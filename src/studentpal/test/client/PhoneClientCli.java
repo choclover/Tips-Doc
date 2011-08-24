@@ -111,7 +111,7 @@ public class PhoneClientCli {
       root.put(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_REQ);
       
       if (cmd.equalsIgnoreCase("login")) {
-        root.put(Message.TAGNAME_CMD_TYPE, TaskDefinition.TASK_LOGIN);
+        root.put(Message.TAGNAME_CMD_TYPE, Message.TASKNAME_LOGIN);
         
         JSONObject args = new JSONObject();
         this.phoneNo = new StringBuffer().append(phone_number1).append(
@@ -123,7 +123,7 @@ public class PhoneClientCli {
         loggined = true;
         
       } else if (cmd.equalsIgnoreCase("logout") && loggined) {
-        root.put(Message.TAGNAME_CMD_TYPE, TaskDefinition.TASK_LOGOUT);
+        root.put(Message.TAGNAME_CMD_TYPE, Message.TASKNAME_LOGOUT);
         JSONObject args = new JSONObject();
         args.put(Message.TAGNAME_PHONE_NUM, phoneNo);
         
@@ -180,7 +180,7 @@ public class PhoneClientCli {
       resp.put(Message.TAGNAME_CMD_TYPE, cmd_type);
       
       JSONObject result = new JSONObject();
-      if (cmd_type.equals(TaskDefinition.TASK_GetAppList)) {
+      if (cmd_type.equals(Message.TASKNAME_GetAppList)) {
         JSONArray applications = new JSONArray();
         
         JSONObject app = new JSONObject();
@@ -202,7 +202,7 @@ public class PhoneClientCli {
         
         result.put(Message.TAGNAME_APPLICATIONS, applications);
         
-      } else if (cmd_type.equals(TaskDefinition.TASK_SetAppAccessCategory)) {
+      } else if (cmd_type.equals(Message.TASKNAME_SetAppAccessCategory)) {
         //TODO
       }
       resp.put(Message.TAGNAME_RESULT, result);

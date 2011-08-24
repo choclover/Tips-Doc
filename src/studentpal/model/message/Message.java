@@ -20,6 +20,13 @@ public class Message {
   public static final String TAGNAME_APP_CLASSNAME   = "app_classname";
   public static final String TAGNAME_APP_ACCESS_TYPE = "access_type";
   
+  public final static String TASKNAME_Generic     = "Generic";
+  public final static String TASKNAME_GetAppList  = "GetAppList";
+  public final static String TASKNAME_SetAppAccessCategory = "SetAppAccessCategory";
+  /* Tasks from Phone */
+  public final static String TASKNAME_LOGIN   = "LOGIN";
+  public final static String TASKNAME_LOGOUT  = "LOGOUT";
+  
   public static final int ERRCODE_NOERROR = 0;
   public static final int ERRCODE_TIMEOUT = 100;
   public static final int ERRCODE_FORMAT_ERR = 400;

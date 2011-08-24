@@ -29,7 +29,7 @@ public class PhoneConnectorWs {
     try {
       PhoneConnection pconn = ConnectionManager.retrieveConnection(mobileNo);
       if (pconn != null) {
-        TaskDefinition task = TaskFactory.getInstance().createTask(TaskDefinition.TASK_GetAppList);
+        TaskDefinition task = TaskFactory.getInstance().createTask(Message.TASKNAME_GetAppList);
         pconn.executeTaskDef(task);
         
         replyStr = task.getReplyStr();
@@ -51,7 +51,7 @@ public class PhoneConnectorWs {
     String replyStr = "";
     try {
       TaskDefinition task = TaskFactory.getInstance().createTask(
-          TaskDefinition.TASK_SetAppAccessCategory, param);
+          Message.TASKNAME_SetAppAccessCategory, param);
 
       PhoneConnection pconn = ConnectionManager.retrieveConnection(mobileNo);
       if (pconn != null) {

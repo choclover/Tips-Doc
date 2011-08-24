@@ -107,7 +107,7 @@ public class PhoneConnHandler extends IoHandlerAdapter {
     throws JSONException {
     String cmdType = request.getString(Message.TAGNAME_CMD_TYPE);
     
-    if (cmdType.equals(TaskDefinition.TASK_LOGIN)) {
+    if (cmdType.equals(Message.TASKNAME_LOGIN)) {
       JSONObject argObj = request.getJSONObject(Message.TAGNAME_ARGUMENTS); 
       String phoneNo    = argObj.getString(Message.TAGNAME_PHONE_NUM);
       
@@ -116,7 +116,7 @@ public class PhoneConnHandler extends IoHandlerAdapter {
       
       session.setAttribute(PhoneConnection.ATTR_TAGNAME, pconn);
     
-    } else if (cmdType.equals(TaskDefinition.TASK_LOGOUT)) {
+    } else if (cmdType.equals(Message.TASKNAME_LOGOUT)) {
       JSONObject argObj = request.getJSONObject(Message.TAGNAME_ARGUMENTS); 
       String phoneNo    = argObj.getString(Message.TAGNAME_PHONE_NUM);
       

@@ -42,6 +42,10 @@ public class MessageHandler implements Runnable {
     }
   }
   
+  public void terminate() {
+    this.stopped = true;
+  }
+  
   public void handleEvent(int respType, int respCode, Object respBody) {
     //TODO
   }

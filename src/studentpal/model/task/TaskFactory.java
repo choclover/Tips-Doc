@@ -4,6 +4,8 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import studentpal.model.message.Message;
+
 
 public class TaskFactory {
   final static Logger logger = LoggerFactory.getLogger(TaskFactory.class);
@@ -23,10 +25,10 @@ public class TaskFactory {
   
   public TaskDefinition createTask(String taskName, String param) throws JSONException {
     TaskDefinition task = null;
-    if (taskName.equals(TaskDefinition.TASK_GetAppList)) {
+    if (taskName.equals(Message.TASKNAME_GetAppList)) {
       task = new GetAppListTask();
       
-    } else if (taskName.equals(TaskDefinition.TASK_SetAppAccessCategory)) {
+    } else if (taskName.equals(Message.TASKNAME_SetAppAccessCategory)) {
       task = new SetAppAccessCategoryTask();
     }
     

@@ -1,6 +1,5 @@
 package studentpal.model.task;
 
-import java.io.IOException;
 import java.util.TimerTask;
 
 import org.json.JSONException;
@@ -14,18 +13,10 @@ import studentpal.model.message.Message;
 public abstract class TaskDefinition {
   final static Logger logger = LoggerFactory.getLogger(TaskDefinition.class);
   
-  /* Contants */
-  public final static String TASK_Generic = "Generic";
-  public final static String TASK_GetAppList = "GetAppList";
-  public final static String TASK_SetAppAccessCategory = "SetAppAccessCategory";
-  /* Tasks from Phone */
-  public final static String TASK_LOGIN  = "LOGIN";
-  public final static String TASK_LOGOUT = "LOGOUT";
-  
   public final static int TIMEOUT_SECONDS = 10*1000;  //seconds
   
   /* Fields */
-  String taskName = TASK_Generic;
+  String taskName = Message.TASKNAME_Generic;
 
   protected int taskId = 0;
   //the PhoneConnection to which the task is bound
@@ -190,7 +181,7 @@ public abstract class TaskDefinition {
 /*  Subclasses definition  */
 class GetAppListTask extends TaskDefinition {
   public GetAppListTask() {
-    taskName = TASK_GetAppList;
+    taskName = Message.TASKNAME_GetAppList;
   }
   
   public void populateRequestStr(String args) throws JSONException {
@@ -204,7 +195,7 @@ class GetAppListTask extends TaskDefinition {
 
 class SetAppAccessCategoryTask extends TaskDefinition {
   public SetAppAccessCategoryTask() {
-    taskName = TASK_SetAppAccessCategory;
+    taskName = Message.TASKNAME_SetAppAccessCategory;
   }
   
   public void populateRequestStr(String args) throws JSONException {
