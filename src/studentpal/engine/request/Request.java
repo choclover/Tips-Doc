@@ -15,9 +15,9 @@ public abstract class Request /*extends Message*/ {
    * Field Members
    */
   protected boolean bIncoming = true;
-  protected boolean bReplyReady = false;
-  protected String replyStr = null;
-  protected int req_seq = Message.INVALID_MSG_ID;
+  protected boolean bOutputContentReady = false;
+  protected String outputContent = null;
+  protected int req_seq = Message.MSG_ID_INVALID;
   
   public void execute(MessageHandler msgHandler) {
   }
@@ -36,12 +36,17 @@ public abstract class Request /*extends Message*/ {
     return !bIncoming;
   }
   
-  public boolean isReplyReady() {
-    return bReplyReady;
+  public boolean isOutputContentReady() {
+    return bOutputContentReady;
   }
   
-  public String getReplyStr() {
-    return replyStr;
+  public String getOutputContent() {
+    return outputContent;
+  }
+  
+  public void setOutputContent(String content) {
+    outputContent = content;
+    this.bOutputContentReady = true;
   }
   
   public JSONObject generateGenericReplyHeader(String cmd_type) 

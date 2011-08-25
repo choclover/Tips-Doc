@@ -9,8 +9,11 @@ import java.util.Map;
 import studentpal.app.MessageHandler;
 import studentpal.app.SystemStateReceiver;
 import studentpal.app.io.IoHandler;
+import studentpal.engine.request.LoginRequest;
+import studentpal.engine.request.Request;
 import studentpal.model.ClientAppInfo;
 import studentpal.model.exception.STDException;
+import studentpal.util.Utils;
 import studentpal.util.logger.Logger;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -20,7 +23,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 public class ClientEngine implements AppHandler {
   
@@ -72,7 +74,6 @@ public class ClientEngine implements AppHandler {
   //////////////////////////////////////////////////////////////////////////////
   @Override
   public void launch() {
-  
   }
   
   public void launch(Context context) throws STDException {
@@ -125,4 +126,14 @@ public class ClientEngine implements AppHandler {
     return result;
   }
 
+  public void loginServer() throws STDException {
+    String phoneNum = getPhoneNum();
+    if (! Utils.isValidPhoneNumber(phoneNum)) {
+      throw new STDException("Got invalid phone number of " + phoneNum
+          + ", unable to login!");
+    }
+    
+    Request request = new LoginRequest(phoneNum);
+    msgHandler.sendRequest(request);
+  }
 }

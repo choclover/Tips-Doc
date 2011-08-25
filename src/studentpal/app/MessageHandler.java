@@ -8,7 +8,7 @@ import studentpal.util.logger.Logger;
 import android.os.Handler;
 import android.os.Message;
 
-public class MessageHandler extends Handler implements AppHandler {
+public class MessageHandler extends android.os.Handler implements AppHandler {
   
   private static final String TAG = "MessageHandler";
   
@@ -44,13 +44,15 @@ public class MessageHandler extends Handler implements AppHandler {
     if (msg instanceof Request) {
       Request req = (Request)msg;
       if (req.isIncomingReq()) {
+        //Execute this request in the main thread, 
+        //and then append the processed request to message queue again
         req.execute();
-        this.sendRequest(req);  //add handled request to message queue again
+        this.sendRequest(req);   
       
-      } else if (req.isOutgoingReq() && req.isReplyReady()) {
-        String replyStr = req.getReplyStr();
+      } else if (req.isOutgoingReq() && req.isOutputContentReady()) {
+        String replyStr = req.getOutputContent();
         if (replyStr != null && replyStr.trim().length() > 0) {
-          this.ioHandler.sendMessage(replyStr);
+          this.ioHandler.sendMsgStr(replyStr);
         } else {
           Logger.d(TAG, "Outgoing reply is NULL or empty for request "+req.getName());
         }

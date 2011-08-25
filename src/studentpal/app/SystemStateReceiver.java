@@ -4,7 +4,6 @@ import studentpal.util.logger.Logger;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 public class SystemStateReceiver extends BroadcastReceiver {
   private static final String TAG = "SystemStateReceiver";
@@ -12,7 +11,7 @@ public class SystemStateReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     String action = intent.getAction();
-    Log.i(TAG, "Action onReceive() is:" + action);
+    Logger.i(TAG, "Action onReceive() is:" + action);
 
     if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
       Logger.i(TAG, "==== SYSTEM BOOT COMPLETED ====");
@@ -23,7 +22,7 @@ public class SystemStateReceiver extends BroadcastReceiver {
       context.startActivity(launcherIntent);
 
     } else if (action.equals(Intent.ACTION_SCREEN_ON)) {
-      Log.i(TAG, "Screen is turned ON");
+      Logger.i(TAG, "Screen is turned ON");
       
       // Intent i = new Intent(context,
       // com.hemi.helloworld.InstalledProgramsListService.class);
@@ -33,7 +32,7 @@ public class SystemStateReceiver extends BroadcastReceiver {
       // context.startService(i);
 
     } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
-      Log.i(TAG, "Screen is turned OFF");
+      Logger.i(TAG, "Screen is turned OFF");
       
       // Intent i = new Intent(context,
       // com.hemi.helloworld.InstalledProgramsListService.class);

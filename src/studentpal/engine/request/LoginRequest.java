@@ -12,38 +12,36 @@ import studentpal.model.ClientAppInfo;
 import studentpal.util.logger.Logger;
 
 public class LoginRequest extends Request {
-
+  private String phoneNum = null;
+  
+  public LoginRequest(String phoneNum) {
+    this.phoneNum  = phoneNum;
+  }
+  
   public String getName() {
-    return Message.TASKNAME_GetAppList;
+    return Message.TASKNAME_LOGIN;
   }
   
   public void execute() {
-    List<ClientAppInfo> appList = ClientEngine.getInstance().getAppList();
     try {
-      JSONObject respObj = super.generateGenericReplyHeader(getName());
-      respObj.put(Message.TAGNAME_ERR_CODE, Message.ERRCODE_NOERROR);
-
-      JSONArray appAry = new JSONArray();
-      if (appList != null && appList.size() > 0) {
-        for (ClientAppInfo appInfo : appList) {
-          JSONObject app = new JSONObject();
-          app.put(Message.TAGNAME_APP_NAME, appInfo.getAppName());
-          app.put(Message.TAGNAME_APP_CLASSNAME, appInfo.getAppClassname());
-          app.put(Message.TAGNAME_APP_ACCESS_TYPE, 1);
-        }
-      }
-
-      JSONObject resultObj = new JSONObject();
-      resultObj.put(Message.TAGNAME_APPLICATIONS, appAry);
-      respObj.put(Message.TAGNAME_RESULT, resultObj);
-
-      this.replyStr = respObj.toString();
+      JSONObject argsObj = new JSONObject();
+      argsObj.put(Message.TAGNAME_PHONE_NUM, this.phoneNum);
+      
+      JSONObject reqObj = new JSONObject();
+      reqObj.put(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_REQ);
+      reqObj.put(Message.TAGNAME_CMD_TYPE, getName());
+      reqObj.put(Message.TAGNAME_ARGUMENTS, argsObj);
+      
       this.bIncoming = false;
-      this.bReplyReady = true;
+      setOutputContent(reqObj.toString());
 
     } catch (JSONException ex) {
       Logger.w(getName(), "In execute() got an error:" + ex.toString());
     }
+  }
+  
+  public boolean isOutputContentReady() {
+    return true;
   }
 
 }

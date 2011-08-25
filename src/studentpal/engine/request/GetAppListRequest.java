@@ -37,9 +37,8 @@ public class GetAppListRequest extends Request {
       resultObj.put(Message.TAGNAME_APPLICATIONS, appAry);
       respObj.put(Message.TAGNAME_RESULT, resultObj);
 
-      this.replyStr = respObj.toString();
       this.bIncoming = false;
-      this.bReplyReady = true;
+      setOutputContent(respObj.toString());
 
     } catch (JSONException ex) {
       Logger.w(getName(), "In execute() got an error:" + ex.toString());

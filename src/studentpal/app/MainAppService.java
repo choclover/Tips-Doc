@@ -52,13 +52,12 @@ public class MainAppService extends Service {
       try {
         engine.launch(this);
       } catch (STDException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
       break;
       
     case CMD_STOP_WATCHING_APP:
-      //TODO
+      //TODO: stop program watching thread 
       break;
     }
   }

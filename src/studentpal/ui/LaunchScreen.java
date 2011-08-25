@@ -5,7 +5,6 @@ import studentpal.util.logger.Logger;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -39,7 +38,7 @@ public class LaunchScreen extends Activity {
       btnStop = (Button) findViewById(R.id.btnStop);
       btnStop.setOnClickListener(new View.OnClickListener() {
           public void onClick(View view) {
-            Log.i(TAG, btnStop.getText()+" is clicked!");
+            Logger.i(TAG, btnStop.getText()+" is clicked!");
             
             stopWatchingService();
             service_status.setText("STOPPED");

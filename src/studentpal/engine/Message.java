@@ -29,7 +29,8 @@ public class Message {
   public final static String TASKNAME_LOGIN   = "LOGIN";
   public final static String TASKNAME_LOGOUT  = "LOGOUT";
   
-  public static final int INVALID_MSG_ID = -1;
+  public static final int MSG_ID_INVALID = -1;
+  public static final int MSG_ID_NOTUSED = 0;
   
   public static final int ERRCODE_NOERROR = 0;
   public static final int ERRCODE_TIMEOUT = 100;
