@@ -45,10 +45,15 @@ public class MessageHandler extends Handler implements AppHandler {
       Request req = (Request)msg;
       if (req.isIncomingReq()) {
         req.execute();
-        sendRequest(req);
+        this.sendRequest(req);  //add handled request to message queue again
       
       } else if (req.isOutgoingReq() && req.isReplyReady()) {
-        
+        String replyStr = req.getReplyStr();
+        if (replyStr != null && replyStr.trim().length() > 0) {
+          this.ioHandler.sendMessage(replyStr);
+        } else {
+          Logger.d(TAG, "Outgoing reply is NULL or empty for request "+req.getName());
+        }
         
       } else {
         Logger.w(TAG, "Unhandled a request: "+req.getName());

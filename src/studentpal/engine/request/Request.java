@@ -24,6 +24,10 @@ public abstract class Request /*extends Message*/ {
   
   public abstract void execute();
   
+  public String getName() {
+    return Message.TASKNAME_Generic;
+  }
+  
   public boolean isIncomingReq() {
     return bIncoming;
   }
@@ -36,8 +40,8 @@ public abstract class Request /*extends Message*/ {
     return bReplyReady;
   }
   
-  public String getName() {
-    return Message.TASKNAME_Generic;
+  public String getReplyStr() {
+    return replyStr;
   }
   
   public JSONObject generateGenericReplyHeader(String cmd_type) 
