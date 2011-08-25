@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <TextView android:id="@+id/name"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_alignParentRight="true" android:layout_alignParentTop="true"
+        android:layout_above="@+id/listitem_content"
+        android:layout_alignWithParentIfMissing="true" android:gravity="center_vertical"
+        android:text="@+id/listitem_title" android:textSize="22px" />
+    <TextView android:id="@+id/desc"
+        android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" android:singleLine="true"
+        android:ellipsize="marquee" android:text="@+id/item_content"
+        android:textSize="14px" />
+
+    
+</LinearLayout>
