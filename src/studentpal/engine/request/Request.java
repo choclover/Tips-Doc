@@ -1,5 +1,6 @@
 package studentpal.engine.request;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import studentpal.app.MessageHandler;
@@ -39,8 +40,12 @@ public abstract class Request /*extends Message*/ {
     return Message.TASKNAME_Generic;
   }
   
-  public JSONObject generateReplyHeader(String reqType) {
+  public JSONObject generateGenericReplyHeader(String cmd_type) 
+    throws JSONException {
     JSONObject header = new JSONObject();
+    header.put(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_ACK);
+    header.put(Message.TAGNAME_MSG_ID, req_seq);
+    header.put(Message.TAGNAME_CMD_TYPE, cmd_type);
     
     return header;
   }

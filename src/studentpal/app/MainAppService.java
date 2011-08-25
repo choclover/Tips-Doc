@@ -14,7 +14,7 @@ public class MainAppService extends Service {
   public static final int CMD_STOP_WATCHING_APP = 101;
   
   /* 
-   * Fields
+   * Field members
    */
   private ClientEngine engine = null;
   

@@ -37,7 +37,9 @@ public class IoHandler implements AppHandler {
   
   private RemoteConnectionThread connection  = null;
 
-  
+  /*
+   * Methods
+   */
   private IoHandler() {
     initialize();
   }
@@ -78,6 +80,12 @@ public class IoHandler implements AppHandler {
     return "UTF-8";
   }
   
+  public void sendMessage(String msg) {
+    try {
+      
+    }
+  }
+  throws STDException
   //////////////////////////////////////////////////////////////////////////////
   //Connection thread
   class RemoteConnectionThread extends Thread {
@@ -118,9 +126,9 @@ public class IoHandler implements AppHandler {
         bos.flush();
         
       } catch (UnsupportedEncodingException e) {
-        e.printStackTrace();        
+        Logger.w(TAG, e.toString());        
       } catch (IOException e) {
-        e.printStackTrace();
+        Logger.w(TAG, e.toString());
       }
     }
     

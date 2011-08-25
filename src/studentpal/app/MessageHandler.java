@@ -54,9 +54,7 @@ public class MessageHandler extends Handler implements AppHandler {
         Logger.w(TAG, "Unhandled a request: "+req.getName());
       }
       
-    } else {
-      
-    }
+    } 
     
     super.handleMessage(message);
   }
