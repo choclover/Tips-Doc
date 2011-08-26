@@ -1,4 +1,4 @@
-package studentpal.ui;
+package com.studentpal.ui;
 
 import android.app.Activity;
 

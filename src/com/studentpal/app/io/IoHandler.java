@@ -1,4 +1,4 @@
-package studentpal.app.io;
+package com.studentpal.app.io;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -11,16 +11,18 @@ import java.net.UnknownHostException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.studentpal.app.MessageHandler;
+import com.studentpal.engine.AppHandler;
+import com.studentpal.engine.ClientEngine;
+import com.studentpal.engine.Message;
+import com.studentpal.engine.request.Request;
+import com.studentpal.model.codec.Codec;
+import com.studentpal.model.exception.STDException;
+import com.studentpal.util.logger.Logger;
+
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import studentpal.app.MessageHandler;
-import studentpal.engine.AppHandler;
-import studentpal.engine.ClientEngine;
-import studentpal.engine.Message;
-import studentpal.engine.request.Request;
-import studentpal.model.exception.STDException;
-import studentpal.util.logger.Logger;
 
 public class IoHandler implements AppHandler {
   
@@ -35,7 +37,6 @@ public class IoHandler implements AppHandler {
   private MessageHandler msgHandler = null;
   
   private RemoteConnectionThread remoConnThread  = null;
-//  private Handler 
 
   /*
    * Methods
@@ -63,6 +64,10 @@ public class IoHandler implements AppHandler {
     remoConnThread.start();    
   }
   
+  @Override
+  public void terminate() {
+    // TODO Auto-generated method stub
+  }
   //////////////////////////////////////////////////////////////////////////////
   public String getRemoteSvrAddr() {
     // TODO read from config
@@ -138,6 +143,11 @@ public class IoHandler implements AppHandler {
         } catch (IOException e) {
           Logger.w(TAG, e.toString());
         }
+        
+      if (outputMsgHandler != null) {
+        outputMsgHandler.removeMessages(0);
+        outputMsgHandler = null;
+      }
     }
 
     public void run() {
@@ -247,6 +257,7 @@ public class IoHandler implements AppHandler {
       try {
         byte[] msgBytes;
         msgBytes = msg.getBytes(getEncoding());
+        msgBytes = Codec.encode(msgBytes);
 
         bos.write(msgBytes);
         bos.flush();

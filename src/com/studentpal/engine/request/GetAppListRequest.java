@@ -1,4 +1,4 @@
-package studentpal.engine.request;
+package com.studentpal.engine.request;
 
 import java.util.List;
 
@@ -6,10 +6,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import studentpal.engine.ClientEngine;
-import studentpal.engine.Message;
-import studentpal.model.ClientAppInfo;
-import studentpal.util.logger.Logger;
+import com.studentpal.engine.ClientEngine;
+import com.studentpal.engine.Message;
+import com.studentpal.model.ClientAppInfo;
+import com.studentpal.util.logger.Logger;
+
 
 public class GetAppListRequest extends Request {
 

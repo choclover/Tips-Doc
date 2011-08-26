@@ -1,7 +1,8 @@
-package studentpal.model;
+package com.studentpal.model;
 
-import studentpal.engine.ClientEngine;
-import studentpal.util.logger.Logger;
+import com.studentpal.engine.ClientEngine;
+import com.studentpal.util.logger.Logger;
+
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 

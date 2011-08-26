@@ -1,4 +1,4 @@
-package studentpal.engine;
+package com.studentpal.engine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,15 +6,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import studentpal.app.MessageHandler;
-import studentpal.app.SystemStateReceiver;
-import studentpal.app.io.IoHandler;
-import studentpal.engine.request.LoginRequest;
-import studentpal.engine.request.Request;
-import studentpal.model.ClientAppInfo;
-import studentpal.model.exception.STDException;
-import studentpal.util.Utils;
-import studentpal.util.logger.Logger;
+import com.studentpal.app.MessageHandler;
+import com.studentpal.app.SystemStateReceiver;
+import com.studentpal.app.io.IoHandler;
+import com.studentpal.engine.request.LoginRequest;
+import com.studentpal.engine.request.Request;
+import com.studentpal.model.ClientAppInfo;
+import com.studentpal.model.exception.STDException;
+import com.studentpal.util.Utils;
+import com.studentpal.util.logger.Logger;
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -74,6 +75,10 @@ public class ClientEngine implements AppHandler {
   //////////////////////////////////////////////////////////////////////////////
   @Override
   public void launch() {
+  }
+  
+  @Override
+  public void terminate() {
   }
   
   public void launch(Context context) throws STDException {

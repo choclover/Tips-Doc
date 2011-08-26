@@ -1,4 +1,4 @@
-package studentpal.engine;
+package com.studentpal.engine;
 
 import java.util.HashMap;
 

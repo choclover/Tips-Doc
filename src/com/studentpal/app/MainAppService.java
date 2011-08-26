@@ -1,7 +1,8 @@
-package studentpal.app;
+package com.studentpal.app;
 
-import studentpal.engine.ClientEngine;
-import studentpal.model.exception.STDException;
+import com.studentpal.engine.ClientEngine;
+import com.studentpal.model.exception.STDException;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;

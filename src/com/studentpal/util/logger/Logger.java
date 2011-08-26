@@ -1,4 +1,4 @@
-package studentpal.util.logger;
+package com.studentpal.util.logger;
 
 public class Logger {
 

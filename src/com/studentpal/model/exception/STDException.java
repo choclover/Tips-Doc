@@ -1,4 +1,4 @@
-package studentpal.model.exception;
+package com.studentpal.model.exception;
 
 public class STDException extends Exception {
   private String desc;

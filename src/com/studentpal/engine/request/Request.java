@@ -1,10 +1,11 @@
-package studentpal.engine.request;
+package com.studentpal.engine.request;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import studentpal.app.MessageHandler;
-import studentpal.engine.Message;
+import com.studentpal.app.MessageHandler;
+import com.studentpal.engine.Message;
+
 
 public abstract class Request /*extends Message*/ {
   /*

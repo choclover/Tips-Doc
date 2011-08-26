@@ -1,10 +1,11 @@
-package studentpal.app;
+package com.studentpal.app;
 
-import studentpal.app.io.IoHandler;
-import studentpal.engine.AppHandler;
-import studentpal.engine.ClientEngine;
-import studentpal.engine.request.Request;
-import studentpal.util.logger.Logger;
+import com.studentpal.app.io.IoHandler;
+import com.studentpal.engine.AppHandler;
+import com.studentpal.engine.ClientEngine;
+import com.studentpal.engine.request.Request;
+import com.studentpal.util.logger.Logger;
+
 import android.os.Handler;
 import android.os.Message;
 
@@ -27,9 +28,15 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
     return instance;
   }
   
+  @Override
   public void launch() {
     this.engine = ClientEngine.getInstance();    
     this.ioHandler = IoHandler.getInstance();
+  }
+  
+  @Override
+  public void terminate() {
+    // TODO Auto-generated method stub
   }
   
   public void sendRequest(Request req) {
@@ -69,4 +76,6 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
   //////////////////////////////////////////////////////////////////////////////
   private void initialize() {
   }
+
+
 }

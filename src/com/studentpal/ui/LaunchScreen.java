@@ -1,7 +1,8 @@
-package studentpal.ui;
+package com.studentpal.ui;
 
-import studentpal.ref.R;
-import studentpal.util.logger.Logger;
+import com.studentpal.R;
+import com.studentpal.util.logger.Logger;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -51,14 +52,14 @@ public class LaunchScreen extends Activity {
   }
 
   public void startWatchingService() {
-    Intent i = new Intent(this, studentpal.app.MainAppService.class);
+    Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
 //    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    i.putExtra("command", studentpal.app.MainAppService.CMD_START_WATCHING_APP);
+    i.putExtra("command", com.studentpal.app.MainAppService.CMD_START_WATCHING_APP);
     startService(i);
   }
   
   public void stopWatchingService() {
-    Intent i = new Intent(this, studentpal.app.MainAppService.class);
+    Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
     stopService(i);
   }
   
