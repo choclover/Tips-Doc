@@ -1,4 +1,4 @@
-package studentpal.utils;
+package studentpal.util;
 
 public class Utils {
 

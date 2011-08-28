@@ -24,8 +24,12 @@ public class ConnectionManager {
   }
   
   public static synchronized void removeConnection(String phoneNo) {
-    logger.info("Removeing Connection for mobileNo: "+phoneNo);
-    phoneConnMap.remove(phoneNo);
+    if (phoneConnMap.containsKey(phoneNo)) {
+      logger.info("Removeing Connection for mobileNo: "+phoneNo);
+      phoneConnMap.remove(phoneNo);
+    } else {
+      logger.info("Connection for mobileNo("+phoneNo+ ") NOT existing!");
+    }
   }
   
   public static void removeConnection(PhoneConnection pconnToRemove) {

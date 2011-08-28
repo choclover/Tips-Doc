@@ -12,7 +12,7 @@ import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import studentpal.utils.Utils;
+import studentpal.util.Utils;
 
 public class ResponseMsgEncoder extends ProtocolEncoderAdapter {
   private static final Logger logger = LoggerFactory.getLogger(ResponseMsgEncoder.class);

@@ -49,7 +49,7 @@ public class ServerEngine {
           new AsCodecFactory()
       ));
   
-      acceptor.setHandler(new PhoneConnHandler());
+      acceptor.setHandler(new PhoneConnctor());
       acceptor.setDefaultLocalAddress(new InetSocketAddress(SVR_PORT));
       acceptor.bind();
 

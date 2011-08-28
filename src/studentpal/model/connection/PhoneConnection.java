@@ -90,7 +90,11 @@ public class PhoneConnection {
         String requestStr = task.getRequestStr();
         sendMessage(requestStr);
 
-//        if (false) 
+        /* 
+         * Add this task to a schedule timeout queue, this task will not return 
+         * until response arrived or timeout happens
+         */
+        if (true) 
         {
           addScheduledTask(task.getTimeoutTask(), TaskDefinition.TIMEOUT_SECONDS);
           task.waitForReply();
@@ -131,11 +135,13 @@ public class PhoneConnection {
         sendMessage(msg.getBytes(AsCodecFactory.CHARSET_NAME));
       } catch (UnsupportedEncodingException e) {
         logger.warn(e.toString());
+      } catch (IOException e) {
+        logger.warn(e.toString());
       }
     }
   }
   
-  public void sendMessage(byte[] msgbuff) {
+  private void sendMessage(byte[] msgbuff) throws IOException {
     IoBuffer iobuff = IoBuffer.allocate(1024);
     iobuff.setAutoExpand(true);
     iobuff.clear();
@@ -144,6 +150,6 @@ public class PhoneConnection {
     iobuff.flip();
 
     ioSession.write(iobuff);
-
   }
+
 }

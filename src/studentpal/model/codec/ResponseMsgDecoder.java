@@ -10,7 +10,7 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import studentpal.utils.Utils;
+import studentpal.util.Utils;
 
 public class ResponseMsgDecoder extends CumulativeProtocolDecoder {
   private static final Logger logger = LoggerFactory.getLogger(ResponseMsgDecoder.class);

@@ -23,8 +23,8 @@ import studentpal.model.message.Message;
 import studentpal.model.task.TaskDefinition;
 import studentpal.model.task.TaskFactory;
 
-public class PhoneConnHandler extends IoHandlerAdapter {
-  private final Logger logger = LoggerFactory.getLogger(PhoneConnHandler.class);
+public class PhoneConnctor extends IoHandlerAdapter {
+  private final Logger logger = LoggerFactory.getLogger(PhoneConnctor.class);
   
   @Override
   public void sessionCreated(IoSession session) {
@@ -40,6 +40,7 @@ public class PhoneConnHandler extends IoHandlerAdapter {
   @Override
   public void messageReceived(IoSession session, Object message)
       throws Exception {
+    logger.info("Received message of \n"+message);
     if (message instanceof String) {
       handleMessage(session, (String)message);
     }
@@ -115,7 +116,14 @@ public class PhoneConnHandler extends IoHandlerAdapter {
       ConnectionManager.addConnection(phoneNo, pconn);
       
       session.setAttribute(PhoneConnection.ATTR_TAGNAME, pconn);
-    
+      
+      //TODO: validate login infomation
+      JSONObject respObj = new JSONObject();
+      respObj.put(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_ACK);
+      respObj.put(Message.TAGNAME_ERR_CODE, Message.ERRCODE_NOERROR);
+      respObj.put(Message.TAGNAME_CMD_TYPE, Message.TASKNAME_LOGIN);
+      pconn.sendMessage(respObj.toString());
+      
     } else if (cmdType.equals(Message.TASKNAME_LOGOUT)) {
       JSONObject argObj = request.getJSONObject(Message.TAGNAME_ARGUMENTS); 
       String phoneNo    = argObj.getString(Message.TAGNAME_PHONE_NUM);

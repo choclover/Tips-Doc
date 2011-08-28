@@ -10,10 +10,10 @@ public class MessageHandler implements Runnable {
   private final static Logger logger = LoggerFactory.getLogger(MessageHandler.class);
   
   private boolean stopped = false;
-  private ServerEngine coreapp;
+  private ServerEngine engine;
   
   public MessageHandler(ServerEngine coreapp) {
-    this.coreapp = coreapp;
+    this.engine = coreapp;
     this.stopped = false;
     
     Thread handler = new Thread(this);
