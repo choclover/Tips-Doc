@@ -1,28 +1,31 @@
 package com.studentpal.app;
 
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.studentpal.app.io.IoHandler;
 import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.model.ClientAppInfo;
+import com.studentpal.ui.AccessDeniedNotification;
+import com.studentpal.ui.AccessRequestForm;
 import com.studentpal.util.logger.Logger;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.content.Intent;
 
 
 public class AccessController implements AppHandler {
   /*
    * Field constants
    */
-  private static final String TAG = "AccessController";
-  private static final int TIMERTASK_PERIOD = 2000;  //mill-seconds
-
+  private static final String TAG = "@@ AccessController";
+  private static final int MONITORTASK_PERIOD = 2000;  //mill-seconds
+  private static final boolean forTest = true;
+  
   /*
    * Field members
    */
@@ -30,17 +33,15 @@ public class AccessController implements AppHandler {
   private ClientEngine  engine = null;
   private ActivityManager activityManager = null;
   
-  
   private boolean   isStopped    = false;
   private Timer     monitorTimer = null;
-  private TimerTask monitorTask = null;
+  private TimerTask monitorTask  = null;
   private HashMap<String, String> restrictedAppsMap; 
   
   /*
    * Methods
    */
   private AccessController() {
-    initialize();
   }
   
   public static AccessController getInstance() {
@@ -57,19 +58,33 @@ public class AccessController implements AppHandler {
   @Override
   public void launch() {
     isStopped = false;
-    restrictedAppsMap = new HashMap<String, String>();
     this.engine = ClientEngine.getInstance();
     this.activityManager = engine.getActivityManager();
+
+    if (restrictedAppsMap != null) {
+      restrictedAppsMap.clear();
+    }
+    restrictedAppsMap = new HashMap<String, String>();
     
     //TODO read restricted app list from config
     List<ClientAppInfo> appList = null;
+    if (forTest) {
+      appList = new ArrayList<ClientAppInfo>();
+      ClientAppInfo appInfo = null;
+      appInfo = new ClientAppInfo("Messaging", "com.android.mms", null);
+      appList.add(appInfo);
+      appInfo = new ClientAppInfo("Alarmclock", "com.android.alarmclock", null);
+      appList.add(appInfo);
+      appInfo = new ClientAppInfo("Browser", "com.android.browser", null);
+      appList.add(appInfo);
+    }
     setRestrictedAppList(appList, false);
   }
 
   @Override
   public void terminate() {
-    // TODO Auto-generated method stub
-    
+    stop();
+    runMonitoring(false);
   }
   
   public void start() {
@@ -79,19 +94,26 @@ public class AccessController implements AppHandler {
     isStopped = true;
   }
   
-  public void runMonitoring(boolean bMonitor) {
-    if (isStopped==false && bMonitor==true) {
+  public void runMonitoring(boolean runMonitor) {
+    Logger.i(TAG, "Ready to run monitoring is: "+runMonitor);
+    
+    if (isStopped==false && runMonitor==true) {
       monitorTimer = new Timer();
       if (monitorTask == null) {
         monitorTask = getMonitorTask();
       } 
-      monitorTimer.schedule(monitorTask, 0, TIMERTASK_PERIOD);
+      monitorTimer.schedule(monitorTask, 0, MONITORTASK_PERIOD);
       
     } else {
-      if (monitorTask != null) monitorTask.cancel();
-      if (monitorTimer != null) monitorTimer.cancel();
+      if (monitorTask != null) {
+        monitorTask.cancel();
+        monitorTask = null;
+      }
+      if (monitorTimer != null) {
+        monitorTimer.cancel();
+        monitorTimer = null;
+      }
     }
-    
   }
   
   public void setRestrictedAppList(List<ClientAppInfo> appList, boolean append) {
@@ -102,7 +124,8 @@ public class AccessController implements AppHandler {
         }
         for (ClientAppInfo appInfo : appList) {
           if (appInfo == null) continue;
-          restrictedAppsMap.put(appInfo.getAppName(), appInfo.getAppClassname());
+          //restrictedAppsMap.put(appInfo.getAppName(), appInfo.getAppClassname());
+          restrictedAppsMap.put(appInfo.getAppClassname(), appInfo.getAppClassname());
         }
       }
     }
@@ -133,24 +156,34 @@ public class AccessController implements AppHandler {
       for (RunningAppProcessInfo process : processes) {
         String pname = process.processName;
         if (restrictedAppsMap.containsKey(pname)
-            && process.pkgList.equals(restrictedAppsMap.get(pname))) {
+            //&& process.pkgList.equals(restrictedAppsMap.get(pname))
+        ) {
           Logger.i(TAG, "Ready to kill application: " + pname);
           
           killProcess(process);
-          // if (true) { // for version before 2.2
-          // // android.os.Process.killProcess(process.pid);
-          // String[] pkgs = process.pkgList;
-          // for (String pkg : pkgs) {
-          // am.restartPackage(pkg);
-          // }
-          // }
+          this.engine.launchActivity(AccessDeniedNotification.class);
         }
       }
     }
   }
   
   private boolean killProcess(RunningAppProcessInfo p) {
-    return false;
+    int apiVer = android.os.Build.VERSION.SDK_INT;
+    String[] pkgs = p.pkgList;
+    for (String pkg : pkgs) {
+      if (apiVer <= android.os.Build.VERSION_CODES.ECLAIR_MR1) {
+        //for API 2.1 and earlier version
+        activityManager.restartPackage(pkg);
+      } else if (apiVer > android.os.Build.VERSION_CODES.FROYO) {
+        //for API 2.2 and higher version
+        activityManager.killBackgroundProcesses(pkg);
+      } else {
+        android.os.Process.killProcess(p.pid);
+        //android.os.Process.killProcess(android.os.Process.myPid());
+      }
+    }
+
+    return true;
   }
 
 }

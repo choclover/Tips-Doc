@@ -7,7 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.studentpal.engine.ClientEngine;
-import com.studentpal.engine.Message;
+import com.studentpal.engine.Event;
 import com.studentpal.model.ClientAppInfo;
 import com.studentpal.util.logger.Logger;
 
@@ -15,28 +15,30 @@ import com.studentpal.util.logger.Logger;
 public class GetAppListRequest extends Request {
 
   public String getName() {
-    return Message.TASKNAME_GetAppList;
+    return Event.TASKNAME_GetAppList;
   }
   
   public void execute() {
     List<ClientAppInfo> appList = ClientEngine.getInstance().getAppList();
     try {
       JSONObject respObj = super.generateGenericReplyHeader(getName());
-      respObj.put(Message.TAGNAME_ERR_CODE, Message.ERRCODE_NOERROR);
+      respObj.put(Event.TAGNAME_ERR_CODE, Event.ERRCODE_NOERROR);
 
       JSONArray appAry = new JSONArray();
       if (appList != null && appList.size() > 0) {
         for (ClientAppInfo appInfo : appList) {
           JSONObject app = new JSONObject();
-          app.put(Message.TAGNAME_APP_NAME, appInfo.getAppName());
-          app.put(Message.TAGNAME_APP_CLASSNAME, appInfo.getAppClassname());
-          app.put(Message.TAGNAME_APP_ACCESS_TYPE, 1);
+          app.put(Event.TAGNAME_APP_NAME, appInfo.getAppName());
+          app.put(Event.TAGNAME_APP_CLASSNAME, appInfo.getAppClassname());
+          app.put(Event.TAGNAME_APP_ACCESS_TYPE, 1);
+          
+          appAry.put(app);
         }
       }
 
       JSONObject resultObj = new JSONObject();
-      resultObj.put(Message.TAGNAME_APPLICATIONS, appAry);
-      respObj.put(Message.TAGNAME_RESULT, resultObj);
+      resultObj.put(Event.TAGNAME_APPLICATIONS, appAry);
+      respObj.put(Event.TAGNAME_RESULT, resultObj);
 
       this.bIncoming = false;
       setOutputContent(respObj.toString());

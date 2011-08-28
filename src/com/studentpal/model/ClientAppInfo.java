@@ -12,6 +12,7 @@ public class ClientAppInfo {
   private String app_name;
   private String app_classname;
   private String app_pkgname;
+  private String[] app_pkgList;
   
   public ClientAppInfo(ApplicationInfo appInfo) {
     if (appInfo != null) {
@@ -25,6 +26,12 @@ public class ClientAppInfo {
       app_classname = appInfo.className;
       app_pkgname  = appInfo.packageName;
     }
+  }
+  
+  public ClientAppInfo(String name, String clazname, String pkgName) {
+    app_name = name;
+    app_classname = clazname;
+    app_pkgname = pkgName; 
   }
 
   public String getAppName() {

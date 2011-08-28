@@ -4,7 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.studentpal.app.MessageHandler;
-import com.studentpal.engine.Message;
+import com.studentpal.engine.Event;
 
 
 public abstract class Request /*extends Message*/ {
@@ -18,7 +18,7 @@ public abstract class Request /*extends Message*/ {
   protected boolean bIncoming = true;
   protected boolean bOutputContentReady = false;
   protected String outputContent = null;
-  protected int req_seq = Message.MSG_ID_INVALID;
+  protected int req_seq = Event.MSG_ID_INVALID;
   
   public void execute(MessageHandler msgHandler) {
   }
@@ -26,7 +26,7 @@ public abstract class Request /*extends Message*/ {
   public abstract void execute();
   
   public String getName() {
-    return Message.TASKNAME_Generic;
+    return Event.TASKNAME_Generic;
   }
   
   public boolean isIncomingReq() {
@@ -53,9 +53,9 @@ public abstract class Request /*extends Message*/ {
   public JSONObject generateGenericReplyHeader(String cmd_type) 
     throws JSONException {
     JSONObject header = new JSONObject();
-    header.put(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_ACK);
-    header.put(Message.TAGNAME_MSG_ID, req_seq);
-    header.put(Message.TAGNAME_CMD_TYPE, cmd_type);
+    header.put(Event.TAGNAME_MSG_TYPE, Event.MESSAGE_HEADER_ACK);
+    header.put(Event.TAGNAME_MSG_ID, req_seq);
+    header.put(Event.TAGNAME_CMD_TYPE, cmd_type);
     
     return header;
   }

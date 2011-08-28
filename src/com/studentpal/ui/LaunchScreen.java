@@ -1,6 +1,7 @@
 package com.studentpal.ui;
 
 import com.studentpal.R;
+import com.studentpal.app.MainAppService;
 import com.studentpal.util.logger.Logger;
 
 import android.app.Activity;
@@ -16,6 +17,7 @@ public class LaunchScreen extends Activity {
   private boolean showUI = true;
   private Button btnStart, btnStop;
   private TextView service_status;
+//  private Intent intentMainAppSvc = null;
   
   /** Called when the activity is first created. */
   @Override
@@ -33,6 +35,9 @@ public class LaunchScreen extends Activity {
             
             startWatchingService();
             service_status.setText("SERVICE STARTED");
+            
+            btnStart.setClickable(false);
+            btnStop.setClickable(true);
           }
       });
       
@@ -43,11 +48,17 @@ public class LaunchScreen extends Activity {
             
             stopWatchingService();
             service_status.setText("STOPPED");
+            
+            btnStart.setClickable(true);
+            btnStop.setClickable(false);
           }
       });
       
     } else {
-      startWatchingService();
+      if (false == MainAppService
+          .isServiceRunning(this, MainAppService.class.getName())) {
+        startWatchingService();
+      }
     }
   }
 
@@ -60,6 +71,7 @@ public class LaunchScreen extends Activity {
   
   public void stopWatchingService() {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
+//    i.putExtra("command", com.studentpal.app.MainAppService.CMD_STOP_WATCHING_APP);
     stopService(i);
   }
   

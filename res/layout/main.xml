@@ -8,12 +8,12 @@
 		android:layout_height="wrap_content" android:text="@string/mainapp_name" />
 
 	<Button android:layout_marginLeft="20dip"
-		android:layout_marginRight="20dip" android:text="Stop Service"
+		android:layout_marginRight="20dip" android:text="Start Service"
 		android:layout_height="wrap_content" android:id="@+id/btnStart"
 		android:layout_width="wrap_content"></Button>
 
 	<Button android:layout_marginLeft="20dip"
-		android:layout_marginRight="20dip" android:text="Start Service"
+		android:layout_marginRight="20dip" android:text="Stop Service"
 		android:layout_height="wrap_content" android:id="@+id/btnStop"
 		android:layout_width="wrap_content"></Button>
 		

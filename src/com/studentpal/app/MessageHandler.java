@@ -3,7 +3,9 @@ package com.studentpal.app;
 import com.studentpal.app.io.IoHandler;
 import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
+import com.studentpal.engine.Event;
 import com.studentpal.engine.request.Request;
+import com.studentpal.model.exception.STDException;
 import com.studentpal.util.logger.Logger;
 
 import android.os.Handler;
@@ -18,7 +20,6 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
   private ClientEngine  engine = null;
   
   private MessageHandler() {
-    initialize();
   }
   
   public static MessageHandler getInstance() {
@@ -40,33 +41,51 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
   }
   
   public void sendRequest(Request req) {
-    Message msg = this.obtainMessage(0, req);
+    Message msg = this.obtainMessage(Event.SIGNAL_TYPE_REQACK, req);
     this.sendMessage(msg);
   }
   
   @Override
-  public void handleMessage(Message message) {
-    Object msg = (Request)message.obj;
+  public void handleMessage(android.os.Message message) {
+    Object msg = message.obj;
+    int sigType = message.what;
+    Logger.i(TAG, "msg type:" /*+msg.getClass().getName()+ "id:"*/ +sigType);
     
-    if (msg instanceof Request) {
-      Request req = (Request)msg;
-      if (req.isIncomingReq()) {
-        //Execute this request in the main thread, 
-        //and then append the processed request to message queue again
-        req.execute();
-        this.sendRequest(req);   
-      
-      } else if (req.isOutgoingReq() && req.isOutputContentReady()) {
-        String replyStr = req.getOutputContent();
-        if (replyStr != null && replyStr.trim().length() > 0) {
-          this.ioHandler.sendMsgStr(replyStr);
-        } else {
-          Logger.d(TAG, "Outgoing reply is NULL or empty for request "+req.getName());
-        }
+    switch(sigType) {
+    case Event.SIGNAL_TYPE_REQACK:
+      if (msg instanceof Request) {
+        Request req = (Request)msg;
+        if (req.isIncomingReq()) {
+          //Execute this request in the main thread, 
+          //and then append the processed request to message queue again
+          req.execute();
+          this.sendRequest(req);   
         
-      } else {
-        Logger.w(TAG, "Unhandled a request: "+req.getName());
+        } else if (req.isOutgoingReq() && req.isOutputContentReady()) {
+          String replyStr = req.getOutputContent();
+          if (replyStr != null && replyStr.trim().length() > 0) {
+            this.ioHandler.sendMsgStr(replyStr);
+          } else {
+            Logger.d(TAG, "Outgoing reply is NULL or empty for request "+req.getName());
+          }
+          
+        } else {
+          Logger.w(TAG, "Unhandled a request: "+req.getName());
+        }
       }
+      break;
+        
+    case Event.SIGNAL_TYPE_OUTSTREAM_READY:
+      // Start to login server
+      try {
+        engine.loginServer();
+      } catch (STDException e1) {
+        Logger.w(TAG, e1.toString());
+      }
+      break;
+      
+    default:
+      break;
       
     } 
     
@@ -74,8 +93,5 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  private void initialize() {
-  }
-
 
 }

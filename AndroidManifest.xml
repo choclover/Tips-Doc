@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.studentpal" android:versionCode="1"
-	android:versionName="0.0.1">
+	package="com.studentpal" android:versionCode="1" android:versionName="0.0.1">
 	
 	<application android:icon="@drawable/icon" android:label="@string/mainapp_name" >
 		<activity android:name=".ui.LaunchScreen" android:label="@string/mainapp_name">
@@ -10,10 +9,14 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		
+	 
+    <activity android:name=".ui.AccessRequestForm"></activity>
+    <activity android:name=".ui.AccessDeniedNotification"></activity>
+    <activity android:name=".ui.RequestFinishedNotification"></activity>
+    	
 		<service android:name=".app.MainAppService"></service>
-
-		<receiver android:name=".app.SystemStateReceiver">
+  
+		<receiver android:name=".app.receiver.SystemStateReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>
@@ -21,17 +24,17 @@
 	</application>
 
   <uses-sdk android:minSdkVersion="7" />
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
-  <uses-permission android:name="android.permission.RECEIVE_SMS"></uses-permission>
-  <uses-permission android:name="android.permission.RECEIVE_MMS"></uses-permission>
-  <uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
-  <uses-permission android:name="android.permission.READ_SMS"></uses-permission>
-  <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
-  <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
-  <uses-permission android:name="android.permission.RESTART_PACKAGES"></uses-permission>
-  <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"></uses-permission>
-  <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="android.permission.RECEIVE_SMS" />
+  <uses-permission android:name="android.permission.RECEIVE_MMS" />
+  <uses-permission android:name="android.permission.SEND_SMS" />
+  <uses-permission android:name="android.permission.READ_SMS" />
+  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.RESTART_PACKAGES" />
+  <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+  <uses-permission android:name="android.permission.INTERNET" />
 	
 </manifest>
 

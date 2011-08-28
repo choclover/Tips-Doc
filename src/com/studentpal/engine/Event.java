@@ -2,8 +2,8 @@ package com.studentpal.engine;
 
 import java.util.HashMap;
 
-public class Message {
-  private final static String TAG = "Engine.Message";
+public class Event {
+  private final static String TAG = "Engine.Event";
   
   public static final String MESSAGE_HEADER_ACK = "A";
   public static final String MESSAGE_HEADER_REQ = "R";
@@ -32,6 +32,9 @@ public class Message {
   public static final int MSG_ID_INVALID = -1;
   public static final int MSG_ID_NOTUSED = 0;
   
+  public static final int SIGNAL_TYPE_REQACK = 101;
+  public static final int SIGNAL_TYPE_OUTSTREAM_READY = 102;
+  
   public static final int ERRCODE_NOERROR = 0;
   public static final int ERRCODE_TIMEOUT = 100;
   public static final int ERRCODE_FORMAT_ERR = 400;
@@ -44,7 +47,7 @@ public class Message {
   private int errcoe = 0;
   private Object data = null;
   
-  public Message() {
+  public Event() {
   }
   
 //  static {
@@ -68,4 +71,10 @@ public class Message {
   public Object getData() {
     return this.data;
   }
+  
+
+}
+
+class Signal extends Event {
+  
 }

@@ -1,13 +1,20 @@
 package com.studentpal.app;
 
+import java.util.List;
+
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.model.exception.STDException;
+import com.studentpal.util.logger.Logger;
 
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
 public class MainAppService extends Service {
+  private static final String TAG = "MainAppService";
+  
   /* 
    * Contants
    */
@@ -26,6 +33,7 @@ public class MainAppService extends Service {
   
   @Override
   public void onCreate() {
+    Logger.w(TAG, "onCreate()!");
     super.onCreate();
   }
 
@@ -34,15 +42,26 @@ public class MainAppService extends Service {
   // method will not be called.
   @Override
   public void onStart(Intent intent, int startId) {
-    handleCommand(intent);
+    onStartCommand(intent, 0, startId);
   }
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
+    Logger.w(TAG, "onStartCommand()!\tstartId: "+startId);
+    
     handleCommand(intent);
     // We want this service to continue running until it is explicitly
     // stopped, so return sticky.
     return START_STICKY;
+  }
+  
+  @Override
+  public void onDestroy() {
+    engine = ClientEngine.getInstance();
+    if (engine != null) {
+      engine.terminate();
+    }
+    super.onDestroy();  
   }
   
   private void handleCommand(Intent intent) {
@@ -51,17 +70,40 @@ public class MainAppService extends Service {
     case CMD_START_WATCHING_APP:
       engine = ClientEngine.getInstance();
       try {
-        engine.launch(this);
+        engine.initialize(this);
+        engine.launch();
       } catch (STDException e) {
         e.printStackTrace();
       }
       break;
       
     case CMD_STOP_WATCHING_APP:
-      //TODO: stop program watching thread 
+      break;
+      
+    default:
       break;
     }
   }
-  
+
+  /*
+   * 判断服务是否运行.
+   * @param context
+   * @param className 判断的服务名字
+   */
+  public static boolean isServiceRunning(Context mContext, String className) {
+    boolean isRunning = false;
+    ActivityManager activityManager = (ActivityManager) mContext
+        .getSystemService(Context.ACTIVITY_SERVICE);
+    List<ActivityManager.RunningServiceInfo> serviceList = activityManager
+        .getRunningServices(30);
+
+    for (int i = 0; i < serviceList.size(); i++) {
+      if (serviceList.get(i).service.getClassName().equals(className) == true) {
+        isRunning = true;
+        break;
+      }
+    }
+    return isRunning;
+  }
   
 }

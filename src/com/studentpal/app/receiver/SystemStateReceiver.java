@@ -1,5 +1,6 @@
-package com.studentpal.app;
+package com.studentpal.app.receiver;
 
+import com.studentpal.engine.ClientEngine;
 import com.studentpal.util.logger.Logger;
 
 import android.content.BroadcastReceiver;
@@ -7,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 
 public class SystemStateReceiver extends BroadcastReceiver {
-  private static final String TAG = "SystemStateReceiver";
+  private static final String TAG = "@@ SystemStateReceiver";
 
   @Override
   public void onReceive(Context context, Intent intent) {
@@ -24,22 +25,20 @@ public class SystemStateReceiver extends BroadcastReceiver {
 
     } else if (action.equals(Intent.ACTION_SCREEN_ON)) {
       Logger.i(TAG, "Screen is turned ON");
-      
-      // Intent i = new Intent(context,
-      // com.hemi.helloworld.InstalledProgramsListService.class);
-      // i
-      // .putExtra("command",
-      // InstalledProgramsListService.CMD_START_WATCHING_APP);
-      // context.startService(i);
+      try {
+        ClientEngine.getInstance().getAccessController().start();
+      } catch (Exception e) {
+        Logger.w(TAG, e.toString());
+      }
 
     } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
       Logger.i(TAG, "Screen is turned OFF");
       
-      // Intent i = new Intent(context,
-      // com.hemi.helloworld.InstalledProgramsListService.class);
-      // i.putExtra("command",
-      // InstalledProgramsListService.CMD_STOP_WATCHING_APP);
-      // context.startService(i);
+      try {
+        ClientEngine.getInstance().getAccessController().stop();
+      } catch (Exception e) {
+        Logger.w(TAG, e.toString());
+      }
     }
   }
 
