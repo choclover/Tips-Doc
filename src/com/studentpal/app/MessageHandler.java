@@ -37,7 +37,7 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
   
   @Override
   public void terminate() {
-    // TODO Auto-generated method stub
+    removeMessages(0);
   }
   
   public void sendRequest(Request req) {

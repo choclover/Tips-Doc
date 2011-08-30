@@ -62,14 +62,20 @@ public class LaunchScreen extends Activity {
     }
   }
 
-  public void startWatchingService() {
+  @Override
+  public void onBackPressed() {
+    finish();
+  }
+  
+  //////////////////////////////////////////////////////////////////////////////
+  private void startWatchingService() {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
 //    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     i.putExtra("command", com.studentpal.app.MainAppService.CMD_START_WATCHING_APP);
     startService(i);
   }
   
-  public void stopWatchingService() {
+  private void stopWatchingService() {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
 //    i.putExtra("command", com.studentpal.app.MainAppService.CMD_STOP_WATCHING_APP);
     stopService(i);

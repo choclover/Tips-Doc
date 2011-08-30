@@ -48,7 +48,13 @@ public class MainAppService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     Logger.w(TAG, "onStartCommand()!\tstartId: "+startId);
-    
+
+    // No intent, tell the system not to restart us.
+    if (intent == null) {
+      stopSelf();
+      return START_NOT_STICKY;
+    }
+
     handleCommand(intent);
     // We want this service to continue running until it is explicitly
     // stopped, so return sticky.
@@ -61,6 +67,7 @@ public class MainAppService extends Service {
     if (engine != null) {
       engine.terminate();
     }
+    
     super.onDestroy();  
   }
   

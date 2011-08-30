@@ -51,9 +51,9 @@ public class AccessController implements AppHandler {
     return instance;
   }
 
-  private void initialize() {
-    //TODO
-  }
+//  private void initialize() {
+//    //TODO
+//  }
   
   @Override
   public void launch() {

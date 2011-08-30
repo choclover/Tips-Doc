@@ -9,6 +9,7 @@ import android.content.Intent;
 
 public class SystemStateReceiver extends BroadcastReceiver {
   private static final String TAG = "@@ SystemStateReceiver";
+  private static final boolean forDeploy = false;
 
   @Override
   public void onReceive(Context context, Intent intent) {
@@ -18,10 +19,12 @@ public class SystemStateReceiver extends BroadcastReceiver {
     if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
       Logger.i(TAG, "==== SYSTEM BOOT COMPLETED ====");
 
-//      Intent launcherIntent = new Intent(context,
-//          studentpal.ui.LaunchScreen.class);
-//      launcherIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//      context.startActivity(launcherIntent);
+      if (forDeploy) {
+        Intent launcherIntent = new Intent(context,
+            com.studentpal.ui.LaunchScreen.class);
+        launcherIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(launcherIntent);
+      }
 
     } else if (action.equals(Intent.ACTION_SCREEN_ON)) {
       Logger.i(TAG, "Screen is turned ON");
