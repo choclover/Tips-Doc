@@ -36,12 +36,14 @@ public class ClientEngine implements AppHandler {
   private static ClientEngine instance = null;
   
   private Context launcher;
+  private SystemStateReceiver sysStateReceiver = null;
   private ActivityManager activityManager = null;
   private TelephonyManager teleManager = null;
-  private SystemStateReceiver sysStateReceiver = null;
+  //Handlers
   private MessageHandler msgHandler = null;
   private IoHandler ioHandler = null;
   private AccessController accController = null;
+  private List<AppHandler> appHandlerAry = null;
   
   private ClientEngine() {
   }
@@ -81,27 +83,42 @@ public class ClientEngine implements AppHandler {
     //Create AccessController instance
     this.accController = AccessController.getInstance();
     
+    if (appHandlerAry == null) {
+      appHandlerAry = new ArrayList<AppHandler>();
+      appHandlerAry.add(msgHandler);
+      appHandlerAry.add(ioHandler);
+      appHandlerAry.add(accController);
+    }
+    
   }
   
   //////////////////////////////////////////////////////////////////////////////
   @Override
   public void terminate() {
-    this.ioHandler.terminate();
-    this.msgHandler.terminate();
-    this.accController.terminate();
+    for (AppHandler handler : appHandlerAry) {
+      if (handler != null) {
+        handler.terminate();
+      }
+    }
     
     this.launcher.unregisterReceiver(sysStateReceiver);
   }
   
   @Override
   public void launch() {
-    this.ioHandler.launch();
-    this.msgHandler.launch();
-    this.accController.launch();
+    for (AppHandler handler : appHandlerAry) {
+      if (handler != null) {
+        handler.launch();
+      }
+    }
   }
   
   public String getPhoneNum() {
-    return this.teleManager.getLine1Number();
+    String result = "";
+    if (this.teleManager != null) {
+      result = this.teleManager.getLine1Number();
+    }
+    return result;
   }
 
   public ActivityManager getActivityManager() {

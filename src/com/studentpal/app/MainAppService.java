@@ -75,8 +75,8 @@ public class MainAppService extends Service {
     int cmd = intent.getIntExtra("command", -1);
     switch (cmd) {
     case CMD_START_WATCHING_APP:
-      engine = ClientEngine.getInstance();
       try {
+        engine = ClientEngine.getInstance();
         engine.initialize(this);
         engine.launch();
       } catch (STDException e) {

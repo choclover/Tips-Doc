@@ -32,7 +32,7 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
   @Override
   public void launch() {
     this.engine = ClientEngine.getInstance();    
-    this.ioHandler = IoHandler.getInstance();
+    this.ioHandler = this.engine.getIoHandler();
   }
   
   @Override

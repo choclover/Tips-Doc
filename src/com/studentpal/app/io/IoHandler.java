@@ -21,7 +21,6 @@ import com.studentpal.model.exception.STDException;
 import com.studentpal.util.logger.Logger;
 
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
@@ -51,7 +50,6 @@ public class IoHandler implements AppHandler {
    * Methods
    */
   private IoHandler() {
-    
   }
   
   public static IoHandler getInstance() {
@@ -62,43 +60,20 @@ public class IoHandler implements AppHandler {
   }
 
   private void initialize() {
-    if (socketConn != null) {
-      try { socketConn.close(); } 
-      catch (IOException e) { e.printStackTrace(); }
-      socketConn = null;
-    }
-
-    while (socketConn == null) {
-      socketConn = constructSocketConnection();
-      if (socketConn == null) {
-        Logger.w(TAG, "Creating Socket returns NULL");
-        try {
-          Thread.sleep(2000);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-      } 
-    }
-
-    if (socketConn != null) {
-      try {
-        bis = new BufferedInputStream(socketConn.getInputStream());
-        bos = new BufferedOutputStream(socketConn.getOutputStream());
-        
-        inputConnThread = new InputConnectionThread(); 
-        inputConnThread.start();
-        outputConnThread = new OutputConnectionThread(); 
-        outputConnThread.start(); 
-        
-      } catch (IOException e) {
-        e.printStackTrace();
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        init_network();
       }
-    }
+    };
+    new Thread(r).start();
   }
   
+  
+  @Override
   public void launch() {
     this.engine = ClientEngine.getInstance();  
-    this.msgHandler = MessageHandler.getInstance();
+    this.msgHandler = this.engine.getMsgHandler();
     
     initialize();
   }
@@ -133,11 +108,20 @@ public class IoHandler implements AppHandler {
         Logger.w(TAG, e.toString());
       }
   }
-  //////////////////////////////////////////////////////////////////////////////
-  public String getRemoteSvrAddr() {
+  
+  public String getRemoteSvrIP() {
+    /* 
+     * Do NOT use localhost/127.0.0.1 for machine itself 
+     */
     // TODO read from config
     String addr = "192.168.1.250";
     //addr = "192.168.1.108";
+    return addr;
+  }
+
+  public String getRemoteSvrDomainName() {
+    // TODO read from config
+    String addr = "coeustec.gicp.net";
     return addr;
   }
 
@@ -165,28 +149,77 @@ public class IoHandler implements AppHandler {
     //TODO
   }
   
+  //////////////////////////////////////////////////////////////////////////////
+  private void init_network() {
+    if (socketConn != null) {
+      try { socketConn.close(); } 
+      catch (IOException e) { e.printStackTrace(); }
+      socketConn = null;
+    }
+
+    while (socketConn == null) {
+      socketConn = constructSocketConnection();
+      if (socketConn == null) {
+        Logger.w(TAG, "Creating Socket returns NULL");
+        try {
+          Thread.sleep(2000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      } 
+      
+      break;  //FIXME: design a re-connect or retry method
+    }
+
+    if (socketConn != null) {
+      try {
+        bis = new BufferedInputStream(socketConn.getInputStream());
+        bos = new BufferedOutputStream(socketConn.getOutputStream());
+        
+        inputConnThread = new InputConnectionThread(); 
+        inputConnThread.start();
+        outputConnThread = new OutputConnectionThread(); 
+        outputConnThread.start(); 
+        
+      } catch (IOException e) {
+        Logger.w(TAG, e.toString());
+      }
+    }
+  }
+  
   private Socket constructSocketConnection() {
     Socket aSock = null;
-    try {
-      // The IP here should NOT be localhost which is the phone itself
-      aSock = new Socket(InetAddress.getByName(getRemoteSvrAddr()),
-          getRemoteSvrPort());
-      aSock.setKeepAlive(true);
-      // TODO handle re-connnect and exception handling
-
-    } catch (UnknownHostException e) {
-      Logger.w(TAG, e.toString());
-    } catch (IOException e) {
-      Logger.w(TAG, e.toString());
+    final int RETRY_TIMES = 5;
+    
+    for (int i=0; i<RETRY_TIMES; i++) {
+      try {
+        // The IP here should NOT be localhost which is the phone itself
+        aSock = new Socket(InetAddress.getByName(getRemoteSvrIP()),
+            getRemoteSvrPort());
+        aSock.setKeepAlive(true);
+  
+      } catch (UnknownHostException e) {
+        Logger.w(TAG, e.toString());
+      } catch (IOException e) {
+        Logger.w(TAG, e.toString());
+      }
+      
+      if (aSock != null) break;
+      
+      try {
+        Thread.sleep((i*10+5) * 1000);
+      } catch (InterruptedException e) {
+        Logger.w(TAG, e.toString());
+      }
     }
 
     return aSock;
   }
   
-  //////////////////////////////////////////////////////////////////////////////
+  //**************************************************************************//
   //Connection thread
   class OutputConnectionThread extends Thread/*HandlerThread*/ {
-    private static final String TAG = "OutputConnectionThread";
+    private static final String TAG = "@@ OutputConnectionThread";
     private Handler outputMsgHandler = null;
     private boolean isReady = false;
     
@@ -226,31 +259,26 @@ public class IoHandler implements AppHandler {
         }
       };
       
+      //we can start to login server now since OUTPUT stream is ready
       Message signal = msgHandler.obtainMessage(Event.SIGNAL_TYPE_OUTSTREAM_READY);
       msgHandler.sendMessage(signal);
       
       Looper.loop();
     }
     
-    public void sendMsgStr(String msgStr) throws STDException {
-      if (this.outputMsgHandler == null) {
-        throw new STDException("Output Msg handler should NOT be null!");
-      }
-      Message msg = this.outputMsgHandler.obtainMessage(0, msgStr);
-      this.outputMsgHandler.sendMessage(msg);
-    }
-
     private void sendMsgStr_internal(String msg) throws STDException {
       if (bos == null) {
         throw new STDException("Output stream should NOT be null!");
       }
 
+      Logger.i("Ready to send msg:\n"+msg);
+      
       try {
         byte[] msgBytes;
         msgBytes = msg.getBytes(getEncoding());
         msgBytes = Codec.encode(msgBytes);
 
-        bos.write(msgBytes);
+        bos.write(msgBytes);  
         bos.flush();
 
       } catch (UnsupportedEncodingException e) {
@@ -259,14 +287,24 @@ public class IoHandler implements AppHandler {
         Logger.w(TAG, e.toString());
       }
     }
+    
+    ////////////////////////////////////////////////////////////////////////////
+    public void sendMsgStr(String msgStr) throws STDException {
+      if (this.outputMsgHandler == null) {
+        throw new STDException("Output Msg handler should NOT be null!");
+      }
+      Message msg = this.outputMsgHandler.obtainMessage(0, msgStr);
+      this.outputMsgHandler.sendMessage(msg);
+    }
+    
   }//class OutputConnectionThread
   
-  
+  //**************************************************************************//
   class InputConnectionThread extends Thread {
     private static final String TAG = "@@ InputConnectionThread";
 
     private boolean isStop = false;
-    private boolean isReady = false;
+//    private boolean isReady = false;
     
     public void terminate() {
       isStop = true;
@@ -291,6 +329,9 @@ public class IoHandler implements AppHandler {
 
             String msgStr = new String(buffer, getEncoding());
             Logger.i(TAG, "AndrClient Got a message:\n" + msgStr);
+            if (msgStr==null || msgStr.trim().length()==0) {
+              continue;
+            }
             
             try {
               JSONObject msgObjRoot = new JSONObject(msgStr);
@@ -341,6 +382,7 @@ public class IoHandler implements AppHandler {
           }
 
           Thread.sleep(SLEEP_TIME);
+          
         }// while !stopped
 
       } catch (InterruptedException e) {
