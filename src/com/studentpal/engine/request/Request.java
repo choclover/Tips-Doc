@@ -47,7 +47,11 @@ public abstract class Request /*extends Message*/ {
   
   public void setOutputContent(String content) {
     outputContent = content;
-    this.bOutputContentReady = true;
+    if (content!=null && content.trim().length() > 0) {
+      this.bOutputContentReady = true;
+    } else {
+      this.bOutputContentReady = false;
+    }
   }
   
   public JSONObject generateGenericReplyHeader(String cmd_type) 

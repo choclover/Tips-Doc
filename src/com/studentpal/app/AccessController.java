@@ -33,7 +33,6 @@ public class AccessController implements AppHandler {
   private ClientEngine  engine = null;
   private ActivityManager activityManager = null;
   
-  private boolean   isStopped    = false;
   private Timer     monitorTimer = null;
   private TimerTask monitorTask  = null;
   private HashMap<String, String> restrictedAppsMap; 
@@ -57,7 +56,6 @@ public class AccessController implements AppHandler {
   
   @Override
   public void launch() {
-    isStopped = false;
     this.engine = ClientEngine.getInstance();
     this.activityManager = engine.getActivityManager();
 
@@ -66,38 +64,23 @@ public class AccessController implements AppHandler {
     }
     restrictedAppsMap = new HashMap<String, String>();
     
-    //TODO read restricted app list from config
-    List<ClientAppInfo> appList = null;
-    if (forTest) {
-      appList = new ArrayList<ClientAppInfo>();
-      ClientAppInfo appInfo = null;
-      appInfo = new ClientAppInfo("Messaging", "com.android.mms", null);
-      appList.add(appInfo);
-      appInfo = new ClientAppInfo("Alarmclock", "com.android.alarmclock", null);
-      appList.add(appInfo);
-      appInfo = new ClientAppInfo("Browser", "com.android.browser", null);
-      appList.add(appInfo);
-    }
-    setRestrictedAppList(appList, false);
+    _loadRestrictedApps(restrictedAppsMap);
+    runMonitoring(restrictedAppsMap.size()>0 ? true : false);
   }
 
   @Override
   public void terminate() {
-    stop();
+    if (restrictedAppsMap != null) {
+      restrictedAppsMap.clear();
+    }
     runMonitoring(false);
-  }
-  
-  public void start() {
-    isStopped = false;
-  }
-  public void stop() {
-    isStopped = true;
   }
   
   public void runMonitoring(boolean runMonitor) {
     Logger.i(TAG, "Ready to run monitoring is: "+runMonitor);
     
-    if (isStopped==false && runMonitor==true) {
+    if (runMonitor==true) {
+      //we cannot reuse the old Timer if it is ever cancelled, so have to recreate one
       monitorTimer = new Timer();
       if (monitorTask == null) {
         monitorTask = getMonitorTask();
@@ -110,45 +93,23 @@ public class AccessController implements AppHandler {
         monitorTask = null;
       }
       if (monitorTimer != null) {
+        monitorTimer.purge();
         monitorTimer.cancel();
         monitorTimer = null;
       }
     }
   }
   
-  public void setRestrictedAppList(List<ClientAppInfo> appList, boolean append) {
-    if (appList!=null && appList.size()>0) {
-      synchronized(restrictedAppsMap) {
-        if (!append) {
-          restrictedAppsMap.clear();
-        }
-        for (ClientAppInfo appInfo : appList) {
-          if (appInfo == null) continue;
-          //restrictedAppsMap.put(appInfo.getAppName(), appInfo.getAppClassname());
-          restrictedAppsMap.put(appInfo.getAppClassname(), appInfo.getAppClassname());
-        }
-      }
-    }
-    
-    runMonitoring(restrictedAppsMap.size()>0 ? true : false);
-  }
+//  public void setRestrictedAppList(List<ClientAppInfo> appList) {
+//    boolean append = false;
+//    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
+//  }
+//  public void appendRestrictedAppList(List<ClientAppInfo> appList) {
+//    boolean append = true;
+//    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
+//  }
   
-  public void appendRestrictedAppList(List<ClientAppInfo> appList) {
-    setRestrictedAppList(appList, true);
-  }
-  
-  //////////////////////////////////////////////////////////////////////////////
-  private TimerTask getMonitorTask() {
-    TimerTask task = new TimerTask() {
-      public void run() {
-        Logger.d(TAG, "Monitor Task starts to run!");
-        killRestrictedApps();
-      }
-    };
-    return task;
-  }
-  
-  private void killRestrictedApps() {
+  public void killRestrictedApps() {
     List<RunningAppProcessInfo> processes = activityManager
         .getRunningAppProcesses();
 
@@ -165,6 +126,56 @@ public class AccessController implements AppHandler {
         }
       }
     }
+  }
+  
+  //////////////////////////////////////////////////////////////////////////////
+  private void _loadRestrictedApps(HashMap intoMap) {
+    //TODO read restricted app list from config
+    List<ClientAppInfo> appList = null;
+    if (forTest) {
+      appList = new ArrayList<ClientAppInfo>();
+      ClientAppInfo appInfo = null;
+      appInfo = new ClientAppInfo("Messaging", "com.android.mms", null);
+      appList.add(appInfo);
+      appInfo = new ClientAppInfo("Alarmclock", "com.android.alarmclock", null);
+      appList.add(appInfo);
+      appInfo = new ClientAppInfo("Browser", "com.android.browser", null);
+      appList.add(appInfo);
+    }
+    
+    boolean append = false;
+    _setRestrictedAppList(intoMap, appList, append);
+  }
+  
+  private void _setRestrictedAppList(HashMap<String, String> restrictedAppsMap, 
+      List<ClientAppInfo> appList, boolean append) {
+    if (restrictedAppsMap == null) {
+      Logger.w(TAG, "Input restrictedAppsMap should NOT be NULL!");
+      return;
+    }
+    
+    if (appList!=null && appList.size()>0) {
+      synchronized(restrictedAppsMap) {
+        if (!append) {
+          restrictedAppsMap.clear();
+        }
+        for (ClientAppInfo appInfo : appList) {
+          if (appInfo == null) continue;
+          //restrictedAppsMap.put(appInfo.getAppName(), appInfo.getAppClassname());
+          restrictedAppsMap.put(appInfo.getAppClassname(), appInfo.getAppClassname());
+        }
+      }
+    }
+  }
+  
+  private TimerTask getMonitorTask() {
+    TimerTask task = new TimerTask() {
+      public void run() {
+        Logger.d(TAG, "Monitor Task starts to run!");
+        killRestrictedApps();
+      }
+    };
+    return task;
   }
   
   private boolean killProcess(RunningAppProcessInfo p) {

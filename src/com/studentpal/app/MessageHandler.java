@@ -57,7 +57,7 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
         Request req = (Request)msg;
         if (req.isIncomingReq()) {
           //Execute this request in the main thread, 
-          //and then append the processed request to message queue again
+          //and then append the processed request (as response) to message queue again
           req.execute();
           this.sendRequest(req);   
         

@@ -29,7 +29,7 @@ public class SystemStateReceiver extends BroadcastReceiver {
     } else if (action.equals(Intent.ACTION_SCREEN_ON)) {
       Logger.i(TAG, "Screen is turned ON");
       try {
-        ClientEngine.getInstance().getAccessController().start();
+        ClientEngine.getInstance().getAccessController().runMonitoring(true);
       } catch (Exception e) {
         Logger.w(TAG, e.toString());
       }
@@ -38,7 +38,7 @@ public class SystemStateReceiver extends BroadcastReceiver {
       Logger.i(TAG, "Screen is turned OFF");
       
       try {
-        ClientEngine.getInstance().getAccessController().stop();
+        ClientEngine.getInstance().getAccessController().runMonitoring(false);
       } catch (Exception e) {
         Logger.w(TAG, e.toString());
       }

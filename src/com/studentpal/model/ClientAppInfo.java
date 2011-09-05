@@ -28,9 +28,9 @@ public class ClientAppInfo {
     }
   }
   
-  public ClientAppInfo(String name, String clazname, String pkgName) {
+  public ClientAppInfo(String name, String main_classname, String pkgName) {
     app_name = name;
-    app_classname = clazname;
+    app_classname = main_classname;
     app_pkgname = pkgName; 
   }
 
