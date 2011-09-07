@@ -25,6 +25,7 @@ public class Event {
   public final static String TASKNAME_Generic     = "Generic";
   public final static String TASKNAME_GetAppList  = "GetAppList";
   public final static String TASKNAME_SetAppAccessCategory = "SetAppAccessCategory";
+  public final static String TASKNAME_SetAccessCategories = "SetAccessCategories";
   /* Tasks from Phone */
   public final static String TASKNAME_LOGIN   = "LOGIN";
   public final static String TASKNAME_LOGOUT  = "LOGOUT";

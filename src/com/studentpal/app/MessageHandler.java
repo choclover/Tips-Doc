@@ -13,7 +13,7 @@ import android.os.Message;
 
 public class MessageHandler extends android.os.Handler implements AppHandler {
   
-  private static final String TAG = "MessageHandler";
+  private static final String TAG = "@@ MessageHandler";
   
   private static MessageHandler instance = null;
   private IoHandler     ioHandler = null;
