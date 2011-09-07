@@ -8,6 +8,7 @@ import java.util.TimerTask;
 
 import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
+import com.studentpal.model.AccessCategory;
 import com.studentpal.model.ClientAppInfo;
 import com.studentpal.ui.AccessDeniedNotification;
 import com.studentpal.ui.AccessRequestForm;
@@ -35,7 +36,9 @@ public class AccessController implements AppHandler {
   
   private Timer     monitorTimer = null;
   private TimerTask monitorTask  = null;
+  
   private HashMap<String, String> restrictedAppsMap; 
+  private List<AccessCategory> accessCategoryList;
   
   /*
    * Methods
@@ -59,11 +62,18 @@ public class AccessController implements AppHandler {
     this.engine = ClientEngine.getInstance();
     this.activityManager = engine.getActivityManager();
 
+    if (accessCategoryList != null) {
+      accessCategoryList.clear();
+    } else {
+      accessCategoryList = new ArrayList<AccessCategory>();
+    }
+    _loadAccessCategories(accessCategoryList);
+    
     if (restrictedAppsMap != null) {
       restrictedAppsMap.clear();
+    } else {
+      restrictedAppsMap = new HashMap<String, String>();
     }
-    restrictedAppsMap = new HashMap<String, String>();
-    
     _loadRestrictedApps(restrictedAppsMap);
     runMonitoring(restrictedAppsMap.size()>0 ? true : false);
   }
@@ -108,6 +118,11 @@ public class AccessController implements AppHandler {
 //    boolean append = true;
 //    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
 //  }
+  public void appendRestrictedAppList(ClientAppInfo appInfo) {
+    ArrayList<ClientAppInfo> appList = new ArrayList<ClientAppInfo>(1);
+    boolean append = true;
+    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
+  }
   
   public void killRestrictedApps() {
     List<RunningAppProcessInfo> processes = activityManager
@@ -129,6 +144,11 @@ public class AccessController implements AppHandler {
   }
   
   //////////////////////////////////////////////////////////////////////////////
+  private void _loadAccessCategories(List intoList) {
+    //TODO read access categories from config
+    
+  }
+  
   private void _loadRestrictedApps(HashMap intoMap) {
     //TODO read restricted app list from config
     List<ClientAppInfo> appList = null;
