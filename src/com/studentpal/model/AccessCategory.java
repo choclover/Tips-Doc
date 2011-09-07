@@ -12,6 +12,10 @@ public class AccessCategory {
   
   private String _name;
   private int    _id;
+  /*
+   * An ClientAppInfo instance managed by this category
+   * Restricted Rules count upon this ClientAppInfo
+   */
   private HashMap<ClientAppInfo, Integer> _managedAppsMap;
   private List<AccessRule> _ruleList;
   
@@ -44,6 +48,21 @@ public class AccessCategory {
     if (rule != null) {
       _ruleList.add(rule);
     }
+  }
+  
+  public HashMap<ClientAppInfo, Integer> getManagedApps() {
+    return _managedAppsMap;
+  }
+  
+  public void adjustRestrictedRuleCnt(ClientAppInfo appInfo, int change) {
+    if (appInfo==null || change==0) return;
+    
+    Integer oldCnt = _managedAppsMap.get(appInfo);
+    Integer newCnt = oldCnt + change;
+    if (oldCnt + change < 0) {
+      newCnt = 0;
+    }
+    _managedAppsMap.put(appInfo, newCnt);
   }
   
   

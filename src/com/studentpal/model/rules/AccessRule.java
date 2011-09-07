@@ -62,6 +62,10 @@ public class AccessRule {
   public AccessCategory getAdhereCate() {
     return _adhereCate;
   }
+  
+  public boolean isDenying() {
+    return access_type==ACCESS_DENIED;
+  }
   //////////////////////////////////////////////////////////////////////////////
   private void setTime(ScheduledTime time, int hour, int minute) {
     time._hour = hour;
