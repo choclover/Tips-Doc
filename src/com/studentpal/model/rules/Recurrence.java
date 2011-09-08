@@ -29,7 +29,7 @@ public abstract class Recurrence {
     return inst;
   }
   
-  public abstract void setReoccurValue(Object reoccureVal) throws STDException;
+  public abstract void setRecurValue(Object recureVal) throws STDException;
   public abstract boolean isOccurringToday();
   
   /*
@@ -40,8 +40,8 @@ public abstract class Recurrence {
       return "DAILY";
     }
     
-    public void setReoccurValue(Object reoccureVal) {
-      return;
+    public void setRecurValue(Object recureVal) {
+      recurValue = recureVal;
     }
 
     public boolean isOccurringToday() {
@@ -54,7 +54,7 @@ public abstract class Recurrence {
       return "WEEKLY";
     }
     
-    public void setReoccurValue(Object recurVal) throws STDException {
+    public void setRecurValue(Object recurVal) throws STDException {
       if (recurVal!=null && recurVal instanceof Integer) {
         this.recurValue = recurVal;
       } else {
@@ -72,7 +72,7 @@ public abstract class Recurrence {
       return "MONTHLY";
     }
     
-    public void setReoccurValue(Object recurVal) throws STDException {
+    public void setRecurValue(Object recurVal) throws STDException {
       if (recurVal!=null && recurVal instanceof int[]) {
         this.recurValue = recurVal;
       } else {

@@ -10,6 +10,7 @@ import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.model.AccessCategory;
 import com.studentpal.model.ClientAppInfo;
+import com.studentpal.model.rules.AccessRule;
 import com.studentpal.ui.AccessDeniedNotification;
 import com.studentpal.ui.AccessRequestForm;
 import com.studentpal.util.logger.Logger;
@@ -33,6 +34,7 @@ public class AccessController implements AppHandler {
   private static AccessController instance = null;
   private ClientEngine  engine = null;
   private ActivityManager activityManager = null;
+//  private RuleScheduler ruleScheduler = null;
   
   private Timer     monitorTimer = null;
   private TimerTask monitorTask  = null;
@@ -53,29 +55,39 @@ public class AccessController implements AppHandler {
     return instance;
   }
 
-//  private void initialize() {
-//    //TODO
-//  }
-  
-  @Override
-  public void launch() {
+  private void initialize() {
     this.engine = ClientEngine.getInstance();
     this.activityManager = engine.getActivityManager();
 
-    if (accessCategoryList != null) {
-      accessCategoryList.clear();
-    } else {
-      accessCategoryList = new ArrayList<AccessCategory>();
-    }
-    _loadAccessCategories(accessCategoryList);
-    
     if (restrictedAppsMap != null) {
       restrictedAppsMap.clear();
     } else {
       restrictedAppsMap = new HashMap<String, String>();
     }
+    
+    if (accessCategoryList != null) {
+      accessCategoryList.clear();
+    } else {
+      accessCategoryList = new ArrayList<AccessCategory>();
+    }
+    
+  }
+  
+  @Override
+  public void launch() {
+    initialize();
+    
     _loadRestrictedApps(restrictedAppsMap);
+
+    _loadAccessCategories(accessCategoryList);
+    for (AccessCategory accessCate : accessCategoryList) {
+      List<AccessRule> rules = accessCate.getAccessRules();
+      RuleScheduler scheduler = accessCate.getScheduler();
+      scheduler.reScheduleRules(rules); 
+    }
+
     runMonitoring(restrictedAppsMap.size()>0 ? true : false);
+    
   }
 
   @Override
@@ -84,6 +96,15 @@ public class AccessController implements AppHandler {
       restrictedAppsMap.clear();
     }
     runMonitoring(false);
+    
+    if (accessCategoryList != null) {
+      for (AccessCategory accessCate : accessCategoryList) {
+        RuleScheduler scheduler = accessCate.getScheduler();
+        if (scheduler != null) {
+          scheduler.terminate();
+        }
+      }
+    }
   }
   
   public void runMonitoring(boolean runMonitor) {
@@ -110,18 +131,30 @@ public class AccessController implements AppHandler {
     }
   }
   
-//  public void setRestrictedAppList(List<ClientAppInfo> appList) {
-//    boolean append = false;
-//    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
-//  }
-//  public void appendRestrictedAppList(List<ClientAppInfo> appList) {
-//    boolean append = true;
-//    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
-//  }
-  public void appendRestrictedAppList(ClientAppInfo appInfo) {
+  public void setRestrictedAppList(List<ClientAppInfo> appList) {
+    boolean append = false;
+    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
+  }
+
+  public void appendRestrictedAppList(List<ClientAppInfo> appList) {
+    boolean append = true;
+    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
+  }
+  
+  public void appendRestrictedApp(ClientAppInfo appInfo) {
     ArrayList<ClientAppInfo> appList = new ArrayList<ClientAppInfo>(1);
     boolean append = true;
     _setRestrictedAppList(this.restrictedAppsMap, appList, append);
+  }
+  
+  public void removeRestrictedAppList(List<ClientAppInfo> appList) {
+    if (appList==null || appList.size()==0) return;
+    
+    for (ClientAppInfo appInfo : appList) {
+      synchronized(restrictedAppsMap) {
+        restrictedAppsMap.remove(appInfo.getAppClassname());
+      }
+    }
   }
   
   public void killRestrictedApps() {
@@ -146,6 +179,11 @@ public class AccessController implements AppHandler {
   //////////////////////////////////////////////////////////////////////////////
   private void _loadAccessCategories(List intoList) {
     //TODO read access categories from config
+    if (forTest) {
+      
+      
+    }
+    
     
   }
   
