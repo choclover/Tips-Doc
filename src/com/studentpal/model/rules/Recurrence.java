@@ -1,16 +1,18 @@
 package com.studentpal.model.rules;
 
+import java.util.Calendar;
+
 import com.studentpal.model.exception.STDException;
 
 public abstract class Recurrence {
-  final static int DAILY    = 0x01;
-  final static int WEEKLY   = 0x02;
-  final static int MONTHLY  = 0x03;
-  final static int YEARLY   = 0x04;
+  public final static int DAILY    = 0x01;
+  public final static int WEEKLY   = 0x02;
+  public final static int MONTHLY  = 0x03;
+  public final static int YEARLY   = 0x04;
   
   Object recurValue = null;
   
-  public Recurrence getInstance(int type) throws STDException {
+  public static Recurrence getInstance(int type) throws STDException {
     Recurrence inst = null;
     switch (type) {
     case DAILY:
@@ -35,7 +37,7 @@ public abstract class Recurrence {
   /*
    * Inner class
    */
-  final class DAILY extends Recurrence {
+  static final class DAILY extends Recurrence {
     public String getName() {
       return "DAILY";
     }
@@ -49,7 +51,7 @@ public abstract class Recurrence {
     }
   }
   
-  final class WEEKLY extends Recurrence {
+  static final class WEEKLY extends Recurrence {
     public String getName() {
       return "WEEKLY";
     }
@@ -63,11 +65,15 @@ public abstract class Recurrence {
     }
 
     public boolean isOccurringToday() {
-      return true;
+      Calendar c = Calendar.getInstance();
+      int weekDay = c.get(Calendar.DAY_OF_WEEK);
+      int recur = (recurValue!=null) ? ((Integer)recurValue).intValue() : 0;
+      
+      return (weekDay & recur) != 0) ;
     }
   }
   
-  final class MONTHLY extends Recurrence {
+  static final class MONTHLY extends Recurrence {
     public String getName() {
       return "MONTHLY";
     }

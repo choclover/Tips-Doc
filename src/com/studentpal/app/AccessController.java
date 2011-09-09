@@ -6,18 +6,19 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+
 import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.model.AccessCategory;
 import com.studentpal.model.ClientAppInfo;
+import com.studentpal.model.exception.STDException;
 import com.studentpal.model.rules.AccessRule;
+import com.studentpal.model.rules.Recurrence;
+import com.studentpal.model.rules.TimeRange;
 import com.studentpal.ui.AccessDeniedNotification;
-import com.studentpal.ui.AccessRequestForm;
 import com.studentpal.util.logger.Logger;
-
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
-import android.content.Intent;
 
 
 public class AccessController implements AppHandler {
@@ -36,11 +37,11 @@ public class AccessController implements AppHandler {
   private ActivityManager activityManager = null;
 //  private RuleScheduler ruleScheduler = null;
   
-  private Timer     monitorTimer = null;
-  private TimerTask monitorTask  = null;
+  private Timer     _monitorTimer = null;
+  private TimerTask _monitorTask  = null;
   
-  private HashMap<String, String> restrictedAppsMap; 
-  private List<AccessCategory> accessCategoryList;
+  private HashMap<String, String> _restrictedAppsMap; 
+  private List<AccessCategory> _accessCategoryList;
   
   /*
    * Methods
@@ -59,16 +60,16 @@ public class AccessController implements AppHandler {
     this.engine = ClientEngine.getInstance();
     this.activityManager = engine.getActivityManager();
 
-    if (restrictedAppsMap != null) {
-      restrictedAppsMap.clear();
+    if (_restrictedAppsMap != null) {
+      _restrictedAppsMap.clear();
     } else {
-      restrictedAppsMap = new HashMap<String, String>();
+      _restrictedAppsMap = new HashMap<String, String>();
     }
     
-    if (accessCategoryList != null) {
-      accessCategoryList.clear();
+    if (_accessCategoryList != null) {
+      _accessCategoryList.clear();
     } else {
-      accessCategoryList = new ArrayList<AccessCategory>();
+      _accessCategoryList = new ArrayList<AccessCategory>();
     }
     
   }
@@ -77,28 +78,28 @@ public class AccessController implements AppHandler {
   public void launch() {
     initialize();
     
-    _loadRestrictedApps(restrictedAppsMap);
+    _loadRestrictedApps(_restrictedAppsMap);
 
-    _loadAccessCategories(accessCategoryList);
-    for (AccessCategory accessCate : accessCategoryList) {
+    _loadAccessCategories(_accessCategoryList);
+    for (AccessCategory accessCate : _accessCategoryList) {
       List<AccessRule> rules = accessCate.getAccessRules();
       RuleScheduler scheduler = accessCate.getScheduler();
       scheduler.reScheduleRules(rules); 
     }
 
-    runMonitoring(restrictedAppsMap.size()>0 ? true : false);
+    runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
     
   }
 
   @Override
   public void terminate() {
-    if (restrictedAppsMap != null) {
-      restrictedAppsMap.clear();
+    if (_restrictedAppsMap != null) {
+      _restrictedAppsMap.clear();
     }
     runMonitoring(false);
     
-    if (accessCategoryList != null) {
-      for (AccessCategory accessCate : accessCategoryList) {
+    if (_accessCategoryList != null) {
+      for (AccessCategory accessCate : _accessCategoryList) {
         RuleScheduler scheduler = accessCate.getScheduler();
         if (scheduler != null) {
           scheduler.terminate();
@@ -112,47 +113,47 @@ public class AccessController implements AppHandler {
     
     if (runMonitor==true) {
       //we cannot reuse the old Timer if it is ever cancelled, so have to recreate one
-      monitorTimer = new Timer();
-      if (monitorTask == null) {
-        monitorTask = getMonitorTask();
+      _monitorTimer = new Timer();
+      if (_monitorTask == null) {
+        _monitorTask = getMonitorTask();
       } 
-      monitorTimer.schedule(monitorTask, 0, MONITORTASK_PERIOD);
+      _monitorTimer.schedule(_monitorTask, 0, MONITORTASK_PERIOD);
       
     } else {
-      if (monitorTask != null) {
-        monitorTask.cancel();
-        monitorTask = null;
+      if (_monitorTask != null) {
+        _monitorTask.cancel();
+        _monitorTask = null;
       }
-      if (monitorTimer != null) {
-        monitorTimer.purge();
-        monitorTimer.cancel();
-        monitorTimer = null;
+      if (_monitorTimer != null) {
+        _monitorTimer.purge();
+        _monitorTimer.cancel();
+        _monitorTimer = null;
       }
     }
   }
   
   public void setRestrictedAppList(List<ClientAppInfo> appList) {
     boolean append = false;
-    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
+    _setRestrictedAppList(this._restrictedAppsMap, appList, append);
   }
 
   public void appendRestrictedAppList(List<ClientAppInfo> appList) {
     boolean append = true;
-    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
+    _setRestrictedAppList(this._restrictedAppsMap, appList, append);
   }
   
   public void appendRestrictedApp(ClientAppInfo appInfo) {
     ArrayList<ClientAppInfo> appList = new ArrayList<ClientAppInfo>(1);
     boolean append = true;
-    _setRestrictedAppList(this.restrictedAppsMap, appList, append);
+    _setRestrictedAppList(this._restrictedAppsMap, appList, append);
   }
   
   public void removeRestrictedAppList(List<ClientAppInfo> appList) {
     if (appList==null || appList.size()==0) return;
     
     for (ClientAppInfo appInfo : appList) {
-      synchronized(restrictedAppsMap) {
-        restrictedAppsMap.remove(appInfo.getAppClassname());
+      synchronized(_restrictedAppsMap) {
+        _restrictedAppsMap.remove(appInfo.getAppClassname());
       }
     }
   }
@@ -161,10 +162,10 @@ public class AccessController implements AppHandler {
     List<RunningAppProcessInfo> processes = activityManager
         .getRunningAppProcesses();
 
-    synchronized (restrictedAppsMap) {
+    synchronized (_restrictedAppsMap) {
       for (RunningAppProcessInfo process : processes) {
         String pname = process.processName;
-        if (restrictedAppsMap.containsKey(pname)
+        if (_restrictedAppsMap.containsKey(pname)
             //&& process.pkgList.equals(restrictedAppsMap.get(pname))
         ) {
           Logger.i(TAG, "Ready to kill application: " + pname);
@@ -180,11 +181,8 @@ public class AccessController implements AppHandler {
   private void _loadAccessCategories(List intoList) {
     //TODO read access categories from config
     if (forTest) {
-      
-      
+      intoList.add(this.getDailyCate());
     }
-    
-    
   }
   
   private void _loadRestrictedApps(HashMap intoMap) {
@@ -235,6 +233,58 @@ public class AccessController implements AppHandler {
     };
     return task;
   }
+  
+  private AccessCategory getDailyCate() {
+    AccessCategory aCate = new AccessCategory();
+    try {
+      AccessRule aRule = new AccessRule();
+
+      Recurrence recur = Recurrence.getInstance(Recurrence.DAILY);
+      aRule.setRecurrence(recur);
+
+      TimeRange tr = null;
+
+      tr = new TimeRange();
+      tr.setStartTime(7, 30);
+      tr.setEndTime(8, 30);
+      aRule.addTimeRange(tr);
+
+      tr = new TimeRange();
+      tr.setStartTime(9, 30);
+      tr.setEndTime(10, 30);
+      aRule.addTimeRange(tr);
+
+      tr = new TimeRange();
+      tr.setStartTime(11, 30);
+      tr.setEndTime(12, 30);
+      aRule.addTimeRange(tr);
+
+      aCate.set_id(1);
+      aCate.set_name("Cate 1");
+      aCate.addAccessRule(aRule);
+      aCate.addManagedApp(new ClientAppInfo("Messaging", "com.android.mms",
+          null));
+      aCate.addManagedApp(new ClientAppInfo("Alarmclock",
+          "com.android.alarmclock", null));
+      aCate.addManagedApp(new ClientAppInfo("Browser", "com.android.browser",
+          null));
+    } catch (STDException e) {
+      Logger.w(TAG, e.toString());
+    }
+    
+    return aCate;
+  }
+  
+  private AccessCategory getWeeklyCate() {
+    AccessCategory aCate = new AccessCategory();
+    return aCate;
+  } 
+   
+  private AccessCategory getMonthlyCate() {
+    AccessCategory aCate = new AccessCategory();
+    return aCate;
+  }
+  
   
   private boolean killProcess(RunningAppProcessInfo p) {
     int apiVer = android.os.Build.VERSION.SDK_INT;

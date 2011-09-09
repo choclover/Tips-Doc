@@ -24,8 +24,8 @@ public class AccessCategory {
    */
   private HashMap<ClientAppInfo, Integer> _managedAppsMap;
   private List<AccessRule> _rulesList;
+
   
-   
   public AccessCategory() {
     _managedAppsMap = new HashMap<ClientAppInfo, Integer>();
     _rulesList = new ArrayList<AccessRule>();
@@ -51,11 +51,11 @@ public class AccessCategory {
     }
   }
   
-//  public void addAccessRule(AccessRule rule) {
-//    if (rule != null) {
-//      _rulesList.add(rule);
-//    }
-//  }
+  public void addAccessRule(AccessRule rule) {
+    if (rule != null) {
+      _rulesList.add(rule);
+    }
+  }
 
   public List<AccessRule> getAccessRules() {
     return _rulesList;
