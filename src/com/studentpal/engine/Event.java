@@ -13,6 +13,7 @@ public class Event {
   public static final String TAGNAME_MSG_ID   = "msg_id";
   public static final String TAGNAME_CMD_TYPE = "cmd_type";
   public static final String TAGNAME_ERR_CODE = "err_code";
+  public static final String TAGNAME_ERR_DESC = "err_desc";
   public static final String TAGNAME_RESULT    = "result";
   public static final String TAGNAME_ARGUMENTS = "args";
 
@@ -20,7 +21,19 @@ public class Event {
   public static final String TAGNAME_APPLICATIONS    = "applications";
   public static final String TAGNAME_APP_NAME        = "app_name";
   public static final String TAGNAME_APP_CLASSNAME   = "app_classname";
-  public static final String TAGNAME_APP_ACCESS_TYPE = "access_type";
+
+  public static final String TAGNAME_ACCESS_CATEGORIES = "access_categories";
+  public static final String TAGNAME_ACCESS_CATEGORY = "access_cate";
+  public static final String TAGNAME_ACCESS_CATE_ID = "cate_id";
+  public static final String TAGNAME_ACCESS_CATE_NAME = "cate_name";
+  
+  public static final String TAGNAME_ACCESS_RULES = "access_rules";
+  public static final String TAGNAME_RULE_AUTH_TYPE = "auth_type";
+  public static final String TAGNAME_RULE_REPEAT_TYPE  = "repeat_type";
+  public static final String TAGNAME_RULE_REPEAT_VALUE = "repeat_value";
+  public static final String TAGNAME_ACCESS_TIMERANGES = "time_ranges";
+  public static final String TAGNAME_RULE_REPEAT_STARTTIME = "starttime";
+  public static final String TAGNAME_RULE_REPEAT_ENDTIME = "endtime";
   
   public final static String TASKNAME_Generic     = "Generic";
   public final static String TASKNAME_GetAppList  = "GetAppList";

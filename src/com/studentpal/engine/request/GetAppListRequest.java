@@ -31,7 +31,7 @@ public class GetAppListRequest extends Request {
             JSONObject app = new JSONObject();
             app.put(Event.TAGNAME_APP_NAME, appInfo.getAppName());
             app.put(Event.TAGNAME_APP_CLASSNAME, appInfo.getAppClassname());
-            app.put(Event.TAGNAME_APP_ACCESS_TYPE, 1);
+            app.put(Event.TAGNAME_ACCESS_CATEGORY, 1);
             
             appAry.put(app);
           }

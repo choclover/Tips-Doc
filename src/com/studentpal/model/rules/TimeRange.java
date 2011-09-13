@@ -9,18 +9,27 @@ public class TimeRange {
 
   private ScheduledTime startTime, endTime;
 
+  public TimeRange() {
+  }
+  
+  public TimeRange(int startHour, int startMin, int endHour, int endMin) 
+    throws STDException {
+    setStartTime(startHour, startMin);
+    setEndTime(endHour, endMin);
+  }
+  
   public void setStartTime(int hour, int minute) throws STDException {
     if (startTime == null) {
       startTime = new ScheduledTime(ResourceManager.RES_STR_START_TIME, true);
     }
-    setTime(startTime, hour, minute);
+    _setTime(startTime, hour, minute);
   }
 
   public void setEndTime(int hour, int minute) throws STDException {
     if (endTime == null) {
       endTime = new ScheduledTime(ResourceManager.RES_STR_END_TIME, false);
     }
-    setTime(endTime, hour, minute);
+    _setTime(endTime, hour, minute);
   }
 
   public ScheduledTime getStartTime() {
@@ -41,7 +50,7 @@ public class TimeRange {
   }
 
   // //////////////////////////////////////////////////////////////////////////
-  private void setTime(ScheduledTime time, int hour, int minute)
+  private void _setTime(ScheduledTime time, int hour, int minute)
       throws STDException {
     if ((hour > 23 && hour < 0) || (minute > 59 && minute < 0)) {
       String msg = "Invalid input time for " + time.getName() + "on HOUR: "
