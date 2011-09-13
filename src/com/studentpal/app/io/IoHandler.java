@@ -337,26 +337,29 @@ public class IoHandler implements AppHandler {
               JSONObject msgObjRoot = new JSONObject(msgStr);
               String msgType = msgObjRoot.getString(Event.TAGNAME_MSG_TYPE);
 
-              if (msgType.equals(Event.MESSAGE_HEADER_REQ)) {
-                //This is a incoming request
-                int msgId = msgObjRoot.getInt(Event.TAGNAME_MSG_ID);
-                String reqType = msgObjRoot.getString(Event.TAGNAME_CMD_TYPE);
-                
-                String reqClazName = Request.class.getName();
-                if (reqClazName.indexOf('.') != -1) {
-                  reqClazName = reqClazName.substring(0, reqClazName.lastIndexOf('.')+1);
+              if (msgType.equals(Event.MESSAGE_HEADER_REQ)) {  //This is a incoming request
+                String reqPkgName = Request.class.getName();
+                if (reqPkgName.indexOf('.') != -1) {
+                  reqPkgName = reqPkgName.substring(0, reqPkgName.lastIndexOf('.')+1);
                 } else {
-                  reqClazName = "";
+                  reqPkgName = "";
                 }
-                reqClazName = reqClazName + reqType + "Request";
+
+                String reqType = msgObjRoot.getString(Event.TAGNAME_CMD_TYPE);
+                String reqClazName = reqPkgName + reqType + "Request";
                 Logger.i(TAG, "Ready to new instance of:"+reqClazName);
                 
                 Request request;
                 request = (Request) Class.forName(reqClazName).newInstance();
 
                 if (request != null) {
-                  // send incoming request to MessageHandler to handle
+                  int msgId = msgObjRoot.getInt(Event.TAGNAME_MSG_ID);
                   request.setRequestSeq(msgId);
+                  
+                  String args = msgObjRoot.getString(Event.TAGNAME_ARGUMENTS);
+                  request.setInputContent(args);
+                  
+                  // send incoming request to MessageHandler to handle
                   msgHandler.sendRequest(request);
                 }
                 

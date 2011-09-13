@@ -33,7 +33,6 @@ public class LoginRequest extends Request {
       reqObj.put(Event.TAGNAME_CMD_TYPE, getName());
       reqObj.put(Event.TAGNAME_ARGUMENTS, argsObj);
       
-      this.bIncoming = false;
       setOutputContent(reqObj.toString());
 
     } catch (JSONException ex) {

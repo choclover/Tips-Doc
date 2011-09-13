@@ -12,7 +12,7 @@ import com.studentpal.model.ClientAppInfo;
 import com.studentpal.util.logger.Logger;
 
 
-public class GetAppListRequest extends Request {
+public class SetAccessCategoriesRequest extends Request {
 
   public String getName() {
     return Event.TASKNAME_GetAppList;
@@ -23,8 +23,12 @@ public class GetAppListRequest extends Request {
       JSONObject respObj = super.generateGenericReplyHeader(getName());
       
       try {
-        List<ClientAppInfo> appList = ClientEngine.getInstance().getAppList();
+        if (this.inputContent == null) {
+          respObj.put(Event.TAGNAME_ERR_CODE, Event.ERRCODE_FORMAT_ERR);
+        }
         
+        respObj.put(Event.TAGNAME_ERR_CODE, Event.ERRCODE_NOERROR);
+  
         JSONArray appAry = new JSONArray();
         if (appList != null && appList.size() > 0) {
           for (ClientAppInfo appInfo : appList) {
@@ -41,8 +45,6 @@ public class GetAppListRequest extends Request {
         resultObj.put(Event.TAGNAME_APPLICATIONS, appAry);
         respObj.put(Event.TAGNAME_RESULT, resultObj);
         
-        respObj.put(Event.TAGNAME_ERR_CODE, Event.ERRCODE_NOERROR);
-
       } catch (Exception ex) {
         Logger.w(getName(), "In execute() got an error:" + ex.toString());
         respObj.put(Event.TAGNAME_ERR_CODE, Event.ERRCODE_SERVER_INTERNAL_ERR);
@@ -52,6 +54,7 @@ public class GetAppListRequest extends Request {
           setOutputContent(respObj.toString());
         }        
       }
+
     } catch (JSONException ex) {
       Logger.w(getName(), "In execute() got an error:" + ex.toString());
     }

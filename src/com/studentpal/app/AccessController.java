@@ -1,6 +1,7 @@
 package com.studentpal.app;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,9 +46,9 @@ public class AccessController implements AppHandler {
   private Timer     _monitorTimer = null;
   private TimerTask _monitorTask  = null;
   
-  private List<AccessCategory> _accessCategoryList;
-  private HashMap<String, String> _restrictedAppsMap; 
-  private Set<String> _processInKillingSet;
+  private List<AccessCategory>    _accessCategoryList;
+  private HashMap<String, String> _restrictedAppsMap;
+  private Set<String>             _processInKillingSet;
   
   /*
    * Methods
@@ -94,28 +95,19 @@ public class AccessController implements AppHandler {
     //runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
     
     _loadAccessCategories(_accessCategoryList);
-    for (AccessCategory accessCate : _accessCategoryList) {
-      List<AccessRule> rules = accessCate.getAccessRules();
-      RuleScheduler scheduler = accessCate.getScheduler();
-      scheduler.reScheduleRules(rules); 
-    }
+    _launchAccessCategories();
   }
 
   @Override
   public void terminate() {
     if (_restrictedAppsMap != null) {
-      _restrictedAppsMap.clear();
+      synchronized (_restrictedAppsMap) {
+        _restrictedAppsMap.clear();
+      }
     }
     runMonitoring(false);
     
-    if (_accessCategoryList != null) {
-      for (AccessCategory accessCate : _accessCategoryList) {
-        RuleScheduler scheduler = accessCate.getScheduler();
-        if (scheduler != null) {
-          scheduler.terminate();
-        }
-      }
-    }
+    _terminateAccessCategories();
   }
   
   public void runMonitoring(boolean runMonitor) {
@@ -171,24 +163,14 @@ public class AccessController implements AppHandler {
     runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
   }
   
-  private void killRestrictedProcs() {
-    List<RunningAppProcessInfo> processes = activityManager
-        .getRunningAppProcesses();
-    
-    synchronized (_restrictedAppsMap) {
-      for (RunningAppProcessInfo process : processes) {
-        String pname = process.processName;
-        if (_restrictedAppsMap.containsKey(pname)
-            //&& process.pkgList.equals(restrictedAppsMap.get(pname))
-        ) {
-          Logger.i(TAG, "Ready to kill process: " + pname);
-          Logger.i(TAG, "Ready to kill process: " + process);
-          
-          killProcess(process);
-        }
-      }
-    }
+  //remove and terminate original categories
+  //add in new categories and launch them(reschedule all rules in each category)
+  public void setAccessCategories(List<AccessCategory> categories) {
+    _terminateAccessCategories();
+    _addAccessCategories(categories);
+    _launchAccessCategories();
   }
+  
   public void killRestrictedApps() {
     List runningApps = null;
     boolean useProcessInfo = true;
@@ -287,6 +269,40 @@ public class AccessController implements AppHandler {
     _setRestrictedAppList(intoMap, appList, append);
   }
   
+  private void _terminateAccessCategories() {
+    if (_accessCategoryList != null && _accessCategoryList.size()>0) {
+      synchronized(_accessCategoryList) {
+        for (AccessCategory accessCate : _accessCategoryList) {
+          RuleScheduler scheduler = accessCate.getScheduler();
+          if (scheduler != null) {
+            scheduler.terminate();
+          }
+        }
+        _accessCategoryList.clear();
+      }
+    }//if
+  }
+  
+  private void _addAccessCategories(List<AccessCategory> cateList) {
+    if (cateList!=null && cateList.size()>0) {
+      synchronized(_accessCategoryList) {
+        for (AccessCategory cate : cateList) {
+          if (cate != null) {
+            _accessCategoryList.add(cate);
+          }
+        }
+      }
+    }
+  }
+  
+  private void _launchAccessCategories() {
+    for (AccessCategory accessCate : _accessCategoryList) {
+      List<AccessRule> rules = accessCate.getAccessRules();
+      RuleScheduler scheduler = accessCate.getScheduler();
+      scheduler.reScheduleRules(rules); 
+    }
+  }
+  
   private void _setRestrictedAppList(HashMap<String, String> restrictedAppsMap, 
       List<ClientAppInfo> appList, boolean append) {
     if (restrictedAppsMap == null) {
@@ -334,21 +350,21 @@ public class AccessController implements AppHandler {
     
     try {
       AccessRule aRule = new AccessRule();
-
+      aRule.setAccessType(AccessRule.ACCESS_DENIED);
+      
       Recurrence recur = Recurrence.getInstance(Recurrence.DAILY);
       aRule.setRecurrence(recur);
-      aRule.setAccessType(AccessRule.ACCESS_DENIED);
 
       TimeRange tr = null;
 
       tr = new TimeRange();
-      tr.setStartTime(8, 22);
-      tr.setEndTime(8, 23);
+      tr.setStartTime(9, 45);
+      tr.setEndTime(9, 47);
       aRule.addTimeRange(tr);
 
       tr = new TimeRange();
-      tr.setStartTime(11, 26);
-      tr.setEndTime(11, 27);
+      tr.setStartTime(12, 04);
+      tr.setEndTime(12, 05);
       aRule.addTimeRange(tr);
 
       tr = new TimeRange();
@@ -358,6 +374,23 @@ public class AccessController implements AppHandler {
 
       aCate.addAccessRule(aRule);
       
+      /////////////////////////////
+      aRule = new AccessRule();
+      aRule.setAccessType(AccessRule.ACCESS_PERMITTED);
+      
+      recur = Recurrence.getInstance(Recurrence.WEEKLY);
+      int recureVal = 1;
+      recureVal |= (1 << (Calendar.TUESDAY-1) );
+      recureVal |= (1 << (Calendar.WEDNESDAY-1) );
+      recur.setRecurValue(recureVal);
+      
+      tr = new TimeRange();
+      tr.setStartTime(12, 12);
+      tr.setEndTime(12, 13);
+      aRule.addTimeRange(tr);
+      
+      aCate.addAccessRule(aRule);
+      
     } catch (STDException e) {
       Logger.w(TAG, e.toString());
     }
@@ -365,14 +398,12 @@ public class AccessController implements AppHandler {
     return aCate;
   }
   
-  
   private AccessCategory getWeeklyCate() {
     AccessCategory aCate = new AccessCategory();
     return aCate;
   } 
    
-  
-private AccessCategory getMonthlyCate() {
+  private AccessCategory getMonthlyCate() {
     AccessCategory aCate = new AccessCategory();
     return aCate;
   }
@@ -410,5 +441,25 @@ private AccessCategory getMonthlyCate() {
 
     return true;
   }
+
+  private void killRestrictedProcs() {
+    List<RunningAppProcessInfo> processes = activityManager
+        .getRunningAppProcesses();
+    
+    synchronized (_restrictedAppsMap) {
+      for (RunningAppProcessInfo process : processes) {
+        String pname = process.processName;
+        if (_restrictedAppsMap.containsKey(pname)
+            //&& process.pkgList.equals(restrictedAppsMap.get(pname))
+        ) {
+          Logger.i(TAG, "Ready to kill process: " + pname);
+          Logger.i(TAG, "Ready to kill process: " + process);
+          
+          killProcess(process);
+        }
+      }
+    }
+  }
+
 
 }

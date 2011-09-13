@@ -17,7 +17,10 @@ public abstract class Request /*extends Message*/ {
    */
   protected boolean bIncoming = true;
   protected boolean bOutputContentReady = false;
+  
+  protected String inputContent = null;
   protected String outputContent = null;
+
   protected int req_seq = Event.MSG_ID_INVALID;
   
   public void execute(MessageHandler msgHandler) {
@@ -46,12 +49,21 @@ public abstract class Request /*extends Message*/ {
   }
   
   public void setOutputContent(String content) {
+    this.bIncoming = false;
     outputContent = content;
     if (content!=null && content.trim().length() > 0) {
       this.bOutputContentReady = true;
     } else {
       this.bOutputContentReady = false;
     }
+  }
+  
+  public String getInputContent() {
+    return inputContent;
+  }
+  
+  public void setInputContent(String content) {
+    inputContent = content;
   }
   
   public JSONObject generateGenericReplyHeader(String cmd_type) 

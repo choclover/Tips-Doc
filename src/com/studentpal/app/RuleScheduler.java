@@ -122,7 +122,7 @@ public class RuleScheduler implements AppHandler {
       ScheduledFuture task = null;
 
       List<TimeRange> timeRangeList = rule.getTimeRangeList();
-      SortedSet<ScheduledTime> timePointSet = new TreeSet<ScheduledTime>(
+      SortedSet<ScheduledTime> timePointsSet = new TreeSet<ScheduledTime>(
           timePointComparator);
 
       // 每次scheduleNextTask()都生成有序的时间点的列表
@@ -130,17 +130,21 @@ public class RuleScheduler implements AppHandler {
         ScheduledTime startTime = timeRange.getStartTime();
         ScheduledTime endTime = timeRange.getEndTime();
 
-        if (timePointSet.contains(startTime) || timePointSet.contains(endTime)) {
+        if (timePointsSet.contains(startTime) || timePointsSet.contains(endTime)) {
           Logger.w(TAG, "Start time(" + startTime.toIntValue()
               + ") or End time(" + endTime.toIntValue()
               + ") is overlapped with others!");
         } else {
-          timePointSet.add(startTime);
-          timePointSet.add(endTime);
+          timePointsSet.add(startTime);
+          timePointsSet.add(endTime);
         }
       }// for
+      
+      for (ScheduledTime timePoint : timePointsSet) {
+        Logger.d(TAG, "ASC TimePoint is: "+timePoint._hour+":"+timePoint._minute);
+      }
 
-      if (timePointSet.size() > 0) {
+      if (timePointsSet.size() > 0) {
         final Calendar now = Calendar.getInstance();
         int nowHour = now.get(Calendar.HOUR_OF_DAY);
         int nowMin = now.get(Calendar.MINUTE);
@@ -148,7 +152,7 @@ public class RuleScheduler implements AppHandler {
         Logger.i(TAG, "Now is: " + nowHour + ':' + nowMin + ':' + nowSec);
 
         // 为最近的时间点设置一个定时执行器
-        for (ScheduledTime timePoint : timePointSet) {
+        for (ScheduledTime timePoint : timePointsSet) {
           delay = timePoint.calcSecondsToSpecificTime(nowHour, nowMin, nowSec);
 
           if (delay < 0) { // 当前时间还未（或者刚刚）到达timePoint
@@ -172,7 +176,7 @@ public class RuleScheduler implements AppHandler {
 
         // 当前时间超过了所有的timePoint
         if (delay > 0) {
-          Logger.i(TAG, "Last Endtime has passed!");
+          Logger.i(TAG, "Last Endtime has passed! -- delay:"+delay);
         }
       }
 
