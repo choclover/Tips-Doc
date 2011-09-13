@@ -34,7 +34,8 @@ public class Event {
   public static final int MSG_ID_NOTUSED = 0;
   
   public static final int SIGNAL_TYPE_REQACK = 101;
-  public static final int SIGNAL_TYPE_OUTSTREAM_READY = 102;
+  public static final int SIGNAL_TYPE_OUTSTREAM_READY = 110;
+  public static final int SIGNAL_SHOW_ACCESS_DENIED_NOTIFICATION = 111;
   
   public static final int ERRCODE_NOERROR = 0;
   public static final int ERRCODE_TIMEOUT = 100;

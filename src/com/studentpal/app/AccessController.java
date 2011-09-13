@@ -2,12 +2,16 @@ package com.studentpal.app;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.ActivityManager;
+import android.app.ActivityManager.RecentTaskInfo;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManager.RunningTaskInfo;
 
 import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
@@ -26,8 +30,10 @@ public class AccessController implements AppHandler {
    * Field constants
    */
   private static final String TAG = "@@ AccessController";
-  private static final int MONITORTASK_PERIOD = 2000;  //mill-seconds
   private static final boolean forTest = true;
+
+  private static final int MONITORTASK_INTERVAL = 2000;  //mill-seconds
+  private static final int MAX_WATCHED_APP_NUMBER = 64;
   
   /*
    * Field members
@@ -35,13 +41,13 @@ public class AccessController implements AppHandler {
   private static AccessController instance = null;
   private ClientEngine  engine = null;
   private ActivityManager activityManager = null;
-//  private RuleScheduler ruleScheduler = null;
   
   private Timer     _monitorTimer = null;
   private TimerTask _monitorTask  = null;
   
-  private HashMap<String, String> _restrictedAppsMap; 
   private List<AccessCategory> _accessCategoryList;
+  private HashMap<String, String> _restrictedAppsMap; 
+  private Set<String> _processInKillingSet;
   
   /*
    * Methods
@@ -66,6 +72,12 @@ public class AccessController implements AppHandler {
       _restrictedAppsMap = new HashMap<String, String>();
     }
     
+    if (_processInKillingSet != null) {
+      _processInKillingSet.clear();
+    } else {
+      _processInKillingSet = new HashSet<String>();
+    }
+    
     if (_accessCategoryList != null) {
       _accessCategoryList.clear();
     } else {
@@ -79,16 +91,14 @@ public class AccessController implements AppHandler {
     initialize();
     
     _loadRestrictedApps(_restrictedAppsMap);
-
+    //runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
+    
     _loadAccessCategories(_accessCategoryList);
     for (AccessCategory accessCate : _accessCategoryList) {
       List<AccessRule> rules = accessCate.getAccessRules();
       RuleScheduler scheduler = accessCate.getScheduler();
       scheduler.reScheduleRules(rules); 
     }
-
-    runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
-    
   }
 
   @Override
@@ -112,12 +122,15 @@ public class AccessController implements AppHandler {
     Logger.i(TAG, "Ready to run monitoring is: "+runMonitor);
     
     if (runMonitor==true) {
+      //First, kill restricted processes that is already running
+      killRestrictedProcs();
+      
       //we cannot reuse the old Timer if it is ever cancelled, so have to recreate one
       _monitorTimer = new Timer();
       if (_monitorTask == null) {
         _monitorTask = getMonitorTask();
       } 
-      _monitorTimer.schedule(_monitorTask, 0, MONITORTASK_PERIOD);
+      _monitorTimer.schedule(_monitorTask, 0, MONITORTASK_INTERVAL);
       
     } else {
       if (_monitorTask != null) {
@@ -132,47 +145,115 @@ public class AccessController implements AppHandler {
     }
   }
   
-  public void setRestrictedAppList(List<ClientAppInfo> appList) {
-    boolean append = false;
-    _setRestrictedAppList(this._restrictedAppsMap, appList, append);
-  }
-
+  public void appendRestrictedApp(ClientAppInfo appInfo) {
+    ArrayList<ClientAppInfo> appList = new ArrayList<ClientAppInfo>(1);
+    appendRestrictedAppList(appList);
+  }  
+  
   public void appendRestrictedAppList(List<ClientAppInfo> appList) {
     boolean append = true;
     _setRestrictedAppList(this._restrictedAppsMap, appList, append);
-  }
+  }  
   
-  public void appendRestrictedApp(ClientAppInfo appInfo) {
-    ArrayList<ClientAppInfo> appList = new ArrayList<ClientAppInfo>(1);
-    boolean append = true;
+  public void setRestrictedAppList(List<ClientAppInfo> appList) {
+    boolean append = false;
     _setRestrictedAppList(this._restrictedAppsMap, appList, append);
   }
   
   public void removeRestrictedAppList(List<ClientAppInfo> appList) {
     if (appList==null || appList.size()==0) return;
     
-    for (ClientAppInfo appInfo : appList) {
-      synchronized(_restrictedAppsMap) {
-        _restrictedAppsMap.remove(appInfo.getAppClassname());
+    synchronized(_restrictedAppsMap) {
+      for (ClientAppInfo appInfo : appList) {
+        _restrictedAppsMap.remove(appInfo.getIndexingKey());
       }
     }
+    runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
   }
   
-  public void killRestrictedApps() {
+  private void killRestrictedProcs() {
     List<RunningAppProcessInfo> processes = activityManager
         .getRunningAppProcesses();
-
+    
     synchronized (_restrictedAppsMap) {
       for (RunningAppProcessInfo process : processes) {
         String pname = process.processName;
         if (_restrictedAppsMap.containsKey(pname)
             //&& process.pkgList.equals(restrictedAppsMap.get(pname))
         ) {
-          Logger.i(TAG, "Ready to kill application: " + pname);
+          Logger.i(TAG, "Ready to kill process: " + pname);
+          Logger.i(TAG, "Ready to kill process: " + process);
           
           killProcess(process);
-          this.engine.launchActivity(AccessDeniedNotification.class);
         }
+      }
+    }
+  }
+  public void killRestrictedApps() {
+    List runningApps = null;
+    boolean useProcessInfo = true;
+    
+    if (useProcessInfo) {
+      runningApps = activityManager.getRunningAppProcesses();
+    } else {
+      runningApps = activityManager.getRunningTasks(MAX_WATCHED_APP_NUMBER);
+      //List<RecentTaskInfo> recentTasks = activityManager.getRecentTasks(MAX_WATCHED_APP_NUMBER, 0);
+    }
+    
+    synchronized (_restrictedAppsMap) {
+      boolean restrictedAppFound = false;
+        
+      for (Object app : runningApps) {
+        String pkgName = null;
+        String clzName = null;
+        if (app instanceof RunningAppProcessInfo) {
+          pkgName = ((RunningAppProcessInfo)app).processName;
+          
+        } else if (app instanceof RunningTaskInfo) {
+          pkgName = ((RunningTaskInfo)app).baseActivity.getPackageName();
+          clzName = ((RunningTaskInfo)app).baseActivity.getClassName();
+        }
+        
+        if (_restrictedAppsMap.containsKey(pkgName)
+            //&& _restrictedAppsMap.get(pkgName).equals(clzName)
+        ) {
+          RunningAppProcessInfo appProc;
+          
+          if (app instanceof RunningAppProcessInfo) {
+            appProc = (RunningAppProcessInfo)app;
+            
+          } else /*if (app instanceof RunningTaskInfo)*/ {
+            appProc = findRunningAppProcess(pkgName);
+            if (appProc == null) {
+              Logger.w(TAG, "Cannot find process for task " + pkgName);
+              continue;
+            }
+          }
+
+          Logger.i(TAG, "Ready to kill application: " + pkgName);
+          Logger.i(TAG, "Ready to kill application: " + app);
+          
+          killProcess(appProc);
+          restrictedAppFound = true;
+
+          if (_processInKillingSet.contains(pkgName)) {
+            Logger.d(TAG, pkgName+" is being killed, skipping...");
+            continue;
+          } else {
+            _processInKillingSet.add(pkgName);
+          }
+          
+          this.engine.launchNewActivity(AccessDeniedNotification.class);
+//          this.engine.showAccessDeniedNotification();
+//          engine.getMsgHandler().sendEmptyMessage(
+//              Event.SIGNAL_SHOW_ACCESS_DENIED_NOTIFICATION);
+        }
+      }
+      
+      //Not found any application that is restricted
+      if (! restrictedAppFound) {
+        //Logger.d(TAG, "clearing _processInKillingSet...");
+        _processInKillingSet.clear();
       }
     }
   }
@@ -191,11 +272,14 @@ public class AccessController implements AppHandler {
     if (forTest) {
       appList = new ArrayList<ClientAppInfo>();
       ClientAppInfo appInfo = null;
-      appInfo = new ClientAppInfo("Messaging", "com.android.mms", null);
+      appInfo = new ClientAppInfo("Messaging", "com.android.mms",
+          "com.android.mms.Messaging");
       appList.add(appInfo);
-      appInfo = new ClientAppInfo("Alarmclock", "com.android.alarmclock", null);
+      appInfo = new ClientAppInfo("Alarmclock", "com.android.alarmclock",
+          "com.android.alarmclock.Alarmclock");
       appList.add(appInfo);
-      appInfo = new ClientAppInfo("Browser", "com.android.browser", null);
+      appInfo = new ClientAppInfo("Browser", "com.android.browser",
+          "com.android.browser.Browser");
       appList.add(appInfo);
     }
     
@@ -218,16 +302,19 @@ public class AccessController implements AppHandler {
         for (ClientAppInfo appInfo : appList) {
           if (appInfo == null) continue;
           //restrictedAppsMap.put(appInfo.getAppName(), appInfo.getAppClassname());
-          restrictedAppsMap.put(appInfo.getAppClassname(), appInfo.getAppClassname());
+          //restrictedAppsMap.put(appInfo.getAppPkgname(), appInfo.getAppClassname());
+          restrictedAppsMap.put(appInfo.getIndexingKey(), appInfo.getIndexingValue());
         }
       }
+      
+      runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
     }
   }
   
   private TimerTask getMonitorTask() {
     TimerTask task = new TimerTask() {
       public void run() {
-        Logger.d(TAG, "Monitor Task starts to run!");
+        Logger.v(TAG, "Monitor Task starts to run!");
         killRestrictedApps();
       }
     };
@@ -236,38 +323,41 @@ public class AccessController implements AppHandler {
   
   private AccessCategory getDailyCate() {
     AccessCategory aCate = new AccessCategory();
+    aCate.set_id(1);
+    aCate.set_name("Cate 1");      
+    aCate.addManagedApp(new ClientAppInfo("Messaging", "com.android.mms",
+        "com.android.mms.Messaging"));
+    aCate.addManagedApp(new ClientAppInfo("Alarmclock",
+        "com.android.alarmclock", "com.android.alarmclock.Alarmclock"));
+    aCate.addManagedApp(new ClientAppInfo("Browser", "com.android.browser",
+        "com.android.browser.Browser"));
+    
     try {
       AccessRule aRule = new AccessRule();
 
       Recurrence recur = Recurrence.getInstance(Recurrence.DAILY);
       aRule.setRecurrence(recur);
+      aRule.setAccessType(AccessRule.ACCESS_DENIED);
 
       TimeRange tr = null;
 
       tr = new TimeRange();
-      tr.setStartTime(7, 30);
-      tr.setEndTime(8, 30);
+      tr.setStartTime(8, 22);
+      tr.setEndTime(8, 23);
       aRule.addTimeRange(tr);
 
       tr = new TimeRange();
-      tr.setStartTime(9, 30);
-      tr.setEndTime(10, 30);
+      tr.setStartTime(11, 26);
+      tr.setEndTime(11, 27);
       aRule.addTimeRange(tr);
 
       tr = new TimeRange();
-      tr.setStartTime(11, 30);
-      tr.setEndTime(12, 30);
+      tr.setStartTime(11, 28);
+      tr.setEndTime(11, 30);
       aRule.addTimeRange(tr);
 
-      aCate.set_id(1);
-      aCate.set_name("Cate 1");
       aCate.addAccessRule(aRule);
-      aCate.addManagedApp(new ClientAppInfo("Messaging", "com.android.mms",
-          null));
-      aCate.addManagedApp(new ClientAppInfo("Alarmclock",
-          "com.android.alarmclock", null));
-      aCate.addManagedApp(new ClientAppInfo("Browser", "com.android.browser",
-          null));
+      
     } catch (STDException e) {
       Logger.w(TAG, e.toString());
     }
@@ -275,17 +365,33 @@ public class AccessController implements AppHandler {
     return aCate;
   }
   
+  
   private AccessCategory getWeeklyCate() {
     AccessCategory aCate = new AccessCategory();
     return aCate;
   } 
    
-  private AccessCategory getMonthlyCate() {
+  
+private AccessCategory getMonthlyCate() {
     AccessCategory aCate = new AccessCategory();
     return aCate;
   }
   
-  
+  private RunningAppProcessInfo findRunningAppProcess(String classname) {
+    RunningAppProcessInfo result = null;
+    
+    List<RunningAppProcessInfo> processes = activityManager
+        .getRunningAppProcesses();
+    for (RunningAppProcessInfo process : processes) {
+      String pname = process.processName;
+      if (classname.equals(pname)) {
+        result = process;
+        break;
+      }
+    }
+    return result;
+  }
+
   private boolean killProcess(RunningAppProcessInfo p) {
     int apiVer = android.os.Build.VERSION.SDK_INT;
     String[] pkgs = p.pkgList;
@@ -293,7 +399,7 @@ public class AccessController implements AppHandler {
       if (apiVer <= android.os.Build.VERSION_CODES.ECLAIR_MR1) {
         //for API 2.1 and earlier version
         activityManager.restartPackage(pkg);
-      } else if (apiVer > android.os.Build.VERSION_CODES.FROYO) {
+      } else if (apiVer >= android.os.Build.VERSION_CODES.FROYO) {
         //for API 2.2 and higher version
         activityManager.killBackgroundProcesses(pkg);
       } else {

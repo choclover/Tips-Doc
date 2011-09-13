@@ -14,7 +14,7 @@ import android.widget.TextView;
 public class LaunchScreen extends Activity {
   private static final String TAG = "LaunchScreen";
   
-  private boolean showUI = true;
+  private static boolean showUI = true;
   private Button btnStart, btnStop;
   private TextView service_status;
 //  private Intent intentMainAppSvc = null;
@@ -60,6 +60,8 @@ public class LaunchScreen extends Activity {
         startWatchingService();
       }
     }
+    
+    //finish();
   }
 
   @Override

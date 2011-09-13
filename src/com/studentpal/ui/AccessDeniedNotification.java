@@ -1,9 +1,11 @@
 package com.studentpal.ui;
 
 import com.studentpal.app.ResourceManager;
+import com.studentpal.engine.ClientEngine;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,23 +20,32 @@ public class AccessDeniedNotification extends Activity {
     builder.setPositiveButton(ResourceManager.RES_STR_SENDREQUEST, 
       new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int id) {
-          AccessDeniedNotification.this.finish();
+//          Intent i = new Intent(AccessDeniedNotification.this, 
+//              AccessRequestForm.class);
+//          i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//          startActivity(i);
           
-          Intent i = new Intent(AccessDeniedNotification.this, 
-              AccessRequestForm.class);
-          i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          startActivity(i);
+          dismiss(dialog, false);
         }
     });
     builder.setNegativeButton(ResourceManager.RES_STR_CANCEL, 
       new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int id) {
-          dialog.cancel();
-          AccessDeniedNotification.this.finish();
+          dismiss(dialog, true);
         }
     });
     
-    AlertDialog alert = builder.create();
+    Dialog alert = builder.create();
     alert.show();
   }
+  
+  private void dismiss(DialogInterface dialog, boolean backHome) {
+    dialog.cancel();
+    AccessDeniedNotification.this.finish();
+    
+    if (backHome) {
+      ClientEngine.getInstance().returnToHomeScreen();
+    }
+  }
+  
 }

@@ -29,12 +29,21 @@ public class RuleScheduler implements AppHandler {
    * Field members
    */
   private ScheduledExecutorService inner_scheduler;
-  private List<RuleExecutor> _rulesExecutorList;
-//  private List<ScheduledFuture> _pendingTaskList;
+  private List<RuleExecutor> _ruleExecutorsList;
+  // private List<ScheduledFuture> _pendingTaskList;
+
+  private static final Comparator<ScheduledTime> timePointComparator = new Comparator<ScheduledTime>() {
+    @Override
+    // sort by ascending order
+    public int compare(ScheduledTime t1, ScheduledTime t2) {
+      int result = t2.calcSecondsToSpecificTime(t1._hour, t1._minute, 0);
+      return result;
+    }
+  };
 
   public RuleScheduler() {
-//    _pendingTaskList = new ArrayList<ScheduledFuture>();
-    _rulesExecutorList = new ArrayList<RuleExecutor>();
+    // _pendingTaskList = new ArrayList<ScheduledFuture>();
+    _ruleExecutorsList = new ArrayList<RuleExecutor>();
   }
 
   public void reScheduleRules(List<AccessRule> rules) {
@@ -48,7 +57,7 @@ public class RuleScheduler implements AppHandler {
 
     if (bRescheduleAll || inner_scheduler == null) {
       terminateAllPendingTasks();
-      _rulesExecutorList.clear();
+      _ruleExecutorsList.clear();
 
       inner_scheduler = null;
       inner_scheduler = Executors.newScheduledThreadPool(rules.size());
@@ -57,7 +66,11 @@ public class RuleScheduler implements AppHandler {
     for (AccessRule aRule : rules) {
       RuleExecutor executor = createRuleExecutor(aRule);
       if (executor != null) {
-        _rulesExecutorList.add(executor);
+        _ruleExecutorsList.add(executor);
+
+        executor.updateRestrictedAppsMapByAction(aRule
+            .getActionOutofTimeRange());
+
         executor.scheduleNextTask(aRule);
       }
     }
@@ -77,15 +90,15 @@ public class RuleScheduler implements AppHandler {
   public void launch() {
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////
   private void terminateAllPendingTasks() {
-    for (RuleExecutor executor : _rulesExecutorList) {
+    for (RuleExecutor executor : _ruleExecutorsList) {
       executor.terminate();
     }
-    _rulesExecutorList.clear();
+    _ruleExecutorsList.clear();
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////
   /*
    * Inner class
    */
@@ -93,12 +106,12 @@ public class RuleScheduler implements AppHandler {
     int delay = 0; // delay in seconds
     int action = 0;
     private AccessRule _adhereRule;
-    private ArrayList<ClientAppInfo> _accessPermittedAppList;
-    private ScheduledFuture pendingTask;
-    
+    // private ArrayList<ClientAppInfo> _accessPermittedAppList = new
+    // ArrayList<ClientAppInfo>();
+    private ScheduledFuture<?> pendingTask;
+
     public RuleExecutor(AccessRule rule) {
       _adhereRule = rule;
-      _accessPermittedAppList = new ArrayList<ClientAppInfo>();
     }
 
     public void setAccessRule(AccessRule rule) {
@@ -107,22 +120,16 @@ public class RuleScheduler implements AppHandler {
 
     public ScheduledFuture scheduleNextTask(AccessRule rule) {
       ScheduledFuture task = null;
-      
+
       List<TimeRange> timeRangeList = rule.getTimeRangeList();
       SortedSet<ScheduledTime> timePointSet = new TreeSet<ScheduledTime>(
-          new Comparator<ScheduledTime>() {
-            @Override
-            public int compare(ScheduledTime t1, ScheduledTime t2) {
-              int result = t1.calcSecondsToSpecificTime(t2._hour, t2._minute, 0);
-              return result;  
-            }
-          });
-      
-      //生成有序的时间点的列表
+          timePointComparator);
+
+      // 每次scheduleNextTask()都生成有序的时间点的列表
       for (TimeRange timeRange : timeRangeList) {
         ScheduledTime startTime = timeRange.getStartTime();
-        ScheduledTime endTime   = timeRange.getEndTime();
-        
+        ScheduledTime endTime = timeRange.getEndTime();
+
         if (timePointSet.contains(startTime) || timePointSet.contains(endTime)) {
           Logger.w(TAG, "Start time(" + startTime.toIntValue()
               + ") or End time(" + endTime.toIntValue()
@@ -131,44 +138,77 @@ public class RuleScheduler implements AppHandler {
           timePointSet.add(startTime);
           timePointSet.add(endTime);
         }
-      }
-      
+      }// for
+
       if (timePointSet.size() > 0) {
         final Calendar now = Calendar.getInstance();
         int nowHour = now.get(Calendar.HOUR_OF_DAY);
         int nowMin = now.get(Calendar.MINUTE);
         int nowSec = now.get(Calendar.SECOND);
-        
-        //为最近的时间点设置一个定时执行器
+        Logger.i(TAG, "Now is: " + nowHour + ':' + nowMin + ':' + nowSec);
+
+        // 为最近的时间点设置一个定时执行器
         for (ScheduledTime timePoint : timePointSet) {
           delay = timePoint.calcSecondsToSpecificTime(nowHour, nowMin, nowSec);
-          if (delay <= 0) {  //当前时间还未或者刚刚到达timePoint
+
+          if (delay < 0) { // 当前时间还未（或者刚刚）到达timePoint
             if (timePoint.isStartTime()) {
-              this.action = _adhereRule.getActionOutofTimeRange();
-            } else {
               this.action = _adhereRule.getActionInTimeRange();
+            } else {
+              this.action = _adhereRule.getActionOutofTimeRange();
             }
-            
+
+            StringBuffer msg = new StringBuffer().append("Scheduled time(")
+                .append(timePoint.toIntValue()).append(") to now(").append(
+                    nowHour).append(':').append(nowMin).append(':').append(
+                    nowSec).append(") is ").append(delay).append(
+                    " seconds in action ").append(action);
+            Logger.d(TAG, msg.toString());
+
             task = inner_scheduler.schedule(this, Math.abs(delay), SECONDS);
             break;
           }
         }
-        
-        //当前时间超过了所有的timePoint
+
+        // 当前时间超过了所有的timePoint
         if (delay > 0) {
-          // Do nothing
           Logger.i(TAG, "Last Endtime has passed!");
         }
       }
-      
-      setPendingTask(task);
+
+      this.pendingTask = task;
       return task;
     }
-    
+
     @Override
     public void run() {
+      Logger.i(TAG, "Task start to run with delay: " + delay + "\taction: "
+          + action);
+
+      updateRestrictedAppsMapByAction(this.action);
+
+      // 为下一个时间点设置定时器
+      scheduleNextTask(_adhereRule);
+    }
+
+    // public void setAction(int action) {
+    // this.action = action;
+    // }
+    
+    public void terminate() {
+      if (this.pendingTask != null) {
+        pendingTask.cancel(true);
+      }
+    }
+
+    // //////////////////////////////////////////////////////////////////////////
+    // private void setPendingTask(ScheduledFuture task) {
+    // this.pendingTask = task;
+    // }
+
+    private void updateRestrictedAppsMapByAction(int accessType) {
       int denyCntDelta = 0;
-      switch (this.action) {
+      switch (accessType) {
       case AccessRule.ACCESS_DENIED:
         denyCntDelta = 1;
         break;
@@ -179,46 +219,37 @@ public class RuleScheduler implements AppHandler {
         break;
       }
 
-      _accessPermittedAppList.clear();  //reset
+      // _accessPermittedAppList.clear(); //reset
+      List<ClientAppInfo> restrictedAppList = new ArrayList<ClientAppInfo>();
+      List<ClientAppInfo> permittedAppList = new ArrayList<ClientAppInfo>();
       
       AccessCategory accCate = _adhereRule.getAdhereCategory();
       Set<ClientAppInfo> appInfoSet = accCate.getManagedApps().keySet();
       for (ClientAppInfo appInfo : appInfoSet) {
-        accCate.adjustRestrictedRuleCount(appInfo, denyCntDelta);
-
-        if (accCate.isAccessPermitted(appInfo)) {
-          _accessPermittedAppList.add(appInfo);
+        if (denyCntDelta != 0) {
+          accCate.adjustRestrictedRuleCount(appInfo, denyCntDelta);
         }
-      }
 
-      if (_accessPermittedAppList.size() > 0) {
-        ClientEngine.getInstance().getAccessController()
-            .removeRestrictedAppList(_accessPermittedAppList);
+        if (true == accCate.isAccessDenied(appInfo)) {
+          restrictedAppList.add(appInfo);
+        } else {
+          permittedAppList.add(appInfo);
+        }
+        
+      }// for
+
+      if (restrictedAppList.size() > 0) 
+      {
+        ClientEngine.getInstance().getAccessController().setRestrictedAppList(
+            restrictedAppList);
+      } 
+      if (permittedAppList.size() > 0) 
+      {
+        ClientEngine.getInstance().getAccessController().removeRestrictedAppList(
+            permittedAppList);
       }
-      
-      //为下一个时间点设置定时器
-      scheduleNextTask(_adhereRule);
-      
     }
 
-//    public void setAction(int action) {
-//      this.action = action;
-//    }
-//
-//    public void setDelayTime(int seconds) {
-//      delay = seconds;
-//    }
-    
-    public void terminate() {
-      if (this.pendingTask != null) {
-        pendingTask.cancel(true);
-      }
-    }
-    
-    ////////////////////////////////////////////////////////////////////////////
-    private void setPendingTask(ScheduledFuture task) {
-      this.pendingTask = task;
-    }
-  }
+  }// class RuleExecutor
 
 }

@@ -83,12 +83,17 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
       }
       break;
       
+    case Event.SIGNAL_SHOW_ACCESS_DENIED_NOTIFICATION:
+      engine.showAccessDeniedNotification();
+      break;
+      
     default:
+      super.handleMessage(message);
       break;
       
     } 
     
-    super.handleMessage(message);
+    
   }
 
   //////////////////////////////////////////////////////////////////////////////

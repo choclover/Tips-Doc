@@ -97,13 +97,13 @@ public class TimeRange {
     }
 
     /*
-     * 计算距离指定时间点的seconds数目。
+     * 计算距离指定时间点的seconds数目。 
      * = 0: 本scheduled time正好等于指定的特定时间点 
      * > 0: 本scheduled time在指定的指定时间点之前(尚未到达指定时间点) 
      * < 0: 本scheduled time在指定的指定时间点之后(已经超过指定时间点)
      */
     public int calcSecondsToSpecificTime(int hour, int minute, int second) {
-      int seconds = ((hour - _hour) * 60 + (minute - _minute)) * 60 - second;
+      int seconds = ((hour - _hour) * 60 + (minute - _minute)) * 60 + second;
       return seconds;
     }
 

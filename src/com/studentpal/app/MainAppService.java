@@ -13,7 +13,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 public class MainAppService extends Service {
-  private static final String TAG = "MainAppService";
+  private static final String TAG = "@@ MainAppService";
   
   /* 
    * Contants
@@ -35,6 +35,8 @@ public class MainAppService extends Service {
   public void onCreate() {
     Logger.w(TAG, "onCreate()!");
     super.onCreate();
+    
+    engine = ClientEngine.getInstance();
   }
 
   // This is the old onStart method that will be called on the pre-2.0
@@ -63,7 +65,6 @@ public class MainAppService extends Service {
   
   @Override
   public void onDestroy() {
-    engine = ClientEngine.getInstance();
     if (engine != null) {
       engine.terminate();
     }
@@ -76,7 +77,7 @@ public class MainAppService extends Service {
     switch (cmd) {
     case CMD_START_WATCHING_APP:
       try {
-        engine = ClientEngine.getInstance();
+//        engine = ClientEngine.getInstance();
         engine.initialize(this);
         engine.launch();
       } catch (STDException e) {
@@ -112,5 +113,6 @@ public class MainAppService extends Service {
     }
     return isRunning;
   }
+  
   
 }

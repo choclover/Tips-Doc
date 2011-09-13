@@ -28,7 +28,7 @@ public class ClientAppInfo {
     }
   }
   
-  public ClientAppInfo(String name, String main_classname, String pkgName) {
+  public ClientAppInfo(String name, String pkgName, String main_classname) {
     app_name = name;
     app_classname = main_classname;
     app_pkgname = pkgName; 
@@ -44,5 +44,13 @@ public class ClientAppInfo {
 
   public String getAppPkgname() {
     return app_pkgname;
+  }
+  
+  public String getIndexingKey() {
+    return getAppPkgname();
+  }
+  
+  public String getIndexingValue() {
+    return getAppClassname();
   }
 }

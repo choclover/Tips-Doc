@@ -7,18 +7,24 @@ import java.util.List;
 import java.util.Map;
 
 import com.studentpal.app.AccessController;
+import com.studentpal.app.MainAppService;
 import com.studentpal.app.MessageHandler;
+import com.studentpal.app.ResourceManager;
 import com.studentpal.app.io.IoHandler;
 import com.studentpal.app.receiver.SystemStateReceiver;
 import com.studentpal.engine.request.LoginRequest;
 import com.studentpal.engine.request.Request;
 import com.studentpal.model.ClientAppInfo;
 import com.studentpal.model.exception.STDException;
+import com.studentpal.ui.AccessDeniedNotification;
+import com.studentpal.ui.AccessRequestForm;
 import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
 
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
@@ -95,13 +101,20 @@ public class ClientEngine implements AppHandler {
   //////////////////////////////////////////////////////////////////////////////
   @Override
   public void terminate() {
-    for (AppHandler handler : appHandlerAry) {
-      if (handler != null) {
-        handler.terminate();
+    if (appHandlerAry != null) {
+      for (AppHandler handler : appHandlerAry) {
+        if (handler != null) {
+          handler.terminate();
+        }
       }
     }
     
-    this.launcher.unregisterReceiver(sysStateReceiver);
+    if (launcher != null) {
+      if (sysStateReceiver != null) {
+        launcher.unregisterReceiver(sysStateReceiver);
+      }
+    }
+    
   }
   
   @Override
@@ -121,6 +134,10 @@ public class ClientEngine implements AppHandler {
     return result;
   }
 
+  public Context getContext() {
+    return launcher;
+  }
+  
   public ActivityManager getActivityManager() {
     return activityManager;
   }
@@ -145,12 +162,43 @@ public class ClientEngine implements AppHandler {
     return android.os.Build.VERSION.SDK_INT;
   }
   
-  public void launchActivity(Class activity) {
+  public void launchNewActivity(Class<?> activity) {
     if (activity != null) {
       Intent i = new Intent(this.launcher, activity);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       this.launcher.startActivity(i);
     }
+  }
+  
+  public void returnToHomeScreen() {
+    Logger.v(TAG, "enter returnToHomeScreen!");
+    Intent startMain = new Intent(Intent.ACTION_MAIN);
+    startMain.addCategory(Intent.CATEGORY_HOME);
+    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    this.launcher.startActivity(startMain);  
+  }
+  
+  public void showAccessDeniedNotification() {
+    AlertDialog.Builder builder = new AlertDialog.Builder(launcher);
+    builder.setMessage(ResourceManager.RES_STR_OPERATION_DENIED);
+    builder.setCancelable(false);
+    builder.setPositiveButton(ResourceManager.RES_STR_SENDREQUEST, 
+      new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {
+          Intent i = new Intent(launcher, AccessRequestForm.class);
+          i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          launcher.startActivity(i);
+        }
+    });
+    builder.setNegativeButton(ResourceManager.RES_STR_CANCEL, 
+      new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {
+          dialog.cancel();
+        }
+    });
+    
+    AlertDialog alert = builder.create();
+    alert.show();
   }
   
   public List<ClientAppInfo> getAppList() {
@@ -161,7 +209,7 @@ public class ClientEngine implements AppHandler {
     while (iter.hasNext()) {
       ClientAppInfo clientApp = new ClientAppInfo((ApplicationInfo) iter.next());
       result.add(clientApp);
-      Logger.d(TAG, "Added AppInfo with name: "+clientApp.getAppName()
+      Logger.d(TAG, "Adding AppInfo with name: "+clientApp.getAppName()
                 +", \tClassName: "+clientApp.getAppClassname());
     }
     

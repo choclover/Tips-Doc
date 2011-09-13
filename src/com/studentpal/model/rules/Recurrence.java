@@ -69,7 +69,7 @@ public abstract class Recurrence {
       int weekDay = c.get(Calendar.DAY_OF_WEEK);
       int recur = (recurValue!=null) ? ((Integer)recurValue).intValue() : 0;
       
-      return (weekDay & recur) != 0) ;
+      return (weekDay & recur) != 0 ;
     }
   }
   
@@ -87,7 +87,15 @@ public abstract class Recurrence {
     }
 
     public boolean isOccurringToday() {
-      return true;
+      boolean result = false;
+      Calendar c = Calendar.getInstance();
+      int mDay = c.get(Calendar.DAY_OF_MONTH);
+      for (int date : (int[])recurValue) {
+        if (mDay == date) {
+          result = true;  break;
+        }
+      }
+      return result;
     }
   }
 }

@@ -32,15 +32,35 @@ public class AccessRule {
 
   private RuleExecutor    _ruleExecutor;
 
+  public AccessRule() {
+  }
+  public AccessRule(int accessType, Recurrence recur) {
+    this.access_type = accessType;
+    this._recurrence = recur;
+  }
+  
   public boolean isOccurringToday() {
     return _recurrence!=null && _recurrence.isOccurringToday();
   }
+  
   public void setRecurrence(Recurrence recur) {
     this._recurrence = recur;
   }
   
+  public void setAdhereCategory(AccessCategory cate) {
+    this._adhereCate = cate;
+  }
+
   public AccessCategory getAdhereCategory() {
     return _adhereCate;
+  }
+  
+  public void setAccessType(int type) {
+    access_type = type;
+  }
+  
+  public int getAccessType() {
+    return access_type;
   }
   
   public int getActionInTimeRange() {
