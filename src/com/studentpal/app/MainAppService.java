@@ -21,6 +21,8 @@ public class MainAppService extends Service {
   public static final int CMD_START_WATCHING_APP = 100;
   public static final int CMD_STOP_WATCHING_APP = 101;
   
+  public static final boolean forTest = true;
+  
   /* 
    * Field members
    */

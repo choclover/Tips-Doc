@@ -20,7 +20,9 @@ import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_TYPE;
 import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_VALUE;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,14 +56,25 @@ public class SetAppAccessCategoryRequest extends Request {
           //TODO add description to "result" obj
           
         } else {
-          JSONObject rootObj = new JSONObject(inputContent);
-          JSONObject argsObj = rootObj.getJSONObject(TAGNAME_ARGUMENTS);
+          Map<Integer, AccessCategory> catesMap = 
+            new HashMap<Integer, AccessCategory>();
+          
+          JSONObject rootParam = new JSONObject(inputContent);
+          JSONObject argsParm = rootParam.getJSONObject(TAGNAME_ARGUMENTS);
 
-          JSONArray catesAry = argsObj.getJSONArray(TAGNAME_ACCESS_CATEGORIES);
-          retrieveAccessCategories(catesAry);
+          JSONArray catesAry = argsParm.getJSONArray(TAGNAME_ACCESS_CATEGORIES);
+          retrieveAccessCategories(catesAry, catesMap);
             
-          JSONArray appsAry = argsObj.getJSONArray(TAGNAME_APPLICATIONS);
-          retrieveAppAccessCategory(appsAry);
+          JSONArray appsAry = argsParm.getJSONArray(TAGNAME_APPLICATIONS);
+          retrieveAppAccessCategory(appsAry, catesMap);
+
+          List<AccessCategory> catesList = new ArrayList<AccessCategory>();
+          for (Integer key : catesMap.keySet()) {
+            catesList.add(catesMap.get(key));
+          }
+          ClientEngine.getInstance().getAccessController().setAccessCategories(
+              catesList);
+          
         }
       } catch (STDException ex) {
         Logger.w(getName(), "In execute() got an error:" + ex.toString());
@@ -83,19 +96,21 @@ public class SetAppAccessCategoryRequest extends Request {
   }
   
   //////////////////////////////////////////////////////////////////////////////
-  private void retrieveAppAccessCategory(JSONArray appsAry) throws STDException {
+  private void retrieveAppAccessCategory(
+      JSONArray appsAry, Map<Integer, AccessCategory> intoMap) throws STDException {
     if (appsAry == null) {
-      throw new STDException(TAGNAME_ACCESS_CATEGORIES+" is NULL in input arguments");
+      throw new STDException(TAGNAME_APPLICATIONS+" is NULL in input arguments");
     }
   }
     
-  private void retrieveAccessCategories(JSONArray catesAry) throws STDException {
+  private void retrieveAccessCategories(
+      JSONArray catesAry, Map<Integer, AccessCategory> intoMap) throws STDException {
     if (catesAry == null) {
-      throw new STDException(TAGNAME_APPLICATIONS+" is NULL in input arguments");
+      throw new STDException(TAGNAME_ACCESS_CATEGORIES+" is NULL in input arguments");
     }
     
     try {
-      List<AccessCategory> cateList = new ArrayList<AccessCategory>();
+//      Map<Integer, AccessCategory> catesMap = new HashMap<Integer, AccessCategory>();
       
       for (int i=0; i<catesAry.length(); i++) {
         JSONObject cateObj = catesAry.getJSONObject(i);
@@ -139,13 +154,10 @@ public class SetAppAccessCategoryRequest extends Request {
           
         }//for rules
         
-        cateList.add(aCate);
+        intoMap.put(aCate.get_id(), aCate);
         
       }//for cates
-      
-      ClientEngine.getInstance().getAccessController()
-          .setAccessCategories(cateList);
-      
+
     } catch (JSONException ex) {
       Logger.w(getName(), "In execute() got an error:" + ex.toString());
       throw new STDException(ex.toString());

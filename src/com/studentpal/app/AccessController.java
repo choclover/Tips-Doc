@@ -31,7 +31,7 @@ public class AccessController implements AppHandler {
    * Field constants
    */
   private static final String TAG = "@@ AccessController";
-  private static final boolean forTest = true;
+  //private static final boolean forTest = true;
 
   private static final int MONITORTASK_INTERVAL = 2000;  //mill-seconds
   private static final int MAX_WATCHED_APP_NUMBER = 64;
@@ -243,7 +243,7 @@ public class AccessController implements AppHandler {
   //////////////////////////////////////////////////////////////////////////////
   private void _loadAccessCategories(List intoList) {
     //TODO read access categories from config
-    if (forTest) {
+    if (MainAppService.forTest) {
       intoList.add(this.getDailyCate());
     }
   }
@@ -251,7 +251,7 @@ public class AccessController implements AppHandler {
   private void _loadRestrictedApps(HashMap intoMap) {
     //TODO read restricted app list from config
     List<ClientAppInfo> appList = null;
-    if (forTest) {
+    if (MainAppService.forTest) {
       appList = new ArrayList<ClientAppInfo>();
       ClientAppInfo appInfo = null;
       appInfo = new ClientAppInfo("Messaging", "com.android.mms",
