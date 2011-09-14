@@ -107,6 +107,7 @@ public class PhoneConnctor extends IoHandlerAdapter {
   private void handleRequest(IoSession session, JSONObject request) 
     throws JSONException {
     String cmdType = request.getString(Message.TAGNAME_CMD_TYPE);
+    int msgId = request.getInt(Message.TAGNAME_MSG_ID);
     
     if (cmdType.equals(Message.TASKNAME_LOGIN)) {
       JSONObject argObj = request.getJSONObject(Message.TAGNAME_ARGUMENTS); 
@@ -120,6 +121,7 @@ public class PhoneConnctor extends IoHandlerAdapter {
       //TODO: validate login infomation
       JSONObject respObj = new JSONObject();
       respObj.put(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_ACK);
+      respObj.put(Message.TAGNAME_MSG_ID, msgId);
       respObj.put(Message.TAGNAME_ERR_CODE, Message.ERRCODE_NOERROR);
       respObj.put(Message.TAGNAME_CMD_TYPE, Message.TASKNAME_LOGIN);
       pconn.sendMessage(respObj.toString());

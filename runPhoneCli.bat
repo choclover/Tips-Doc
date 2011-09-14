@@ -5,3 +5,5 @@ set CP_VAR=./bin;./lib/cxf-2.4.1.jar;D:/ProgramFiles/apache-mina/dist/mina-core-
 
 @echo on
 java -cp %CP_VAR%       studentpal.test.client.PhoneClientCli  %1
+
+

@@ -24,8 +24,8 @@ import studentpal.model.message.Message;
 //import org.apache.cxf.endpoint.Client;
 //import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 
-public class PhoneClientCli {
-  final Logger logger = LoggerFactory.getLogger(PhoneClientCli.class);
+public class WsClientCli {
+  final Logger logger = LoggerFactory.getLogger(WsClientCli.class);
   
   BufferedWriter bwriter;
   BufferedReader bdis;
@@ -40,64 +40,6 @@ public class PhoneClientCli {
   boolean bDebug = false;
   String phoneNo = "";
   
-  public void sockConnect() {
-    try {
-      InetAddress svrAddr = InetAddress.getLocalHost();
-      int         svrPort = ServerEngine.SVR_PORT;
-      logger.debug("Ready to set up socket connection to server @ "
-          + svrAddr.toString() + ":" + svrPort);
-
-      Socket sock = new Socket(svrAddr, svrPort);
-
-      bis = new BufferedInputStream(sock.getInputStream());
-      bos = new BufferedOutputStream(sock.getOutputStream());
-
-      Thread readerThd = new Thread(new Runnable() {
-        // ByteBuffer buffer = ByteBuffer.allocate(1024 * 20);
-        byte[] buffer = new byte[1024 * 20];
-
-        @Override
-        public void run() {
-          try {
-            while (true) {
-              if (bis.available() > 0) {
-                bis.read(buffer);
-                String cmd = new String(buffer, AsCodecFactory.CHARSET_NAME).trim();
-                logger.info("Client Got Incoming msg:\n\t" + cmd);
-                
-                handleIncomingMsg(cmd);
-              }
-              Thread.sleep(1000);
-            }
-          } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-          } catch (IOException e) {
-            e.printStackTrace();
-          } catch (InterruptedException e) {
-            e.printStackTrace();            
-          }
-        }
-      });
-      readerThd.start();
-
-      while (true) {
-        System.out.println("Please input a command: ");
-        String cmd = new BufferedReader(new InputStreamReader(System.in))
-            .readLine();
-        if (cmd.isEmpty()) continue;
-
-        String msg = createOutgoingMsg(cmd.trim());
-        if (msg!=null && !msg.isEmpty()) {
-          sendMessage(msg);
-        }
-      }
-    } catch (UnknownHostException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
   public String createOutgoingMsg(String cmd) {
     String msg = null;
     
@@ -141,20 +83,6 @@ public class PhoneClientCli {
     return msg;
   }
 
-  public void sendMessage(String msgStr) {
-    try {
-      byte[] outputAry = generateOutputByteAry(msgStr
-          .getBytes(AsCodecFactory.CHARSET_NAME));
-
-      bos.write(outputAry, 0, outputAry.length);
-      bos.flush();
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-  
   private void handleIncomingMsg(String reqStr) {
     if (bDebug) {
       try {
@@ -226,31 +154,28 @@ public class PhoneClientCli {
       }
       resp.put(Message.TAGNAME_RESULT, result);
       
-      String resultStr = resp.toString();
-      if (resultStr!=null && !resultStr.isEmpty()) {
-        System.out.println("Sending back response to server:\n\t"+resultStr);
-        sendMessage(resultStr);
-      }
+//      String resultStr = resp.toString();
+//      if (resultStr!=null && !resultStr.isEmpty()) {
+//        System.out.println("Sending back response to server:\n\t"+resultStr);
+//        sendMessage(resultStr);
+//      }
       
     } catch (JSONException e) {
       e.printStackTrace();
     }
   }
   
-  public byte[] generateOutputByteAry(byte[] strBytes) {
-    // encode the output str
-    byte[] headerBytes = intToByteArray(strBytes.length);
-    byte[] outByteAry = new byte[4 + strBytes.length];
+  //////////////////////////////////////////////////////////////////////////////
+  public void wsGetAppList() {
 
-    System.arraycopy(headerBytes, 0, outByteAry, 0, 4);
-    System.arraycopy(strBytes, 0, outByteAry, 4, strBytes.length);
-
-    return outByteAry;
   }
 
-  public static final byte[] intToByteArray(int value) {
-    return new byte[] { (byte) (value >>> 24), (byte) (value >>> 16),
-        (byte) (value >>> 8), (byte) value };
+  public void wsSetAppAccessCategory() {
+
+  }
+  
+  public void wsGetPhoneStatus() {
+
   }
 
   private void parse_args(String[] args) {
@@ -261,13 +186,57 @@ public class PhoneClientCli {
     }
   }
   
-  ///////////////////////////////////////////////////
-  public static void main(String[] args) {
-    PhoneClientCli client = new PhoneClientCli();
-    client.parse_args(args);
+  private void execute() {
+    while (true) {
+      try {      
+        printWsUsage();
+        
+        String cmd = new BufferedReader(new InputStreamReader(System.in))
+            .readLine();
+        if (cmd.isEmpty()) continue;
+
+        int idx = Integer.parseInt(cmd);
+        switch (idx) {
+        case 1:
+          wsGetAppList();
+          break;
+
+        case 2:
+          wsSetAppAccessCategory();
+          break;
+          
+        case 3:
+          wsGetPhoneStatus();
+          break;
+
+        default:
+          break;
+        }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+    }
     
-    client.sockConnect();
+  }
+  private static void printWsUsage() {
+    P("\n\n");
+    P("*******************************");
+    P("1. GetAppList");
+    P("2. SetAppAccessCategory");
+    P("3. GetPhoneStatus");
+    P("*******************************");
+    P("Choose a command: ");
   }
   
+  private static void P(String s) {
+    System.out.println(s); 
+  }
+  
+  ///////////////////////////////////////////////////
+  public static void main(String[] args) {
+    WsClientCli client = new WsClientCli();
+    client.parse_args(args);
+    client.execute();
+  }
 
 }

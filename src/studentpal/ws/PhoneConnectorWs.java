@@ -36,7 +36,7 @@ public class PhoneConnectorWs {
         pconn.finishTaskDef(task);
       
       } else {
-        //TODO
+        replyStr = generateGenericError(Message.ERRCODE_CLIENT_CONN_LOST);
       }
       
     } catch (JSONException e) {
@@ -61,11 +61,12 @@ public class PhoneConnectorWs {
         pconn.finishTaskDef(task);
 
       } else {
-        //TODO
+        replyStr = generateGenericError(Message.ERRCODE_CLIENT_CONN_LOST);
       }
     } catch (JSONException e) {
       replyStr = generateParamsError();
     }
+    
     return replyStr;
   }
   
@@ -78,13 +79,17 @@ public class PhoneConnectorWs {
   
   //////////////////////////////////////////////////////////////////////////////
   private String generateParamsError() {
+    return generateGenericError(Message.ERRCODE_MSG_FORMAT_ERR);
+  }
+  
+  private String generateGenericError(int errorCode) {
     String result = "";
     
     try {
-      JSONObject error = new JSONObject();
-      error.put(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_ACK);
-      error.put(Message.TAGNAME_ERR_CODE, Message.ERRCODE_FORMAT_ERR);
-      result = error.toString();
+      JSONObject errorObj = new JSONObject();
+      errorObj.put(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_ACK);
+      errorObj.put(Message.TAGNAME_ERR_CODE, errorCode);
+      result = errorObj.toString();
       
     } catch (JSONException e) {
       e.printStackTrace();

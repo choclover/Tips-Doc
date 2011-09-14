@@ -178,7 +178,7 @@ public abstract class TaskDefinition {
   
 }
 
-/*  Subclasses definition  */
+/*  Inner-classes definition  */
 class GetAppListTask extends TaskDefinition {
   public GetAppListTask() {
     taskName = Message.TASKNAME_GetAppList;

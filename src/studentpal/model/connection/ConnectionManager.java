@@ -25,10 +25,10 @@ public class ConnectionManager {
   
   public static synchronized void removeConnection(String phoneNo) {
     if (phoneConnMap.containsKey(phoneNo)) {
-      logger.info("Removeing Connection for mobileNo: "+phoneNo);
+      logger.info("Closing and Removing connection for mobileNo: "+phoneNo);
       phoneConnMap.remove(phoneNo);
     } else {
-      logger.info("Connection for mobileNo("+phoneNo+ ") NOT existing!");
+      logger.warn("Connection for mobileNo("+phoneNo+ ") NOT found!");
     }
   }
   

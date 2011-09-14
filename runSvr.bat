@@ -6,3 +6,5 @@ SET CP_VAR=./bin;D:/ProgramFiles/apache-mina/dist/mina-core-2.0.3.jar;D:/Program
 @echo on
 
 java -cp %CP_VAR%      studentpal.engine.ServerEngine
+
+

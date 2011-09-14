@@ -2,22 +2,18 @@
 <classpath>
 	<classpathentry excluding="**/.svn/*|Thumbs.db|studentpal/model/connection/Connection.java" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/dist/mina-core-2.0.3.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/D:/ProgramFiles/apache-mina/docs/apidocs/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/commons-logging-1.0.3.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/javassist-3.7.ga.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/javassist-3.11.0.GA.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/jcl-over-slf4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/jzlib-1.0.7.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/ognl-3.0.1.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/slf4j-api-1.6.1.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/slf4j-jdk14-1.6.1.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/spring-2.5.6.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/tomcat-apr-5.5.23.jar"/>
-	<classpathentry kind="lib" path="D:/ProgramFiles/apache-mina/lib/xbean-spring-3.7.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/commons-logging-1.0.3.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/javassist-3.7.ga.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/javassist-3.11.0.GA.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/jcl-over-slf4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/jzlib-1.0.7.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/ognl-3.0.1.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/spring-2.5.6.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/tomcat-apr-5.5.23.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/xbean-spring-3.7.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/dist/mina-core-2.0.3.jar"/>
+	<classpathentry kind="lib" path="/media/Tools/apache-mina-2.0.3/lib/slf4j-jdk14-1.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
