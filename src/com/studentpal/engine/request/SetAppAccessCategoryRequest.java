@@ -1,23 +1,6 @@
 package com.studentpal.engine.request;
 
-import static com.studentpal.engine.Event.ERRCODE_FORMAT_ERR;
-import static com.studentpal.engine.Event.ERRCODE_NOERROR;
-import static com.studentpal.engine.Event.ERRCODE_SERVER_INTERNAL_ERR;
-import static com.studentpal.engine.Event.TAGNAME_ACCESS_CATEGORIES;
-import static com.studentpal.engine.Event.TAGNAME_ACCESS_CATE_ID;
-import static com.studentpal.engine.Event.TAGNAME_ACCESS_CATE_NAME;
-import static com.studentpal.engine.Event.TAGNAME_ACCESS_RULES;
-import static com.studentpal.engine.Event.TAGNAME_ACCESS_TIMERANGES;
-import static com.studentpal.engine.Event.TAGNAME_APPLICATIONS;
-import static com.studentpal.engine.Event.TAGNAME_ARGUMENTS;
-import static com.studentpal.engine.Event.TAGNAME_ERR_CODE;
-import static com.studentpal.engine.Event.TAGNAME_ERR_DESC;
-import static com.studentpal.engine.Event.TAGNAME_RESULT;
-import static com.studentpal.engine.Event.TAGNAME_RULE_AUTH_TYPE;
-import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_ENDTIME;
-import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_STARTTIME;
-import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_TYPE;
-import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_VALUE;
+import static com.studentpal.engine.Event.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +35,7 @@ public class SetAppAccessCategoryRequest extends Request {
       
       try {
         if (this.inputContent == null) {
-          respObj.put(TAGNAME_ERR_CODE, ERRCODE_FORMAT_ERR);
+          respObj.put(TAGNAME_ERR_CODE, ERRCODE_MSG_FORMAT_ERR);
           //TODO add description to "result" obj
           
         } else {
@@ -60,12 +43,12 @@ public class SetAppAccessCategoryRequest extends Request {
             new HashMap<Integer, AccessCategory>();
           
           JSONObject rootParam = new JSONObject(inputContent);
-          JSONObject argsParm = rootParam.getJSONObject(TAGNAME_ARGUMENTS);
+          JSONObject argsParam = rootParam.getJSONObject(TAGNAME_ARGUMENTS);
 
-          JSONArray catesAry = argsParm.getJSONArray(TAGNAME_ACCESS_CATEGORIES);
+          JSONArray catesAry = argsParam.getJSONArray(TAGNAME_ACCESS_CATEGORIES);
           retrieveAccessCategories(catesAry, catesMap);
             
-          JSONArray appsAry = argsParm.getJSONArray(TAGNAME_APPLICATIONS);
+          JSONArray appsAry = argsParam.getJSONArray(TAGNAME_APPLICATIONS);
           retrieveAppAccessCategory(appsAry, catesMap);
 
           List<AccessCategory> catesList = new ArrayList<AccessCategory>();
@@ -78,7 +61,7 @@ public class SetAppAccessCategoryRequest extends Request {
         }
       } catch (STDException ex) {
         Logger.w(getName(), "In execute() got an error:" + ex.toString());
-        respObj.put(TAGNAME_ERR_CODE, ERRCODE_FORMAT_ERR);
+        respObj.put(TAGNAME_ERR_CODE, ERRCODE_MSG_FORMAT_ERR);
         resultObj.put(TAGNAME_ERR_DESC, ex.getMessage());
         
       } finally {
@@ -97,9 +80,30 @@ public class SetAppAccessCategoryRequest extends Request {
   
   //////////////////////////////////////////////////////////////////////////////
   private void retrieveAppAccessCategory(
-      JSONArray appsAry, Map<Integer, AccessCategory> intoMap) throws STDException {
+      JSONArray appsAry, Map<Integer, AccessCategory> sourceMap) throws STDException {
     if (appsAry == null) {
       throw new STDException(TAGNAME_APPLICATIONS+" is NULL in input arguments");
+    }
+    
+    try {
+      for (int i = 0; i < appsAry.length(); i++) {
+        JSONObject appObj = appsAry.getJSONObject(i);
+        
+        String appName = appObj.getString(TAGNAME_APP_NAME);
+        String pkgName = appObj.getString(TAGNAME_APP_PKGNAME);
+        String className = appObj.getString(TAGNAME_APP_CLASSNAME);
+        ClientAppInfo appInfo = new ClientAppInfo(appName, pkgName, className);
+        
+        int cateId = appObj.getInt(TAGNAME_ACCESS_CATE_ID);
+        AccessCategory aCate = sourceMap.get(cateId);
+        if (aCate != null) {
+          aCate.addManagedApp(appInfo);
+        }
+      }// for apps
+
+    } catch (JSONException ex) {
+      Logger.w(getName(), "In execute() got an error:" + ex.toString());
+      throw new STDException(ex.toString());
     }
   }
     

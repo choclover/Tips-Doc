@@ -31,6 +31,7 @@ public class LoginRequest extends Request {
       JSONObject reqObj = new JSONObject();
       reqObj.put(Event.TAGNAME_MSG_TYPE, Event.MESSAGE_HEADER_REQ);
       reqObj.put(Event.TAGNAME_CMD_TYPE, getName());
+      reqObj.put(Event.TAGNAME_MSG_ID, Event.MSG_ID_NOTUSED);
       reqObj.put(Event.TAGNAME_ARGUMENTS, argsObj);
       
       setOutputContent(reqObj.toString());
