@@ -64,6 +64,13 @@ public class RuleScheduler implements AppHandler {
     }
 
     for (AccessRule aRule : rules) {
+      if (aRule == null) {
+        Logger.w(TAG, "Rule should NOT be NULL!");
+      } else if (aRule.isOccurringToday() == false) {
+        Logger.i(TAG, aRule+" is NOT occurring today, skipping it...");
+        continue;
+      }
+      
       RuleExecutor executor = createRuleExecutor(aRule);
       if (executor != null) {
         _ruleExecutorsList.add(executor);
