@@ -40,7 +40,7 @@ public class PhoneConnctor extends IoHandlerAdapter {
   @Override
   public void messageReceived(IoSession session, Object message)
       throws Exception {
-    logger.info("Received message of \n"+message);
+    logger.info("Received message of \n\t"+message);
     if (message instanceof String) {
       handleMessage(session, (String)message);
     }

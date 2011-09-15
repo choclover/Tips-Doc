@@ -11,7 +11,7 @@ public class WsService {
   private static WsService instance = null;
   private static PhoneConnectorWs phoneConnWs = null;
   
-  private static String wsUrl = "http://localhost:8080/StudentPal/PhoneConnector";
+  public static final String wsUrl = "http://localhost:8080/StudentPal/PhoneConnector";
   
   public static WsService getInstance() {
     if (instance == null) {

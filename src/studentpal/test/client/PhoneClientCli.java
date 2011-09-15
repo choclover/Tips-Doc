@@ -113,7 +113,7 @@ public class PhoneClientCli {
         this.phoneNo = new StringBuffer().append(phone_number1).append(
             phone_number2).append(phone_number3).toString();
         //next test client will use next phone number 
-        phone_number3 = String.valueOf(Integer.valueOf(phone_number3).intValue()+1);
+        phone_number3 = String.valueOf(Integer.parseInt(phone_number3)+1);
         args.put(Message.TAGNAME_PHONE_NUM, phoneNo);
 
         root.put(Message.TAGNAME_ARGUMENTS, args);
@@ -217,6 +217,7 @@ public class PhoneClientCli {
         app.put(Message.TAGNAME_APP_NAME, "Camera");
         app.put(Message.TAGNAME_APP_PKGNAME, "com.android.camera");
         app.put(Message.TAGNAME_APP_CLASSNAME, "com.android.camera.Camera");
+        app.put(Message.TAGNAME_ACCESS_CATE_ID, 1);
         applications.put(app);
         
         result.put(Message.TAGNAME_APPLICATIONS, applications);
