@@ -34,7 +34,7 @@ public class SetAppAccessCategoryRequest extends Request {
       JSONObject resultObj = new JSONObject();
       
       try {
-        if (this.inputContent == null) {
+        if (this.inputArguments == null) {
           respObj.put(TAGNAME_ERR_CODE, ERRCODE_MSG_FORMAT_ERR);
           //TODO add description to "result" obj
           
@@ -42,7 +42,7 @@ public class SetAppAccessCategoryRequest extends Request {
           Map<Integer, AccessCategory> catesMap = 
             new HashMap<Integer, AccessCategory>();
           
-          JSONObject rootParam = new JSONObject(inputContent);
+          JSONObject rootParam = new JSONObject(inputArguments);
           JSONObject argsParam = rootParam.getJSONObject(TAGNAME_ARGUMENTS);
 
           JSONArray catesAry = argsParam.getJSONArray(TAGNAME_ACCESS_CATEGORIES);

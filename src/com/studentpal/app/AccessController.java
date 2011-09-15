@@ -345,6 +345,8 @@ public class AccessController implements AppHandler {
         "com.android.mms.Messaging"));
     aCate.addManagedApp(new ClientAppInfo("Alarmclock",
         "com.android.alarmclock", "com.android.alarmclock.Alarmclock"));
+    aCate.addManagedApp(new ClientAppInfo("DeskClock",
+        "com.android.deskclock", "com.android.deskclock.DeskClock"));
     aCate.addManagedApp(new ClientAppInfo("Browser", "com.android.browser",
         "com.android.browser.Browser"));
     
@@ -379,14 +381,15 @@ public class AccessController implements AppHandler {
       aRule.setAccessType(AccessRule.ACCESS_PERMITTED);
       
       recur = Recurrence.getInstance(Recurrence.WEEKLY);
-      int recureVal = 1;
-      recureVal |= (1 << (Calendar.TUESDAY-1) );
+      int recureVal = 0;
+      recureVal |= (1 << (Calendar.THURSDAY-1) );
       recureVal |= (1 << (Calendar.WEDNESDAY-1) );
       recur.setRecurValue(recureVal);
+      aRule.setRecurrence(recur);
       
       tr = new TimeRange();
-      tr.setStartTime(12, 12);
-      tr.setEndTime(12, 13);
+      tr.setStartTime(15, 53);
+      tr.setEndTime(15, 54);
       aRule.addTimeRange(tr);
       
       aCate.addAccessRule(aRule);

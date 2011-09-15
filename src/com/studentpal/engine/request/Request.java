@@ -18,8 +18,8 @@ public abstract class Request /*extends Message*/ {
   protected boolean bIncoming = true;
   protected boolean bOutputContentReady = false;
   
-  protected String inputContent = null;
-  protected String outputContent = null;
+  protected String inputArguments = null;
+  protected String outputContentStr = null;
 
   protected int req_seq = Event.MSG_ID_INVALID;
   
@@ -45,12 +45,12 @@ public abstract class Request /*extends Message*/ {
   }
   
   public String getOutputContent() {
-    return outputContent;
+    return outputContentStr;
   }
   
   public void setOutputContent(String content) {
     this.bIncoming = false;
-    outputContent = content;
+    outputContentStr = content;
     if (content!=null && content.trim().length() > 0) {
       this.bOutputContentReady = true;
     } else {
@@ -58,12 +58,12 @@ public abstract class Request /*extends Message*/ {
     }
   }
   
-  public String getInputContent() {
-    return inputContent;
+  public String getInputArguments() {
+    return inputArguments;
   }
   
-  public void setInputContent(String content) {
-    inputContent = content;
+  public void setInputArguments(String args) {
+    inputArguments = args;
   }
   
   public JSONObject generateGenericReplyHeader(String cmd_type) 

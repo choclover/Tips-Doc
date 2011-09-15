@@ -115,7 +115,8 @@ public class IoHandler implements AppHandler {
      */
     // TODO read from config
     String addr = "192.168.1.250";
-    //addr = "192.168.1.108";
+    addr = "10.60.4.51";
+    
     return addr;
   }
 
@@ -356,8 +357,10 @@ public class IoHandler implements AppHandler {
                   int msgId = msgObjRoot.getInt(Event.TAGNAME_MSG_ID);
                   request.setRequestSeq(msgId);
                   
-                  String args = msgObjRoot.getString(Event.TAGNAME_ARGUMENTS);
-                  request.setInputContent(args);
+                  if (msgObjRoot.has(Event.TAGNAME_ARGUMENTS)) {
+                    String args = msgObjRoot.getString(Event.TAGNAME_ARGUMENTS);
+                    request.setInputArguments(args);
+                  }
                   
                   // send incoming request to MessageHandler to handle
                   msgHandler.sendRequest(request);
@@ -373,7 +376,7 @@ public class IoHandler implements AppHandler {
               }
               
             } catch (JSONException ex) {
-              Logger.w(TAG, "JSON paring error for request:\n" + msgStr);
+              Logger.w(TAG, "JSON paring error for request:\n\t" + msgStr);
               Logger.w(TAG, ex.toString());
             } catch (InstantiationException ex) {
               Logger.w(TAG, ex.toString());

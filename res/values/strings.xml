@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="mainapp_name">StudentPal</string>
+    <string name="mainapp_name">aStudentPal</string>
     <string name="launcher_name">Launcher</string>
 </resources>

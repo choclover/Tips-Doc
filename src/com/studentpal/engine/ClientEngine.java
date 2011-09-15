@@ -41,10 +41,12 @@ public class ClientEngine implements AppHandler {
    */
   private static ClientEngine instance = null;
   
-  private Context launcher;
-  private SystemStateReceiver sysStateReceiver = null;
-  private ActivityManager activityManager = null;
-  private TelephonyManager teleManager = null;
+  private Context             _launcher;
+  private PackageManager      _packageManager   = null;
+  private SystemStateReceiver _sysStateReceiver = null;
+  private ActivityManager     _activityManager  = null;
+  private TelephonyManager    _teleManager      = null;
+  
   //Handlers
   private MessageHandler msgHandler = null;
   private IoHandler ioHandler = null;
@@ -65,20 +67,20 @@ public class ClientEngine implements AppHandler {
     if (context == null) {
       throw new STDException("Context launcher should NOT be NULL");
     } else {
-      this.launcher = context;
+      this._launcher = context;
     }
     
-    this.activityManager = (ActivityManager)this.launcher.getSystemService(Context.ACTIVITY_SERVICE);
+    this._activityManager = (ActivityManager)this._launcher.getSystemService(Context.ACTIVITY_SERVICE);
     
     //Register System State Broadcast receiver
     IntentFilter intentFilter = new IntentFilter();
     intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
     intentFilter.addAction(Intent.ACTION_SCREEN_ON);
-    this.sysStateReceiver = new SystemStateReceiver();
-    this.launcher.registerReceiver(sysStateReceiver, intentFilter);
+    this._sysStateReceiver = new SystemStateReceiver();
+    this._launcher.registerReceiver(_sysStateReceiver, intentFilter);
 
     //Create Telephony Manager
-    this.teleManager = (TelephonyManager)this.launcher.getSystemService(Context.TELEPHONY_SERVICE);
+    this._teleManager = (TelephonyManager)this._launcher.getSystemService(Context.TELEPHONY_SERVICE);
     
     //Create MessageHandler instance
     this.msgHandler = MessageHandler.getInstance();
@@ -109,9 +111,9 @@ public class ClientEngine implements AppHandler {
       }
     }
     
-    if (launcher != null) {
-      if (sysStateReceiver != null) {
-        launcher.unregisterReceiver(sysStateReceiver);
+    if (_launcher != null) {
+      if (_sysStateReceiver != null) {
+        _launcher.unregisterReceiver(_sysStateReceiver);
       }
     }
     
@@ -128,18 +130,18 @@ public class ClientEngine implements AppHandler {
   
   public String getPhoneNum() {
     String result = "";
-    if (this.teleManager != null) {
-      result = this.teleManager.getLine1Number();
+    if (this._teleManager != null) {
+      result = this._teleManager.getLine1Number();
     }
     return result;
   }
 
   public Context getContext() {
-    return launcher;
+    return _launcher;
   }
   
   public ActivityManager getActivityManager() {
-    return activityManager;
+    return _activityManager;
   }
 
   public MessageHandler getMsgHandler() {
@@ -155,7 +157,10 @@ public class ClientEngine implements AppHandler {
   }
   
   public PackageManager getPackageManager() {
-    return launcher.getPackageManager();
+    if (_packageManager == null) {
+      _packageManager = _launcher.getPackageManager();
+    }
+    return _packageManager;
   }
   
   public int getApiVersion() {
@@ -164,9 +169,9 @@ public class ClientEngine implements AppHandler {
   
   public void launchNewActivity(Class<?> activity) {
     if (activity != null) {
-      Intent i = new Intent(this.launcher, activity);
+      Intent i = new Intent(this._launcher, activity);
       i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      this.launcher.startActivity(i);
+      this._launcher.startActivity(i);
     }
   }
   
@@ -175,19 +180,19 @@ public class ClientEngine implements AppHandler {
     Intent startMain = new Intent(Intent.ACTION_MAIN);
     startMain.addCategory(Intent.CATEGORY_HOME);
     startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    this.launcher.startActivity(startMain);  
+    this._launcher.startActivity(startMain);  
   }
   
   public void showAccessDeniedNotification() {
-    AlertDialog.Builder builder = new AlertDialog.Builder(launcher);
+    AlertDialog.Builder builder = new AlertDialog.Builder(_launcher);
     builder.setMessage(ResourceManager.RES_STR_OPERATION_DENIED);
     builder.setCancelable(false);
     builder.setPositiveButton(ResourceManager.RES_STR_SENDREQUEST, 
       new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int id) {
-          Intent i = new Intent(launcher, AccessRequestForm.class);
+          Intent i = new Intent(_launcher, AccessRequestForm.class);
           i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          launcher.startActivity(i);
+          _launcher.startActivity(i);
         }
     });
     builder.setNegativeButton(ResourceManager.RES_STR_CANCEL, 
@@ -203,6 +208,8 @@ public class ClientEngine implements AppHandler {
   
   public List<ClientAppInfo> getAppList() {
     List<ApplicationInfo> applications = getPackageManager().getInstalledApplications(0);
+    //List<PackageInfo> packages = getPackageManager().getInstalledPackages(0);
+    
     List<ClientAppInfo> result = new ArrayList<ClientAppInfo>(applications.size());
     
     Iterator<ApplicationInfo> iter = applications.iterator();
@@ -210,7 +217,9 @@ public class ClientEngine implements AppHandler {
       ClientAppInfo clientApp = new ClientAppInfo((ApplicationInfo) iter.next());
       result.add(clientApp);
       Logger.d(TAG, "Adding AppInfo with name: "+clientApp.getAppName()
-                +", \tClassName: "+clientApp.getAppClassname());
+                +", \nPackageName: "+clientApp.getAppPkgname()
+                +", \nClassName: "+clientApp.getAppClassname()
+                );
     }
     
     return result;

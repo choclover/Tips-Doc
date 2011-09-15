@@ -14,9 +14,10 @@ public class ClientAppInfo {
   private String app_pkgname;
   private String[] app_pkgList;
   
+  private static PackageManager pm = ClientEngine.getInstance().getPackageManager();
+  
   public ClientAppInfo(ApplicationInfo appInfo) {
     if (appInfo != null) {
-      PackageManager pm = ClientEngine.getInstance().getPackageManager();
       if (pm == null) {
         Logger.w(TAG, "Got NULL PackageManager from engine!");
         return;

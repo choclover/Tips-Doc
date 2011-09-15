@@ -3,6 +3,7 @@ package com.studentpal.model.rules;
 import java.util.Calendar;
 
 import com.studentpal.model.exception.STDException;
+import com.studentpal.util.logger.Logger;
 
 public abstract class Recurrence {
   public final static int DAILY    = 0x01;
@@ -31,6 +32,7 @@ public abstract class Recurrence {
     return inst;
   }
   
+  public abstract String getName();
   public abstract void setRecurValue(Object recureVal) throws STDException;
   public abstract boolean isOccurringToday();
   
@@ -57,10 +59,17 @@ public abstract class Recurrence {
     }
     
     public void setRecurValue(Object recurVal) throws STDException {
-      if (recurVal!=null && recurVal instanceof Integer) {
-        this.recurValue = recurVal;
+      if (recurVal==null || !(recurVal instanceof Integer) ) {
+        throw new STDException("Illegal recurrence value");
+        
       } else {
-        throw new STDException("Invalid recurrence value");
+        Integer val = (Integer)recurVal;
+        if (val<1 || val>0x7F) {
+          throw new STDException("Recurrence value out of valid range: "+val);
+        } else {
+          Logger.d("Setting "+getName()+ " RecurValue to: " + recurVal);
+          this.recurValue = recurVal; 
+        }
       }
     }
 
@@ -68,13 +77,8 @@ public abstract class Recurrence {
       if (recurValue == null) return false;
       
       Calendar c = Calendar.getInstance();
-      int weekDay = 1;
-      for (int i=0; i<c.get(Calendar.DAY_OF_WEEK)-1; i++) {
-        weekDay = weekDay << 1;
-      }
-      
+      int weekDay = 1 << (c.get(Calendar.DAY_OF_WEEK)-1);
       int recur = (recurValue!=null) ? ((Integer)recurValue).intValue() : 0;
-      
       return (weekDay & recur) != 0 ;
     }
   }
