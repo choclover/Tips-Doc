@@ -29,7 +29,8 @@ public class PhoneConnectorWs {
     try {
       PhoneConnection pconn = ConnectionManager.retrieveConnection(mobileNo);
       if (pconn != null) {
-        TaskDefinition task = TaskFactory.getInstance().createTask(Message.TASKNAME_GetAppList);
+        TaskDefinition task = TaskFactory.getInstance().createTask(
+            Message.TASKNAME_GetAppList, mobileNo);
         pconn.executeTaskDef(task);
         
         replyStr = task.getReplyStr();

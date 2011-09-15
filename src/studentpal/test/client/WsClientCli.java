@@ -3,8 +3,6 @@ package studentpal.test.client;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import studentpal.model.message.Message;
+import studentpal.ws.WsService;
 import studentpal.ws.wsclient.PhoneConnectorWs;
 import studentpal.ws.wsclient.PhoneConnectorWsService;
 
@@ -25,7 +24,7 @@ public class WsClientCli {
    * Member fields
    */
   private boolean bDebug = false;
-  private String wsUrl = "http://localhost:8080/StudentPal/PhoneConnector.wsdl";
+  private String wsUrl = WsService.getWsUrl();
   
   static String phone_number1 = "155";
   static String phone_number2 = "5521";
@@ -39,7 +38,7 @@ public class WsClientCli {
   
   /*
    * JDK6 WS client
-   * wsimport -d ./bin/ -s ./src -p studentpal.ws.wsclient http://localhost:8080/StudentPal/PhoneConnector?wsdl
+   * wsimport -d ./bin/ -s ./src -p studentpal.ws.wsclient http://localhost:9090/StudentPal/PhoneConnector?wsdl
    */
   private PhoneConnectorWsService pcWsService;
   private PhoneConnectorWs pcWsInst;

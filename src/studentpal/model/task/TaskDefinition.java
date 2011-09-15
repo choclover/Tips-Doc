@@ -2,13 +2,14 @@ package studentpal.model.task;
 
 import java.util.TimerTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import studentpal.model.connection.PhoneConnection;
-import studentpal.model.message.Message;
+import static studentpal.model.message.Message.*;
 
 public abstract class TaskDefinition {
   final static Logger logger = LoggerFactory.getLogger(TaskDefinition.class);
@@ -16,7 +17,7 @@ public abstract class TaskDefinition {
   public final static int TIMEOUT_SECONDS = 10*1000;  //seconds
   
   /* Fields */
-  String taskName = Message.TASKNAME_Generic;
+  String taskName = TASKNAME_Generic;
 
   protected int taskId = 0;
   //the PhoneConnection to which the task is bound
@@ -105,9 +106,9 @@ public abstract class TaskDefinition {
   }
 */
   
-  public void populateRequestStr(JSONObject paramObj) throws JSONException {
-    paramObj.putOnce(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_REQ);
-    paramObj.putOnce(Message.TAGNAME_MSG_ID, this.getTaskId());
+  public void populateRequestHeader(JSONObject paramObj) throws JSONException {
+    paramObj.putOnce(TAGNAME_MSG_TYPE, MESSAGE_HEADER_REQ);
+    paramObj.putOnce(TAGNAME_MSG_ID, this.getTaskId());
   }
   
   public abstract void populateRequestStr(String args) throws JSONException;
@@ -129,17 +130,23 @@ public abstract class TaskDefinition {
     this.replyStr = reply;
   }
   
-  public void handleReply(JSONObject response) {
+  public void handleReply(JSONObject raw_response) {
+    if (raw_response == null) return;
+    
     try {
-      int errCode = response.getInt(Message.TAGNAME_ERR_CODE);
-      JSONObject resultObj = response.getJSONObject(Message.TAGNAME_RESULT);
-      if (errCode == Message.ERRCODE_NOERROR) {
-        resultObj.put(Message.TAGNAME_RESULT, "SUCCESS");
+      JSONObject replyObj = new JSONObject();
+      int errCode = raw_response.getInt(TAGNAME_ERR_CODE);
+      if (errCode == ERRCODE_NOERROR) {
+        replyObj.put(TAGNAME_RESULT, "SUCCESS");
       } else {
-        resultObj.put(Message.TAGNAME_RESULT, "FAIL");
+        replyObj.put(TAGNAME_RESULT, "FAIL");
+        replyObj.put(TAGNAME_ERR_CODE, raw_response.getInt(TAGNAME_ERR_CODE));
       }
       
-      setReplyStr(resultObj.toString());
+      //populate the response body for each type of task
+      populateResponseBody(raw_response, replyObj);
+      
+      setReplyStr(replyObj.toString());
       
     } catch (JSONException e) {
       logger.warn(e.getLocalizedMessage());
@@ -147,6 +154,9 @@ public abstract class TaskDefinition {
 
     notifyReplyWaiter();
   }
+  
+  protected abstract void populateResponseBody(JSONObject raw_response, JSONObject replyObj)
+    throws JSONException;
   
   protected void notifyReplyWaiter() {
     if (timeoutTask != null)
@@ -165,9 +175,9 @@ public abstract class TaskDefinition {
     logger.warn("Task(id:"+taskId+") of type " +taskName+ " has timeout!");
     try {
       JSONObject reply = new JSONObject();
-//      reply.put(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_ACK);
-//      reply.put(Message.TAGNAME_ERR_CODE, Message.ERRCODE_TIMEOUT);
-      reply.put(Message.TAGNAME_RESULT, "TIMEOUT");
+//      reply.put(TAGNAME_MSG_TYPE, MESSAGE_HEADER_ACK);
+//      reply.put(TAGNAME_ERR_CODE, ERRCODE_TIMEOUT);
+      reply.put(TAGNAME_RESULT, "TIMEOUT");
       setReplyStr(reply.toString());
     } catch (JSONException e) {
       logger.warn(e.getLocalizedMessage());
@@ -181,31 +191,52 @@ public abstract class TaskDefinition {
 /*  Inner-classes definition  */
 class GetAppListTask extends TaskDefinition {
   public GetAppListTask() {
-    taskName = Message.TASKNAME_GetAppList;
+    taskName = TASKNAME_GetAppList;
   }
   
   public void populateRequestStr(String args) throws JSONException {
-    JSONObject paramObj = new JSONObject();
+    JSONObject reqObj = new JSONObject();
     
-    super.populateRequestStr(paramObj);
-    paramObj.putOnce(Message.TAGNAME_CMD_TYPE, taskName);
-    setRequestStr(paramObj.toString());
+    super.populateRequestHeader(reqObj);
+    reqObj.putOnce(TAGNAME_CMD_TYPE, taskName);
+    //No need to append arguments
+    
+    setRequestStr(reqObj.toString());
+  }
+  
+  @Override
+  protected void populateResponseBody(JSONObject raw_response, JSONObject replyObj) throws JSONException
+  {
+    JSONObject resultObj = raw_response.getJSONObject(TAGNAME_RESULT);
+    if (resultObj != null) {
+      JSONArray appsAry = resultObj.getJSONArray(TAGNAME_APPLICATIONS);
+      if (appsAry != null) {
+        replyObj.put(TAGNAME_APPLICATIONS, appsAry);  
+      }
+    }
   }
 }
 
 class SetAppAccessCategoryTask extends TaskDefinition {
   public SetAppAccessCategoryTask() {
-    taskName = Message.TASKNAME_SetAppAccessCategory;
+    taskName = TASKNAME_SetAppAccessCategory;
   }
   
   public void populateRequestStr(String args) throws JSONException {
-    JSONObject paramObj = new JSONObject();
+    JSONObject reqObj = new JSONObject();
     
-    super.populateRequestStr(paramObj);
-    paramObj.putOnce(Message.TAGNAME_CMD_TYPE, taskName);
-    if (args!=null && !args.isEmpty()) {
-      paramObj.put(Message.TAGNAME_ARGUMENTS, args);
+    super.populateRequestHeader(reqObj);
+    reqObj.putOnce(TAGNAME_CMD_TYPE, taskName);
+    if (args!=null /*&& !args.isEmpty()*/) {
+      reqObj.put(TAGNAME_ARGUMENTS, args);
     }
-    setRequestStr(paramObj.toString());
+    
+    setRequestStr(reqObj.toString());
+  }
+
+  @Override
+  protected void populateResponseBody(JSONObject raw_response, JSONObject replyObj) 
+    throws JSONException {
+    //Nothing to add into response body
   }
 }

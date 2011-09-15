@@ -1,5 +1,7 @@
 package studentpal.ws;
 
+import java.net.InetAddress;
+
 import javax.xml.ws.Endpoint;
 
 import org.slf4j.Logger;
@@ -11,7 +13,8 @@ public class WsService {
   private static WsService instance = null;
   private static PhoneConnectorWs phoneConnWs = null;
   
-  public static final String wsUrl = "http://localhost:8080/StudentPal/PhoneConnector";
+  public static final String wsLocation = "/StudentPal/PhoneConnector";
+  public static final int    wsPort = 9090;
   
   public static WsService getInstance() {
     if (instance == null) {
@@ -22,11 +25,31 @@ public class WsService {
   }
   
   public void publishWs() {
-    logger.info("** ready to publish WS! **");
-    
-    Endpoint.publish(wsUrl, phoneConnWs);
+    try {
+      String wsUrl = getWsUrl();
+      
+      logger.info("** Prepare to publish WS @ " +wsUrl+ " **");
+      Endpoint.publish(wsUrl, phoneConnWs);
+      logger.info("** Completed publish WS! **");
+      
+    } catch (Exception ex) {
+      logger.warn(ex.toString());
+    }
   }
   
+  public static String getWsUrl() {
+    String result = "";
+    try {
+      String localStr = InetAddress.getLocalHost().getHostAddress();
+      localStr = "localhost";
+      
+      result = "http://" +localStr+ ":" + wsPort + wsLocation;
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    
+    return result;
+  }
   public static void main(String[] args) {
     WsService wsServiceInst = WsService.getInstance();
     wsServiceInst.publishWs();

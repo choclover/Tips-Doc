@@ -1,6 +1,6 @@
 
 bin/*
-*.classpath
+.classpath*
 .settings/*
 .svn
 .svn/*

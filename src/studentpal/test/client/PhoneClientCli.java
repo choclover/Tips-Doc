@@ -129,6 +129,8 @@ public class PhoneClientCli {
         root.put(Message.TAGNAME_ARGUMENTS, args);
         loggined = false;
         
+      } else if (cmd.equalsIgnoreCase("exit")) {
+        exit();
       } else {
         return null;
       }
@@ -260,6 +262,11 @@ public class PhoneClientCli {
         bDebug = true;
       }
     }
+  }
+  
+  private void exit() {
+    System.out.println("\nBye...");
+    System.exit(1);
   }
   
   ///////////////////////////////////////////////////

@@ -83,27 +83,26 @@ public class PhoneConnection {
   }
 
   public void executeTaskDef(TaskDefinition task) {
-    if (task != null) {
-      try {
-        addTaskDef(task);
+    if (task == null) return;
+    
+    try {
+      addTaskDef(task);
 
-        String requestStr = task.getRequestStr();
-        sendMessage(requestStr);
+      String requestStr = task.getRequestStr();
+      sendMessage(requestStr);
 
-        /* 
-         * Add this task to a schedule timeout queue, this task will not return 
-         * until response arrived or timeout happens
-         */
-        if (true) 
-        {
-          addScheduledTask(task.getTimeoutTask(), TaskDefinition.TIMEOUT_SECONDS);
-          task.waitForReply();
-        }
-        
-      } catch (Exception ex) {
-        logger.warn(ex.toString());
-        finishTaskDef(task);
+      /*
+       * Add this task to a schedule timeout queue, this task will not return
+       * until response arrived or timeout happens
+       */
+      if (true) {
+        addScheduledTask(task.getTimeoutTask(), TaskDefinition.TIMEOUT_SECONDS);
+        task.waitForReply();
       }
+
+    } catch (Exception ex) {
+      logger.warn(ex.toString());
+      finishTaskDef(task);
     }
   }
   
