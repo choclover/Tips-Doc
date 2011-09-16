@@ -81,13 +81,21 @@ public class AccessCategory {
   public void adjustRestrictedRuleCount(ClientAppInfo appInfo, int delta) {
     if (appInfo == null || delta == 0)
       return;
-
-    Integer oldCnt = _managedAppsMap.get(appInfo);
-    Integer newCnt = oldCnt + delta;
-    if (newCnt < 0) {
-      newCnt = 0;
+    
+    if (_managedAppsMap.containsKey(appInfo) == false) {
+      Logger.w(TAG, "_managedAppsMap NOT contains AppInfo: " + appInfo.getAppName());
     }
-    _managedAppsMap.put(appInfo, newCnt);
+    
+    synchronized (_managedAppsMap) {
+      Integer oldCnt = _managedAppsMap.get(appInfo);
+      Integer newCnt = oldCnt + delta;
+      if (newCnt < 0) {
+        newCnt = 0;
+      }
+      Logger.v(TAG, "Putting counter " + newCnt
+          + " to _managedAppsMap for AppInfo: " + appInfo.getAppName());
+      _managedAppsMap.put(appInfo, newCnt);
+    }
   }
 
   public boolean isAccessPermitted(ClientAppInfo appInfo) {

@@ -115,7 +115,7 @@ public class IoHandler implements AppHandler {
      */
     // TODO read from config
     String addr = "192.168.1.250";
-    //addr = "10.60.4.51";
+    addr = "10.60.4.51";
     
     return addr;
   }

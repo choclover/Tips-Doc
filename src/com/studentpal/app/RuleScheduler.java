@@ -76,11 +76,9 @@ public class RuleScheduler implements AppHandler {
       if (executor != null) {
         _ruleExecutorsList.add(executor);
 
-        // move to scheduleNextTask()
-        // executor.updateRestrictedAppsMapByAction(aRule
-        // .getActionOutofTimeRange());
-
-        executor.scheduleNextTask(aRule);
+        int currAction = executor.getCurrentAction();
+        executor.updateRestrictedAppsMapByAction(currAction);
+        executor.scheduleNextTask();
       }
     }
   }
@@ -112,56 +110,37 @@ public class RuleScheduler implements AppHandler {
    * Inner class
    */
   public class RuleExecutor implements Runnable {
-    int delay = 0; // delay in seconds
+   
     int futureAction = 0;
     private AccessRule _adhereRule;
-    // private ArrayList<ClientAppInfo> _accessPermittedAppList = new
-    // ArrayList<ClientAppInfo>();
+    private SortedSet<ScheduledTime> timePointsSet;
     private ScheduledFuture<?> pendingTask;
 
     public RuleExecutor(AccessRule rule) {
       _adhereRule = rule;
+      
+      if (timePointsSet == null) {
+        this.timePointsSet = new TreeSet<ScheduledTime>(timePointComparator);
+        populateTimePointsSet(this.timePointsSet);
+      }
     }
 
     public void setAccessRule(AccessRule rule) {
       _adhereRule = rule;
     }
 
-    public ScheduledFuture scheduleNextTask(AccessRule rule) {
+    public ScheduledFuture scheduleNextTask() {
       ScheduledFuture task = null;
 
-      List<TimeRange> timeRangeList = rule.getTimeRangeList();
-      SortedSet<ScheduledTime> timePointsSet = new TreeSet<ScheduledTime>(
-          timePointComparator);
-
-      // 每次scheduleNextTask()都生成有序的时间点的列表
-      for (TimeRange timeRange : timeRangeList) {
-        ScheduledTime startTime = timeRange.getStartTime();
-        ScheduledTime endTime = timeRange.getEndTime();
-
-        if (timePointsSet.contains(startTime) || timePointsSet.contains(endTime)) {
-          Logger.w(TAG, "Start time(" + startTime.toIntValue()
-              + ") or End time(" + endTime.toIntValue()
-              + ") is overlapped with others!");
-        } else {
-          timePointsSet.add(startTime);
-          timePointsSet.add(endTime);
-        }
-      }// for
-      
-      for (ScheduledTime timePoint : timePointsSet) {
-        Logger.d(TAG, "ASC TimePoint is: "+timePoint._hour+":"+timePoint._minute);
-      }
-
       if (timePointsSet.size() > 0) {
+        int delay = 0; // delay in seconds
+        
         final Calendar now = Calendar.getInstance();
         int nowHour = now.get(Calendar.HOUR_OF_DAY);
         int nowMin = now.get(Calendar.MINUTE);
         int nowSec = now.get(Calendar.SECOND);
         Logger.i(TAG, "Now is: " + nowHour + ':' + nowMin + ':' + nowSec);
 
-        int nowAction = _adhereRule.getActionOutofTimeRange();
-        
         // 为最近的时间点设置一个定时执行器
         for (ScheduledTime timePoint : timePointsSet) {
           delay = timePoint.calcSecondsToSpecificTime(nowHour, nowMin, nowSec);
@@ -169,11 +148,9 @@ public class RuleScheduler implements AppHandler {
           if (delay < 0) { // 当前时间还未（或者刚刚）到达timePoint
             if (timePoint.isStartTime()) {
               this.futureAction = _adhereRule.getActionInTimeRange();
-              nowAction = _adhereRule.getActionOutofTimeRange();
               
             } else {
               this.futureAction = _adhereRule.getActionOutofTimeRange();
-              nowAction = _adhereRule.getActionInTimeRange();
             }
 
             StringBuffer msg = new StringBuffer().append("Scheduled time(")
@@ -193,28 +170,65 @@ public class RuleScheduler implements AppHandler {
           Logger.i(TAG, "Last Endtime has passed! -- delay:"+delay);
         }
         
-        //update RestrictedAppsMap according to current action
-        updateRestrictedAppsMapByAction(nowAction);
-      }
+      } //if 
 
       this.pendingTask = task;
       return task;
     }
 
+    public int getCurrentAction() {
+      // default is OutofTimeRange action
+      int currAction = _adhereRule.getActionOutofTimeRange();
+
+      if (timePointsSet.size() > 0) {
+        final Calendar now = Calendar.getInstance();
+        int nowHour = now.get(Calendar.HOUR_OF_DAY);
+        int nowMin = now.get(Calendar.MINUTE);
+        int nowSec = now.get(Calendar.SECOND);
+        Logger.i(TAG, "Now is: " + nowHour + ':' + nowMin + ':' + nowSec);
+
+        // 为最近的时间点设置一个定时执行器
+        for (ScheduledTime timePoint : timePointsSet) {
+          int delay = timePoint.calcSecondsToSpecificTime(nowHour, nowMin,
+              nowSec);
+
+          if (delay <= 0) { // 当前时间还未（或者刚刚）到达timePoint
+            if (timePoint.isStartTime()) {
+              currAction = _adhereRule.getActionOutofTimeRange(); // 在startTime之前，则是OutofTimeRange
+            } else {
+              currAction = _adhereRule.getActionInTimeRange();
+            }
+
+            StringBuffer msg = new StringBuffer().append(
+                "Action on current time(").append(nowHour).append(':').append(
+                nowMin).append(':').append(nowSec).append(") is: ").append(
+                currAction);
+            Logger.d(TAG, msg.toString());
+            break; // only need to schedule the first task
+          }
+        }// for
+      }
+
+      return currAction;
+    }
+    
     @Override
     public void run() {
-      Logger.i(TAG, "Task start to run with delay: " + delay + "\taction: "
-          + futureAction);
+      Logger.i(TAG, "Task start to run with action: " + futureAction);
 
       updateRestrictedAppsMapByAction(this.futureAction);
 
       // 为下一个时间点设置定时器
-      scheduleNextTask(_adhereRule);
+      scheduleNextTask();
     }
 
     public void terminate() {
       if (this.pendingTask != null) {
         pendingTask.cancel(true);
+      }
+      if (this.timePointsSet != null) {
+        timePointsSet.clear();
+        timePointsSet = null;
       }
     }
 
@@ -223,7 +237,32 @@ public class RuleScheduler implements AppHandler {
     // this.pendingTask = task;
     // }
 
+    private void populateTimePointsSet(SortedSet<ScheduledTime> timePointsSet) {
+      List<TimeRange> timeRangeList = _adhereRule.getTimeRangeList();
+
+      // 每次scheduleNextTask()都生成有序的时间点的列表
+      for (TimeRange timeRange : timeRangeList) {
+        ScheduledTime startTime = timeRange.getStartTime();
+        ScheduledTime endTime = timeRange.getEndTime();
+
+        if (timePointsSet.contains(startTime) || timePointsSet.contains(endTime)) {
+          Logger.w(TAG, "Start time(" + startTime.toIntValue()
+              + ") or End time(" + endTime.toIntValue()
+              + ") is overlapped with others!");
+        } else {
+          timePointsSet.add(startTime);
+          timePointsSet.add(endTime);
+        }
+      }// for
+      
+      for (ScheduledTime timePoint : timePointsSet) {
+        Logger.d(TAG, "ASC TimePoint is: "+timePoint._hour+":"+timePoint._minute);
+      } 
+    }
+    
     private void updateRestrictedAppsMapByAction(int actionType) {
+      Logger.v(TAG, "Enter updateRestrictedAppsMapByAction in action "+actionType);
+      
       int denyCntDelta = 0;
       switch (actionType) {
       case AccessRule.ACCESS_DENIED:
@@ -237,7 +276,6 @@ public class RuleScheduler implements AppHandler {
         break;
       }
 
-      // _accessPermittedAppList.clear(); //reset
       List<ClientAppInfo> restrictedAppList = new ArrayList<ClientAppInfo>();
       List<ClientAppInfo> permittedAppList = new ArrayList<ClientAppInfo>();
       
