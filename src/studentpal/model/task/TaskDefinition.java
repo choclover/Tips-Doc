@@ -228,7 +228,8 @@ class SetAppAccessCategoryTask extends TaskDefinition {
     super.populateRequestHeader(reqObj);
     reqObj.putOnce(TAGNAME_CMD_TYPE, taskName);
     if (args!=null /*&& !args.isEmpty()*/) {
-      reqObj.put(TAGNAME_ARGUMENTS, args);
+      JSONObject argsObj = new JSONObject(args);
+      reqObj.putOnce(TAGNAME_ARGUMENTS, argsObj);
     }
     
     setRequestStr(reqObj.toString());

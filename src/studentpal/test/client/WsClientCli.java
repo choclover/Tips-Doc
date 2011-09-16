@@ -2,6 +2,7 @@ package studentpal.test.client;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +26,7 @@ public class WsClientCli {
    */
   private boolean bDebug = false;
   private String wsUrl = WsService.getWsUrl();
+  private String phoneNo;
   
   static String phone_number1 = "155";
   static String phone_number2 = "5521";
@@ -51,6 +53,9 @@ public class WsClientCli {
 
     pcWsService = new PhoneConnectorWsService();
     pcWsInst = pcWsService.getPhoneConnectorWsPort();
+    
+    this.phoneNo = new StringBuffer().append(phone_number1).append(
+        phone_number2).append(phone_number3).toString();
   }
   
   public void wsSayHello() throws Exception {
@@ -58,16 +63,23 @@ public class WsClientCli {
   }
   
   public void wsGetAppList() {
-    String phoneNo = new StringBuffer().append(phone_number1).append(
-        phone_number2).append(phone_number3).toString();
     //next test client will use next phone number 
     //phone_number3 = String.valueOf(Integer.parseInt(phone_number3)+1);
     
-    P(pcWsInst.getAppList(phoneNo));
+    P(pcWsInst.getAppList(this.phoneNo));
   }
 
-  public void wsSetAppAccessCategory() {
-
+  public void wsSetAppAccessCategory() throws JSONException {
+    JSONObject rootObj = new JSONObject();
+    JSONArray catesObj = createAccessCategories();
+    rootObj.put(Message.TAGNAME_ACCESS_CATEGORIES, catesObj);
+    
+    JSONArray appsObj = crateAppAccessCategory(
+        ((JSONObject)catesObj.get(0)).getInt(Message.TAGNAME_ACCESS_CATE_ID));
+    rootObj.put(Message.TAGNAME_APPLICATIONS, appsObj);
+    
+    String parmStr = rootObj.toString();
+    P(pcWsInst.setAppAccessCategory(this.phoneNo, parmStr));
   }
   
   public void wsGetPhoneStatus() {
@@ -77,77 +89,6 @@ public class WsClientCli {
   }
   
   //////////////////////////////////////////////////////////////////////////////
-  private void handleIncomingMsg(String reqStr) {
-    JSONObject resp = new JSONObject();
-    try {
-      JSONObject req = new JSONObject(reqStr);
-
-      String msg_type = req.getString(Message.TAGNAME_MSG_TYPE);
-      if (msg_type.equals(Message.MESSAGE_HEADER_ACK)) {
-        logger.info("This is a ACK message, will ignore it.");
-        return;
-      }
-
-      // We will only handle requests.
-      String cmd_type = req.getString(Message.TAGNAME_CMD_TYPE);
-      int req_seq = req.getInt(Message.TAGNAME_MSG_ID);
-
-      resp.put(Message.TAGNAME_MSG_TYPE, Message.MESSAGE_HEADER_ACK);
-      resp.put(Message.TAGNAME_MSG_ID, req_seq);
-      resp.put(Message.TAGNAME_ERR_CODE, Message.ERRCODE_NOERROR);
-      resp.put(Message.TAGNAME_CMD_TYPE, cmd_type);
-
-      JSONObject result = new JSONObject();
-      // 澶勭悊GetAppList鍛戒护
-      if (cmd_type.equals(Message.TASKNAME_GetAppList)) {
-        JSONArray applications = new JSONArray();
-
-        JSONObject app = new JSONObject();
-        app.put(Message.TAGNAME_APP_NAME, "Browser");
-        app.put(Message.TAGNAME_APP_PKGNAME, "com.android.browser");
-        app.put(Message.TAGNAME_APP_CLASSNAME, "com.android.browser.Browser");
-        app.put(Message.TAGNAME_ACCESS_CATE_ID, 1);
-        applications.put(app);
-
-        app = new JSONObject();
-        app.put(Message.TAGNAME_APP_NAME, "Messaging");
-        app.put(Message.TAGNAME_APP_PKGNAME, "com.android.mms");
-        app.put(Message.TAGNAME_APP_CLASSNAME, "com.android.mms.Messaging");
-        app.put(Message.TAGNAME_ACCESS_CATE_ID, 2);
-        applications.put(app);
-
-        app = new JSONObject();
-        app.put(Message.TAGNAME_APP_NAME, "Alarm Clock");
-        app.put(Message.TAGNAME_APP_PKGNAME, "com.android.alarmclock");
-        app.put(Message.TAGNAME_APP_CLASSNAME,
-            "com.android.alarmclock.Alarmclock");
-        app.put(Message.TAGNAME_ACCESS_CATE_ID, 2);
-        applications.put(app);
-
-        app = new JSONObject();
-        app.put(Message.TAGNAME_APP_NAME, "Camera");
-        app.put(Message.TAGNAME_APP_PKGNAME, "com.android.camera");
-        app.put(Message.TAGNAME_APP_CLASSNAME, "com.android.camera.Camera");
-        applications.put(app);
-
-        result.put(Message.TAGNAME_APPLICATIONS, applications);
-
-      } else if (cmd_type.equals(Message.TASKNAME_SetAppAccessCategory)) {
-        // TODO
-      }
-      resp.put(Message.TAGNAME_RESULT, result);
-
-      // String resultStr = resp.toString();
-      // if (resultStr!=null && !resultStr.isEmpty()) {
-      // System.out.println("Sending back response to server:\n\t"+resultStr);
-      // sendMessage(resultStr);
-      // }
-
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-  }
-
   private void parse_args(String[] args) {
     for (String arg : args) {
       if (arg.equals("-debug")) {
@@ -212,6 +153,121 @@ public class WsClientCli {
   
   private static void P(String s) {
     System.out.println(s); 
+  }
+  
+  private JSONArray createAccessCategories() throws JSONException {
+    JSONArray catesAry = new JSONArray();
+    JSONArray rulesAry;
+    JSONArray trsAry;
+    
+    JSONObject aCateObj;
+    JSONObject aRuleObj;
+    JSONObject aTrObj;
+    
+    /*
+     * Set content for Access Cate 1
+     */
+    rulesAry = new JSONArray();
+    
+    //Rule 1
+    trsAry = new JSONArray();
+    aTrObj = new JSONObject();
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "9:36");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "9:47");
+    trsAry.put(aTrObj);
+    
+    aTrObj = new JSONObject();
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "12:04");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "12:06");
+    trsAry.put(aTrObj);
+    
+    aTrObj = new JSONObject();
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "1:35");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "1:36");
+    trsAry.put(aTrObj);
+    
+    aRuleObj = new JSONObject();
+    aRuleObj.put(Message.TAGNAME_RULE_AUTH_TYPE, Message.ACCESS_TYPE_DENIED);
+    aRuleObj.put(Message.TAGNAME_RULE_REPEAT_TYPE, Message.RECUR_TYPE_DAILY);
+    //aRuleObj.put(Message.TAGNAME_RULE_REPEAT_VALUE, 0);
+    aRuleObj.put(Message.TAGNAME_ACCESS_TIMERANGES, trsAry);
+    
+    rulesAry.put(aRuleObj);
+    
+    //Rule 2
+    trsAry = new JSONArray();
+
+    int hour = 8;
+    int min = 12;
+    aTrObj = new JSONObject();
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, ""+hour+":"+min);
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, ""+hour+":"+(min+1));
+    trsAry.put(aTrObj);
+    
+    aTrObj = new JSONObject();
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, ""+hour+":"+(min+2));
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, ""+hour+":"+(min+3));
+    trsAry.put(aTrObj);
+    
+    aRuleObj = new JSONObject();
+    aRuleObj.put(Message.TAGNAME_RULE_AUTH_TYPE, Message.ACCESS_TYPE_PERMITTED);
+    aRuleObj.put(Message.TAGNAME_RULE_REPEAT_TYPE, Message.RECUR_TYPE_WEEKLY);
+    int recureVal = 0;
+    recureVal |= (1 << (Calendar.THURSDAY-1) );
+    recureVal |= (1 << (Calendar.FRIDAY-1) );
+    aRuleObj.put(Message.TAGNAME_RULE_REPEAT_VALUE, recureVal);
+    aRuleObj.put(Message.TAGNAME_ACCESS_TIMERANGES, trsAry);
+    
+    rulesAry.put(aRuleObj);
+    
+    aCateObj = new JSONObject();
+    aCateObj.put(Message.TAGNAME_ACCESS_CATE_ID, 101);
+    aCateObj.put(Message.TAGNAME_ACCESS_CATE_NAME, "Cate 1");
+    aCateObj.put(Message.TAGNAME_ACCESS_RULES, rulesAry);
+    
+    catesAry.put(aCateObj);
+    
+    /*
+     * Set content for Access Cate 2
+     */
+    //TODO
+    
+    return catesAry;
+  }
+  
+  private JSONArray crateAppAccessCategory(int cateId) throws JSONException {
+    JSONArray appsObj = new JSONArray();
+    JSONObject anAppObj;
+    
+    anAppObj = new JSONObject();
+    anAppObj.put(Message.TAGNAME_APP_NAME, "Messaging");
+    anAppObj.put(Message.TAGNAME_APP_PKGNAME, "com.android.mms");
+    anAppObj.put(Message.TAGNAME_APP_CLASSNAME, "com.android.mms.Messaging");
+    anAppObj.put(Message.TAGNAME_ACCESS_CATE_ID, cateId);
+    appsObj.put(anAppObj);
+
+    anAppObj = new JSONObject();
+    anAppObj.put(Message.TAGNAME_APP_NAME, "Alarmclock");
+    anAppObj.put(Message.TAGNAME_APP_PKGNAME, "com.android.alarmclock");
+    anAppObj.put(Message.TAGNAME_APP_CLASSNAME, "com.android.alarmclock.Alarmclock");
+    anAppObj.put(Message.TAGNAME_ACCESS_CATE_ID, cateId);
+    appsObj.put(anAppObj);
+    
+    anAppObj = new JSONObject();
+    anAppObj.put(Message.TAGNAME_APP_NAME, "DeskClock");
+    anAppObj.put(Message.TAGNAME_APP_PKGNAME, "com.android.deskclock");
+    anAppObj.put(Message.TAGNAME_APP_CLASSNAME, "com.android.deskclock.DeskClock");
+    anAppObj.put(Message.TAGNAME_ACCESS_CATE_ID, cateId);
+    appsObj.put(anAppObj);
+
+    anAppObj = new JSONObject();
+    anAppObj.put(Message.TAGNAME_APP_NAME, "Browser");
+    anAppObj.put(Message.TAGNAME_APP_PKGNAME, "com.android.browser");
+    anAppObj.put(Message.TAGNAME_APP_CLASSNAME, "com.android.browser.Browser");
+    anAppObj.put(Message.TAGNAME_ACCESS_CATE_ID, cateId);
+    appsObj.put(anAppObj);
+    
+    return appsObj;
   }
   
   ///////////////////////////////////////////////////

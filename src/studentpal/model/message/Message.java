@@ -36,16 +36,20 @@ public class Message {
   public static final String TAGNAME_RULE_REPEAT_STARTTIME  = "starttime";
   public static final String TAGNAME_RULE_REPEAT_ENDTIME    = "endtime";
   
+  /*
+   * TASK constants
+   */
   public final static String TASKNAME_Generic     = "Generic";
   public final static String TASKNAME_GetAppList  = "GetAppList";
   public final static String TASKNAME_SetAppAccessCategory = "SetAppAccessCategory";
+  //public final static String TASKNAME_SetAccessCategories  = "SetAccessCategories";
   /* Tasks from Phone */
   public final static String TASKNAME_LOGIN   = "LOGIN";
   public final static String TASKNAME_LOGOUT  = "LOGOUT";
   
-  public static final int MSG_ID_INVALID = -1;
-  public static final int MSG_ID_NOTUSED = 0;
-  
+  /*
+   * Error code constants 
+   */
   public static final int ERRCODE_NOERROR                   = 0;
   public static final int ERRCODE_TIMEOUT                   = 100;
   public static final int ERRCODE_CLIENT_CONN_LOST          = 200;
@@ -53,18 +57,39 @@ public class Message {
   public static final int ERRCODE_MSG_FORMAT_ERR            = 400;
   public static final int ERRCODE_SERVER_INTERNAL_ERR       = 500;
 
+  /*
+   * Value constants
+   */
+  public static final int MSG_ID_INVALID = -1;
+  public static final int MSG_ID_NOTUSED = 0;
 
+  public final static int RECUR_TYPE_DAILY    = 0x01;
+  public final static int RECUR_TYPE_WEEKLY   = 0x02;
+  public final static int RECUR_TYPE_MONTHLY  = 0x03;
+  public final static int RECUR_TYPE_YEARLY   = 0x04;
+  
+  public static final int ACCESS_TYPE_DENIED    = 0x01;
+  public static final int ACCESS_TYPE_PERMITTED = 0x02;
+  
+  public static final int SIGNAL_TYPE_REQACK = 101;
+  public static final int SIGNAL_TYPE_OUTSTREAM_READY = 110;
+  public static final int SIGNAL_SHOW_ACCESS_DENIED_NOTIFICATION = 111;
+  
+  
   private static final HashMap<Integer, String> ERRCODE_DESC_MAPPER 
     = new HashMap<Integer, String>();
+  // static {
+  // ERRCODE_DESC_MAPPER.put(ERRCODE_NOERROR, "SUCCESS");
+  // }
   
+  /*
+   * Member fields
+   */
   private int type = 0;
   private int errcoe = 0;
   private Object data = null;
   
-//  static {
-//    ERRCODE_DESC_MAPPER.put(ERRCODE_NOERROR, "SUCCESS");
-//  }
-  
+  //////////////////////////////////////////////////////////////////////////////
   public void setData(int type, int code, Object data) {
     this.type = type;
     this.errcoe = code;
