@@ -1,15 +1,11 @@
 package com.studentpal.model.rules;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import com.studentpal.app.ResourceManager;
-import com.studentpal.app.RuleScheduler;
 import com.studentpal.app.RuleScheduler.RuleExecutor;
+import com.studentpal.engine.Event;
 import com.studentpal.model.AccessCategory;
-import com.studentpal.model.exception.STDException;
 import com.studentpal.util.logger.Logger;
 
 public class AccessRule {
@@ -18,8 +14,8 @@ public class AccessRule {
   /*
    * Constants
    */
-  public static final int ACCESS_DENIED = 0x01;
-  public static final int ACCESS_PERMITTED = 0x02;
+  public static final int ACCESS_DENIED    = Event.ACCESS_TYPE_DENIED;
+  public static final int ACCESS_PERMITTED = Event.ACCESS_TYPE_PERMITTED;
   
   /*
    * Member fields

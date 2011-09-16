@@ -76,8 +76,9 @@ public class RuleScheduler implements AppHandler {
       if (executor != null) {
         _ruleExecutorsList.add(executor);
 
-        executor.updateRestrictedAppsMapByAction(aRule
-            .getActionOutofTimeRange());
+        // move to scheduleNextTask()
+        // executor.updateRestrictedAppsMapByAction(aRule
+        // .getActionOutofTimeRange());
 
         executor.scheduleNextTask(aRule);
       }
@@ -112,7 +113,7 @@ public class RuleScheduler implements AppHandler {
    */
   public class RuleExecutor implements Runnable {
     int delay = 0; // delay in seconds
-    int action = 0;
+    int futureAction = 0;
     private AccessRule _adhereRule;
     // private ArrayList<ClientAppInfo> _accessPermittedAppList = new
     // ArrayList<ClientAppInfo>();
@@ -159,33 +160,41 @@ public class RuleScheduler implements AppHandler {
         int nowSec = now.get(Calendar.SECOND);
         Logger.i(TAG, "Now is: " + nowHour + ':' + nowMin + ':' + nowSec);
 
+        int nowAction = _adhereRule.getActionOutofTimeRange();
+        
         // 为最近的时间点设置一个定时执行器
         for (ScheduledTime timePoint : timePointsSet) {
           delay = timePoint.calcSecondsToSpecificTime(nowHour, nowMin, nowSec);
 
           if (delay < 0) { // 当前时间还未（或者刚刚）到达timePoint
             if (timePoint.isStartTime()) {
-              this.action = _adhereRule.getActionInTimeRange();
+              this.futureAction = _adhereRule.getActionInTimeRange();
+              nowAction = _adhereRule.getActionOutofTimeRange();
+              
             } else {
-              this.action = _adhereRule.getActionOutofTimeRange();
+              this.futureAction = _adhereRule.getActionOutofTimeRange();
+              nowAction = _adhereRule.getActionInTimeRange();
             }
 
             StringBuffer msg = new StringBuffer().append("Scheduled time(")
                 .append(timePoint.toIntValue()).append(") to now(").append(
                     nowHour).append(':').append(nowMin).append(':').append(
                     nowSec).append(") is ").append(delay).append(
-                    " seconds in action ").append(action);
+                    " seconds in action ").append(futureAction);
             Logger.d(TAG, msg.toString());
 
             task = inner_scheduler.schedule(this, Math.abs(delay), SECONDS);
-            break;
+            break;  //only need to schedule the first task
           }
-        }
+        }//for
 
         // 当前时间超过了所有的timePoint
         if (delay > 0) {
           Logger.i(TAG, "Last Endtime has passed! -- delay:"+delay);
         }
+        
+        //update RestrictedAppsMap according to current action
+        updateRestrictedAppsMapByAction(nowAction);
       }
 
       this.pendingTask = task;
@@ -195,18 +204,14 @@ public class RuleScheduler implements AppHandler {
     @Override
     public void run() {
       Logger.i(TAG, "Task start to run with delay: " + delay + "\taction: "
-          + action);
+          + futureAction);
 
-      updateRestrictedAppsMapByAction(this.action);
+      updateRestrictedAppsMapByAction(this.futureAction);
 
       // 为下一个时间点设置定时器
       scheduleNextTask(_adhereRule);
     }
 
-    // public void setAction(int action) {
-    // this.action = action;
-    // }
-    
     public void terminate() {
       if (this.pendingTask != null) {
         pendingTask.cancel(true);
@@ -218,9 +223,9 @@ public class RuleScheduler implements AppHandler {
     // this.pendingTask = task;
     // }
 
-    private void updateRestrictedAppsMapByAction(int accessType) {
+    private void updateRestrictedAppsMapByAction(int actionType) {
       int denyCntDelta = 0;
-      switch (accessType) {
+      switch (actionType) {
       case AccessRule.ACCESS_DENIED:
         denyCntDelta = 1;
         break;
@@ -228,6 +233,7 @@ public class RuleScheduler implements AppHandler {
         denyCntDelta = -1;
         break;
       default:
+        Logger.w(TAG, "Invalid action type of "+actionType);
         break;
       }
 

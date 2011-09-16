@@ -42,8 +42,7 @@ public class SetAppAccessCategoryRequest extends Request {
           Map<Integer, AccessCategory> catesMap = 
             new HashMap<Integer, AccessCategory>();
           
-          JSONObject rootParam = new JSONObject(inputArguments);
-          JSONObject argsParam = rootParam.getJSONObject(TAGNAME_ARGUMENTS);
+          JSONObject argsParam = new JSONObject(inputArguments);
 
           JSONArray catesAry = argsParam.getJSONArray(TAGNAME_ACCESS_CATEGORIES);
           retrieveAccessCategories(catesAry, catesMap);
@@ -55,9 +54,11 @@ public class SetAppAccessCategoryRequest extends Request {
           for (Integer key : catesMap.keySet()) {
             catesList.add(catesMap.get(key));
           }
+          
           ClientEngine.getInstance().getAccessController().setAccessCategories(
               catesList);
           
+          respObj.put(TAGNAME_ERR_CODE, ERRCODE_NOERROR);
         }
       } catch (STDException ex) {
         Logger.w(getName(), "In execute() got an error:" + ex.toString());
@@ -130,7 +131,9 @@ public class SetAppAccessCategoryRequest extends Request {
           AccessRule aRule = new AccessRule();
           aRule.setAccessType(ruleObj.getInt(TAGNAME_RULE_AUTH_TYPE));
           Recurrence recur = Recurrence.getInstance(ruleObj.getInt(TAGNAME_RULE_REPEAT_TYPE));
-          recur.setRecurValue(ruleObj.getInt(TAGNAME_RULE_REPEAT_VALUE));
+          if (recur.getRecurType() != Recurrence.DAILY) {
+            recur.setRecurValue(ruleObj.getInt(TAGNAME_RULE_REPEAT_VALUE));
+          }
           aRule.setRecurrence(recur);
           
           JSONArray timerangeAry = ruleObj.getJSONArray(TAGNAME_ACCESS_TIMERANGES);
@@ -144,7 +147,6 @@ public class SetAppAccessCategoryRequest extends Request {
             int min  = Integer.parseInt(time.substring(idx+1));
             tr.setStartTime(hour, min);
             
-            tr = new TimeRange();
             time = trObj.getString(TAGNAME_RULE_REPEAT_ENDTIME);
             idx = time.indexOf(':');
             hour = Integer.parseInt(time.substring(0, idx));
