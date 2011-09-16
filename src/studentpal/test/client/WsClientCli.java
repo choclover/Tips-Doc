@@ -182,8 +182,8 @@ public class WsClientCli {
     trsAry.put(aTrObj);
     
     aTrObj = new JSONObject();
-    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "1:35");
-    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "1:36");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "14:18");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "14:19");
     trsAry.put(aTrObj);
     
     aRuleObj = new JSONObject();
@@ -197,8 +197,8 @@ public class WsClientCli {
     //Rule 2
     trsAry = new JSONArray();
 
-    int hour = 8;
-    int min = 12;
+    int hour = 14;
+    int min = 14;
     aTrObj = new JSONObject();
     aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, ""+hour+":"+min);
     aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, ""+hour+":"+(min+1));
@@ -206,7 +206,7 @@ public class WsClientCli {
     
     aTrObj = new JSONObject();
     aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, ""+hour+":"+(min+2));
-    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, ""+hour+":"+(min+3));
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, ""+hour+":"+(min+9));
     trsAry.put(aTrObj);
     
     aRuleObj = new JSONObject();
