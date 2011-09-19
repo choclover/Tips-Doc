@@ -16,6 +16,7 @@ import android.app.ActivityManager.RunningTaskInfo;
 
 import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
+import com.studentpal.engine.Event;
 import com.studentpal.model.AccessCategory;
 import com.studentpal.model.ClientAppInfo;
 import com.studentpal.model.exception.STDException;
@@ -95,7 +96,9 @@ public class AccessController implements AppHandler {
     //runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
     
     _loadAccessCategories(_accessCategoryList);
-    _launchAccessCategories();
+    rescheduleAccessCategories();
+    
+    runDailyRescheduleTask();
   }
 
   @Override
@@ -168,7 +171,7 @@ public class AccessController implements AppHandler {
   public void setAccessCategories(List<AccessCategory> categories) {
     _terminateAccessCategories();
     _addAccessCategories(categories);
-    _launchAccessCategories();
+    rescheduleAccessCategories();
   }
   
   public void killRestrictedApps() {
@@ -240,6 +243,31 @@ public class AccessController implements AppHandler {
     }
   }
   
+  public void rescheduleAccessCategories() {
+    for (AccessCategory accessCate : _accessCategoryList) {
+      List<AccessRule> rules = accessCate.getAccessRules();
+      RuleScheduler scheduler = accessCate.getScheduler();
+      scheduler.reScheduleRules(rules); 
+    }
+  }
+  
+  public void runDailyRescheduleTask() {
+    int start_h=24; int start_m=0; 
+    int start_s=2;  //delay a few seconds to avoid clock drifting(时钟漂移)
+    
+    final Calendar now = Calendar.getInstance();
+    int nowHour = now.get(Calendar.HOUR_OF_DAY);
+    int nowMin = now.get(Calendar.MINUTE);
+    int nowSec = now.get(Calendar.SECOND);
+    Logger.i(TAG, "Now is: " + nowHour + ':' + nowMin + ':' + nowSec);
+    
+    int delay = ((start_h-nowHour)*60 + (start_m-nowMin))*60 + (start_s-nowSec); 
+    if (delay > 0) {
+      engine.getMsgHandler().sendEmptyMessageDelayed(
+        Event.SIGNAL_ACCESS_RESCHEDULE_DAILY, delay);
+    }
+  }
+  
   //////////////////////////////////////////////////////////////////////////////
   private void _loadAccessCategories(List intoList) {
     //TODO read access categories from config
@@ -292,14 +320,6 @@ public class AccessController implements AppHandler {
           }
         }
       }
-    }
-  }
-  
-  private void _launchAccessCategories() {
-    for (AccessCategory accessCate : _accessCategoryList) {
-      List<AccessRule> rules = accessCate.getAccessRules();
-      RuleScheduler scheduler = accessCate.getScheduler();
-      scheduler.reScheduleRules(rules); 
     }
   }
   

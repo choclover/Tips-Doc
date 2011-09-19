@@ -109,9 +109,9 @@ public class IoHandler implements AppHandler {
       }
   }
   
-  public String getRemoteSvrIP() {
+  public String getRemoteSvrIP() {        
     /* 
-     * Do NOT use localhost/127.0.0.1 for machine itself 
+     * Do NOT use localhost/127.0.0.1 which is the phone itself 
      */
     // TODO read from config
     String addr = "192.168.1.250";
@@ -194,11 +194,15 @@ public class IoHandler implements AppHandler {
     
     for (int i=0; i<RETRY_TIMES; i++) {
       try {
-        // The IP here should NOT be localhost which is the phone itself
-        aSock = new Socket(InetAddress.getByName(getRemoteSvrIP()),
-            getRemoteSvrPort());
+        String svrAddr = getRemoteSvrDomainName();
+        svrAddr = getRemoteSvrIP();
+        int svrPort = getRemoteSvrPort();
+        
+        Logger.d(TAG, "Connecting to " + svrAddr +":"+ svrPort);
+        aSock = new Socket(InetAddress.getByName(svrAddr), svrPort);
         aSock.setKeepAlive(true);
-  
+        Logger.d(TAG, "Connected to "+aSock.getInetAddress().toString());
+        
       } catch (UnknownHostException e) {
         Logger.w(TAG, e.toString());
       } catch (IOException e) {

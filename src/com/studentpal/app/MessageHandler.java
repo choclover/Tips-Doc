@@ -1,15 +1,15 @@
 package com.studentpal.app;
 
+import static com.studentpal.engine.Event.*;
+
+import android.os.Message;
+
 import com.studentpal.app.io.IoHandler;
 import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
-import com.studentpal.engine.Event;
 import com.studentpal.engine.request.Request;
 import com.studentpal.model.exception.STDException;
 import com.studentpal.util.logger.Logger;
-
-import android.os.Handler;
-import android.os.Message;
 
 public class MessageHandler extends android.os.Handler implements AppHandler {
   private static final String TAG = "@@ MessageHandler";
@@ -40,7 +40,7 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
   }
   
   public void sendRequest(Request req) {
-    Message msg = this.obtainMessage(Event.SIGNAL_TYPE_REQACK, req);
+    Message msg = this.obtainMessage(SIGNAL_TYPE_REQACK, req);
     this.sendMessage(msg);
   }
   
@@ -51,7 +51,7 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
     Logger.i(TAG, "msg type:" /*+msg.getClass().getName()+ "id:"*/ +sigType);
     
     switch(sigType) {
-    case Event.SIGNAL_TYPE_REQACK:
+    case SIGNAL_TYPE_REQACK:
       if (msg instanceof Request) {
         Request req = (Request)msg;
         if (req.isIncomingReq()) {
@@ -74,7 +74,7 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
       }
       break;
         
-    case Event.SIGNAL_TYPE_OUTSTREAM_READY:
+    case SIGNAL_TYPE_OUTSTREAM_READY:
       // Start to login server
       try {
         engine.loginServer();
@@ -83,8 +83,13 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
       }
       break;
       
-    case Event.SIGNAL_SHOW_ACCESS_DENIED_NOTIFICATION:
+    case SIGNAL_SHOW_ACCESS_DENIED_NOTIFICATION:
       engine.showAccessDeniedNotification();
+      break;
+      
+    case SIGNAL_ACCESS_RESCHEDULE_DAILY:
+      engine.getAccessController().rescheduleAccessCategories();
+      engine.getAccessController().runDailyRescheduleTask();
       break;
       
     default:
