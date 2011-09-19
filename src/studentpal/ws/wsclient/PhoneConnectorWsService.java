@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "PhoneConnectorWsService", targetNamespace = "urn:cn.com.studentpal:PhoneConnectorWs", wsdlLocation = "http://localhost:9090/StudentPal/PhoneConnector?wsdl")
+@WebServiceClient(name = "PhoneConnectorWsService", targetNamespace = "urn:cn.com.studentpal:PhoneConnectorWs", wsdlLocation = "http://coeustec.gicp.net:9090/StudentPal/PhoneConnector?wsdl")
 public class PhoneConnectorWsService
     extends Service
 {
@@ -30,9 +30,9 @@ public class PhoneConnectorWsService
         try {
             URL baseUrl;
             baseUrl = studentpal.ws.wsclient.PhoneConnectorWsService.class.getResource(".");
-            url = new URL(baseUrl, "http://localhost:9090/StudentPal/PhoneConnector?wsdl");
+            url = new URL(baseUrl, "http://coeustec.gicp.net:9090/StudentPal/PhoneConnector?wsdl");
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'http://localhost:9090/StudentPal/PhoneConnector?wsdl', retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: 'http://coeustec.gicp.net:9090/StudentPal/PhoneConnector?wsdl', retrying as a local file");
             logger.warning(e.getMessage());
         }
         PHONECONNECTORWSSERVICE_WSDL_LOCATION = url;

@@ -41,6 +41,7 @@ public class WsClientCli {
   /*
    * JDK6 WS client
    * wsimport -d ./bin/ -s ./src -p studentpal.ws.wsclient http://localhost:9090/StudentPal/PhoneConnector?wsdl
+   * wsimport -d ./bin/ -s ./src -p studentpal.ws.wsclient http://coeustec.gicp.net:9090/StudentPal/PhoneConnector?wsdl
    */
   private PhoneConnectorWsService pcWsService;
   private PhoneConnectorWs pcWsInst;
@@ -182,8 +183,8 @@ public class WsClientCli {
     trsAry.put(aTrObj);
     
     aTrObj = new JSONObject();
-    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "14:18");
-    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "14:19");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "13:56");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "13:57");
     trsAry.put(aTrObj);
     
     aRuleObj = new JSONObject();
@@ -218,7 +219,7 @@ public class WsClientCli {
     aRuleObj.put(Message.TAGNAME_RULE_REPEAT_VALUE, recureVal);
     aRuleObj.put(Message.TAGNAME_ACCESS_TIMERANGES, trsAry);
     
-    rulesAry.put(aRuleObj);
+    //rulesAry.put(aRuleObj);
     
     aCateObj = new JSONObject();
     aCateObj.put(Message.TAGNAME_ACCESS_CATE_ID, 101);

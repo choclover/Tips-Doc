@@ -40,10 +40,13 @@ public class WsService {
   public static String getWsUrl() {
     String result = "";
     try {
-      String localStr = InetAddress.getLocalHost().getHostAddress();
-      localStr = "localhost";
+      String domainName = InetAddress.getLocalHost().getHostAddress();
+      if (false) {
+        domainName = "localhost";
+        domainName = "coeustec.gicp.net";
+      }
       
-      result = "http://" +localStr+ ":" + wsPort + wsLocation;
+      result = "http://" +domainName+ ":" + wsPort + wsLocation;
     } catch (Exception ex) {
       ex.printStackTrace();
     }
