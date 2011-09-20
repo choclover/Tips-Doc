@@ -2,4 +2,5 @@
 <resources>
     <string name="mainapp_name">aStudentPal</string>
     <string name="launcher_name">Launcher</string>
+    <string name="device_admin_label">学伴成长</string>
 </resources>

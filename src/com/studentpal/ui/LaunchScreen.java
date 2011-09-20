@@ -1,16 +1,19 @@
 package com.studentpal.ui;
 
-import com.studentpal.R;
-import com.studentpal.app.MainAppService;
-import com.studentpal.util.logger.Logger;
-
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.studentpal.R;
+import com.studentpal.app.MainAppService;
+import com.studentpal.app.receiver.MyDeviceAdminReceiver;
+import com.studentpal.util.ActivityUtil;
+import com.studentpal.util.logger.Logger;
 
 public class LaunchScreen extends Activity {
   private static final String TAG = "LaunchScreen";
@@ -19,11 +22,11 @@ public class LaunchScreen extends Activity {
    * Contants
    */
   private static final int RESULT_DEVICE_ADMIN_ENABLE = 1;
+  private static final boolean showUI = false;
   
   /*
    * Member fields
    */
-  private static boolean showUI = true;
   private Button btnStart, btnStop;
   private TextView service_status;
 //  private Intent intentMainAppSvc = null;
@@ -68,14 +71,16 @@ public class LaunchScreen extends Activity {
           .isServiceRunning(this, MainAppService.class.getName())) {
         startWatchingService();
       }
+      finish();
     }
     
-    //finish();
+    setAppDeviceAdmin(true);
   }
 
   @Override
   public void onBackPressed() {
     finish();
+    ActivityUtil.exitApp();
   }
   
   @Override
@@ -108,9 +113,12 @@ public class LaunchScreen extends Activity {
   }
   
   private void setAppDeviceAdmin(boolean active) {
+    ComponentName mDeviceAdminInst = new ComponentName(LaunchScreen.this,
+        MyDeviceAdminReceiver.class);
+    
     Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
     intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-            mDeviceAdminSample);
+        mDeviceAdminInst);
     intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
             "Additional text explaining why this needs to be added.");
     startActivityForResult(intent, RESULT_DEVICE_ADMIN_ENABLE);

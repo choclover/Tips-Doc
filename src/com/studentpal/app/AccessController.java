@@ -402,7 +402,7 @@ public class AccessController implements AppHandler {
       
       recur = Recurrence.getInstance(Recurrence.WEEKLY);
       int recureVal = 0;
-      recureVal |= (1 << (Calendar.THURSDAY-1) );
+      recureVal |= (1 << (Calendar.TUESDAY-1) );
       recureVal |= (1 << (Calendar.WEDNESDAY-1) );
       recur.setRecurValue(recureVal);
       aRule.setRecurrence(recur);
