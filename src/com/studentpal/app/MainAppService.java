@@ -8,12 +8,14 @@ import com.studentpal.util.logger.Logger;
 
 import android.app.ActivityManager;
 import android.app.Service;
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
 public class MainAppService extends Service {
   private static final String TAG = "@@ MainAppService";
+  private static final int RESULT_DEVICE_ADMIN_ENABLE = 1;
   
   /* 
    * Contants
@@ -22,7 +24,20 @@ public class MainAppService extends Service {
   public static final int CMD_STOP_WATCHING_APP = 101;
   
   public static final boolean forTest = true;
-  
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+      switch (requestCode) {
+          case RESULT_ENABLE:
+              if (resultCode == Activity.RESULT_OK) {
+                  Log.i("DeviceAdminSample", "Admin enabled!");
+              } else {
+                  Log.i("DeviceAdminSample", "Admin enable FAILED!");
+              }
+              return;
+      }
+
+      super.onActivityResult(requestCode, resultCode, data);
+  }
   /* 
    * Field members
    */
@@ -116,5 +131,14 @@ public class MainAppService extends Service {
     return isRunning;
   }
   
+  //////////////////////////////////////////////////////////////////////////////
+  private void setDeviceAdmin(boolean active) {
+    Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+    intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+            mDeviceAdminSample);
+    intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+            "Additional text explaining why this needs to be added.");
+    startActivityForResult(intent, RESULT_DEVICE_ADMIN_ENABLE);
+  }
   
 }

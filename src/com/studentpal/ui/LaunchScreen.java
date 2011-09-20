@@ -5,6 +5,7 @@ import com.studentpal.app.MainAppService;
 import com.studentpal.util.logger.Logger;
 
 import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,14 @@ import android.widget.TextView;
 public class LaunchScreen extends Activity {
   private static final String TAG = "LaunchScreen";
   
+  /* 
+   * Contants
+   */
+  private static final int RESULT_DEVICE_ADMIN_ENABLE = 1;
+  
+  /*
+   * Member fields
+   */
   private static boolean showUI = true;
   private Button btnStart, btnStop;
   private TextView service_status;
@@ -69,6 +78,21 @@ public class LaunchScreen extends Activity {
     finish();
   }
   
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (requestCode) {
+    case RESULT_DEVICE_ADMIN_ENABLE:
+      if (resultCode == Activity.RESULT_OK) {
+        Logger.i("DeviceAdminSample", "Admin enabled!");
+      } else {
+        Logger.i("DeviceAdminSample", "Admin enable FAILED!");
+      }
+      return;
+    }
+
+    super.onActivityResult(requestCode, resultCode, data);
+  }
+  
   //////////////////////////////////////////////////////////////////////////////
   private void startWatchingService() {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
@@ -81,6 +105,15 @@ public class LaunchScreen extends Activity {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
 //    i.putExtra("command", com.studentpal.app.MainAppService.CMD_STOP_WATCHING_APP);
     stopService(i);
+  }
+  
+  private void setAppDeviceAdmin(boolean active) {
+    Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+    intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+            mDeviceAdminSample);
+    intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+            "Additional text explaining why this needs to be added.");
+    startActivityForResult(intent, RESULT_DEVICE_ADMIN_ENABLE);
   }
   
 }
