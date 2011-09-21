@@ -47,6 +47,10 @@ public class AccessRule {
     return _recurrence;
   }
   
+  public int getRecurType() {
+    return _recurrence.getRecurType();
+  }
+  
   public void setAdhereCategory(AccessCategory cate) {
     this._adhereCate = cate;
   }

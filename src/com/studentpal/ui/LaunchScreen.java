@@ -120,7 +120,7 @@ public class LaunchScreen extends Activity {
     intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
         mDeviceAdminInst);
     intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-            "Additional text explaining why this needs to be added.");
+            "Additional text explaining why this needs to be added.");//FIXME
     startActivityForResult(intent, RESULT_DEVICE_ADMIN_ENABLE);
   }
   

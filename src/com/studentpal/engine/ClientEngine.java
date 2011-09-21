@@ -10,6 +10,7 @@ import com.studentpal.app.AccessController;
 import com.studentpal.app.MainAppService;
 import com.studentpal.app.MessageHandler;
 import com.studentpal.app.ResourceManager;
+import com.studentpal.app.db.DBaseManager;
 import com.studentpal.app.io.IoHandler;
 import com.studentpal.app.receiver.SystemStateReceiver;
 import com.studentpal.engine.request.LoginRequest;
@@ -48,10 +49,11 @@ public class ClientEngine implements AppHandler {
   private TelephonyManager    _teleManager      = null;
   
   //Handlers
+  private List<AppHandler> appHandlerAry = null;
   private MessageHandler msgHandler = null;
   private IoHandler ioHandler = null;
   private AccessController accController = null;
-  private List<AppHandler> appHandlerAry = null;
+  private DBaseManager dbaseManager = null;
   
   private ClientEngine() {
   }
@@ -91,11 +93,15 @@ public class ClientEngine implements AppHandler {
     //Create AccessController instance
     this.accController = AccessController.getInstance();
     
+    //Create DBaseManager instance
+    this.dbaseManager = DBaseManager.getInstance();
+    
     if (appHandlerAry == null) {
       appHandlerAry = new ArrayList<AppHandler>();
       appHandlerAry.add(msgHandler);
       appHandlerAry.add(ioHandler);
       appHandlerAry.add(accController);
+      appHandlerAry.add(dbaseManager);
     }
     
   }

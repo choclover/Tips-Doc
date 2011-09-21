@@ -14,6 +14,7 @@ import android.app.ActivityManager.RecentTaskInfo;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 
+import com.studentpal.app.db.DBaseManager;
 import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.Event;
@@ -169,6 +170,8 @@ public class AccessController implements AppHandler {
   //remove and terminate original categories
   //add in new categories and launch them(reschedule all rules in each category)
   public void setAccessCategories(List<AccessCategory> categories) {
+    DBaseManager.getInstance().saveAccessCategoriesToDB(categories);
+    
     _terminateAccessCategories();
     _addAccessCategories(categories);
     rescheduleAccessCategories();
