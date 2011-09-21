@@ -119,6 +119,10 @@ public class TimeRange {
     public int calcSecondsToSpecificTime(ScheduledTime time) {
       return calcSecondsToSpecificTime(time._hour, time._minute, 0);
     }
+    
+    public String toString() {
+      return "" +_hour+ ":" +_minute;
+    }
 
   }
 }

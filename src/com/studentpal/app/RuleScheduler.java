@@ -67,7 +67,7 @@ public class RuleScheduler implements AppHandler {
       if (aRule == null) {
         Logger.w(TAG, "Rule should NOT be NULL!");
       } else if (aRule.isOccurringToday() == false) {
-        Logger.i(TAG, "Rule " +aRule.getRecurrence().getName()+ 
+        Logger.i(TAG, "Rule " +aRule.getRecurrence().getName()+
             " is NOT occurring today, skipping it...");
         continue;
       }
@@ -170,7 +170,7 @@ public class RuleScheduler implements AppHandler {
           Logger.i(TAG, "Last Endtime has passed! -- delay:"+delay);
         }
         
-      } //if 
+      } //if
 
       this.pendingTask = task;
       return task;
@@ -257,7 +257,7 @@ public class RuleScheduler implements AppHandler {
       
       for (ScheduledTime timePoint : timePointsSet) {
         Logger.d(TAG, "ASC TimePoint is: "+timePoint._hour+":"+timePoint._minute);
-      } 
+      }
     }
     
     private void updateRestrictedAppsMapByAction(int actionType) {
@@ -294,12 +294,13 @@ public class RuleScheduler implements AppHandler {
         
       }// for
 
-      if (restrictedAppList.size() > 0) 
+      if (restrictedAppList.size() > 0)
       {
-        ClientEngine.getInstance().getAccessController().setRestrictedAppList(
+        //ClientEngine.getInstance().getAccessController().setRestrictedAppList(
+        ClientEngine.getInstance().getAccessController().appendRestrictedAppList(
             restrictedAppList);
-      } 
-      if (permittedAppList.size() > 0) 
+      }
+      if (permittedAppList.size() > 0)
       {
         ClientEngine.getInstance().getAccessController().removeRestrictedAppList(
             permittedAppList);

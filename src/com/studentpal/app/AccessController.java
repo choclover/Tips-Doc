@@ -10,11 +10,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.ActivityManager;
-import android.app.ActivityManager.RecentTaskInfo;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 
-import com.studentpal.app.db.DBaseManager;
 import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.Event;
@@ -93,7 +91,7 @@ public class AccessController implements AppHandler {
   public void launch() {
     initialize();
     
-    _loadRestrictedApps(_restrictedAppsMap);
+    //_loadRestrictedApps(_restrictedAppsMap);
     //runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
     
     _loadAccessCategories(_accessCategoryList);
@@ -125,7 +123,7 @@ public class AccessController implements AppHandler {
       _monitorTimer = new Timer();
       if (_monitorTask == null) {
         _monitorTask = getMonitorTask();
-      } 
+      }
       _monitorTimer.schedule(_monitorTask, 0, MONITORTASK_INTERVAL);
       
     } else {
@@ -144,12 +142,12 @@ public class AccessController implements AppHandler {
   public void appendRestrictedApp(ClientAppInfo appInfo) {
     ArrayList<ClientAppInfo> appList = new ArrayList<ClientAppInfo>(1);
     appendRestrictedAppList(appList);
-  }  
+  }
   
   public void appendRestrictedAppList(List<ClientAppInfo> appList) {
     boolean append = true;
     _setRestrictedAppList(this._restrictedAppsMap, appList, append);
-  }  
+  }
   
   public void setRestrictedAppList(List<ClientAppInfo> appList) {
     boolean append = false;
@@ -170,8 +168,6 @@ public class AccessController implements AppHandler {
   //remove and terminate original categories
   //add in new categories and launch them(reschedule all rules in each category)
   public void setAccessCategories(List<AccessCategory> categories) {
-    DBaseManager.getInstance().saveAccessCategoriesToDB(categories);
-    
     _terminateAccessCategories();
     _addAccessCategories(categories);
     rescheduleAccessCategories();
@@ -250,12 +246,12 @@ public class AccessController implements AppHandler {
     for (AccessCategory accessCate : _accessCategoryList) {
       List<AccessRule> rules = accessCate.getAccessRules();
       RuleScheduler scheduler = accessCate.getScheduler();
-      scheduler.reScheduleRules(rules); 
+      scheduler.reScheduleRules(rules);
     }
   }
   
   public void runDailyRescheduleTask() {
-    int start_h=24; int start_m=0; 
+    int start_h=24; int start_m=0;
     int start_s=2;  //delay a few seconds to avoid clock drifting(时钟漂移)
     
     final Calendar now = Calendar.getInstance();
@@ -264,7 +260,7 @@ public class AccessController implements AppHandler {
     int nowSec = now.get(Calendar.SECOND);
     Logger.i(TAG, "Now is: " + nowHour + ':' + nowMin + ':' + nowSec);
     
-    int delay = ((start_h-nowHour)*60 + (start_m-nowMin))*60 + (start_s-nowSec); 
+    int delay = ((start_h-nowHour)*60 + (start_m-nowMin))*60 + (start_s-nowSec);
     if (delay > 0) {
       engine.getMsgHandler().sendEmptyMessageDelayed(
         Event.SIGNAL_ACCESS_RESCHEDULE_DAILY, delay);
@@ -273,32 +269,48 @@ public class AccessController implements AppHandler {
   
   //////////////////////////////////////////////////////////////////////////////
   private void _loadAccessCategories(List intoList) {
-    //TODO read access categories from config
-    if (MainAppService.forTest) {
-      intoList.add(this.getDailyCate());
+    // TODO read access categories from config
+    // if (MainAppService.forTest) {
+    // intoList.add(this.getDailyCate());
+    // }
+    
+      try {
+      List<AccessCategory> catesList = ClientEngine.getInstance()
+          .getDBaseManager().loadAccessCategoriesFromDB();
+      
+      for (AccessCategory cate : catesList) {
+        if (cate == null) {
+          Logger.w(TAG, "Category should NOT be NULL loaded from DB");
+          continue;
+        }
+        intoList.add(cate);
+      }
+      
+    } catch (STDException ex) {
+      Logger.w(TAG, ex.toString());
     }
   }
   
-  private void _loadRestrictedApps(HashMap intoMap) {
-    //TODO read restricted app list from config
-    List<ClientAppInfo> appList = null;
-    if (MainAppService.forTest) {
-      appList = new ArrayList<ClientAppInfo>();
-      ClientAppInfo appInfo = null;
-      appInfo = new ClientAppInfo("Messaging", "com.android.mms",
-          "com.android.mms.Messaging");
-      appList.add(appInfo);
-      appInfo = new ClientAppInfo("Alarmclock", "com.android.alarmclock",
-          "com.android.alarmclock.Alarmclock");
-      appList.add(appInfo);
-      appInfo = new ClientAppInfo("Browser", "com.android.browser",
-          "com.android.browser.Browser");
-      appList.add(appInfo);
-    }
-    
-    boolean append = false;
-    _setRestrictedAppList(intoMap, appList, append);
-  }
+//  private void _loadRestrictedApps(HashMap intoMap) {
+//    //TODO read restricted app list from config
+//    List<ClientAppInfo> appList = null;
+//    if (MainAppService.forTest) {
+//      appList = new ArrayList<ClientAppInfo>();
+//      ClientAppInfo appInfo = null;
+//      appInfo = new ClientAppInfo("Messaging", "com.android.mms",
+//          "com.android.mms.Messaging");
+//      appList.add(appInfo);
+//      appInfo = new ClientAppInfo("Alarmclock", "com.android.alarmclock",
+//          "com.android.alarmclock.Alarmclock");
+//      appList.add(appInfo);
+//      appInfo = new ClientAppInfo("Browser", "com.android.browser",
+//          "com.android.browser.Browser");
+//      appList.add(appInfo);
+//    }
+//
+//    boolean append = false;
+//    _setRestrictedAppList(intoMap, appList, append);
+//  }
   
   private void _terminateAccessCategories() {
     if (_accessCategoryList != null && _accessCategoryList.size()>0) {
@@ -326,7 +338,7 @@ public class AccessController implements AppHandler {
     }
   }
   
-  private void _setRestrictedAppList(HashMap<String, String> restrictedAppsMap, 
+  private void _setRestrictedAppList(HashMap<String, String> restrictedAppsMap,
       List<ClientAppInfo> appList, boolean append) {
     if (restrictedAppsMap == null) {
       Logger.w(TAG, "Input restrictedAppsMap should NOT be NULL!");
@@ -344,7 +356,7 @@ public class AccessController implements AppHandler {
           //restrictedAppsMap.put(appInfo.getAppPkgname(), appInfo.getAppClassname());
           restrictedAppsMap.put(appInfo.getIndexingKey(), appInfo.getIndexingValue());
         }
-      }
+      }//sync
       
       runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
     }
@@ -352,6 +364,7 @@ public class AccessController implements AppHandler {
   
   private TimerTask getMonitorTask() {
     TimerTask task = new TimerTask() {
+      @Override
       public void run() {
         Logger.v(TAG, "Monitor Task starts to run!");
         killRestrictedApps();
@@ -363,7 +376,7 @@ public class AccessController implements AppHandler {
   private AccessCategory getDailyCate() {
     AccessCategory aCate = new AccessCategory();
     aCate.set_id(1);
-    aCate.set_name("Cate 1");      
+    aCate.set_name("Cate 1");
     aCate.addManagedApp(new ClientAppInfo("Messaging", "com.android.mms",
         "com.android.mms.Messaging"));
     aCate.addManagedApp(new ClientAppInfo("Alarmclock",
@@ -427,7 +440,7 @@ public class AccessController implements AppHandler {
   private AccessCategory getWeeklyCate() {
     AccessCategory aCate = new AccessCategory();
     return aCate;
-  } 
+  }
    
   private AccessCategory getMonthlyCate() {
     AccessCategory aCate = new AccessCategory();

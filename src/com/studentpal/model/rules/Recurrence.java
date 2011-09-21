@@ -37,11 +37,13 @@ public abstract class Recurrence {
   public abstract String getName();
   public abstract void setRecurValue(Object recureVal) throws STDException;
   public abstract boolean isOccurringToday();
+  public abstract String toString();
   
   public int getRecurType() {
     return recurType;
   }
-  /*
+  
+  /**
    * Inner class
    */
   static final class DAILY extends Recurrence {
@@ -60,6 +62,10 @@ public abstract class Recurrence {
     public boolean isOccurringToday() {
       return true;
     }
+    
+    public String toString() {
+      return "";
+    }
   }
   
   static final class WEEKLY extends Recurrence {
@@ -74,13 +80,12 @@ public abstract class Recurrence {
     public void setRecurValue(Object recurVal) throws STDException {
       if (recurVal==null || !(recurVal instanceof Integer) ) {
         throw new STDException("Illegal recurrence value");
-        
       } else {
         Integer val = (Integer)recurVal;
         if (val<1 || val>0x7F) {
-          throw new STDException("Recurrence value out of valid range: "+val);
+          throw new STDException("Recurrence value out of valid range: "+Integer.toHexString(val));
         } else {
-          Logger.d("Setting "+getName()+ " RecurValue to: " + recurVal);
+          Logger.d("Setting "+getName()+ " RecurValue to: " + Integer.toHexString(val));
           this.recurValue = recurVal; 
         }
       }
@@ -90,9 +95,15 @@ public abstract class Recurrence {
       if (recurValue == null) return false;
       
       Calendar c = Calendar.getInstance();
-      int weekDay = 1 << (c.get(Calendar.DAY_OF_WEEK)-1);
-      int recur = (recurValue!=null) ? ((Integer)recurValue).intValue() : 0;
+      int weekDay = c.get(Calendar.DAY_OF_WEEK);
+      weekDay = 1 << (weekDay-1);
+      int recur = (recurValue!=null) ? ((Integer)recurValue) : 0;
+      
       return (weekDay & recur) != 0 ;
+    }
+    
+    public String toString() {
+      return String.valueOf(recurValue);
     }
   }
   
@@ -106,23 +117,44 @@ public abstract class Recurrence {
     }
     
     public void setRecurValue(Object recurVal) throws STDException {
-      if (recurVal!=null && recurVal instanceof int[]) {
-        this.recurValue = recurVal;
+      if (recurVal!=null && recurVal instanceof Long) {
+        Long val = (Long)recurVal;
+        if (val<1 || val>0x7FFFFFFF) {  //max to 31 bits
+          throw new STDException("Recurrence value out of valid range: "+Long.toHexString(val));
+        } else {
+          Logger.d("Setting "+getName()+ " RecurValue to: " + Long.toHexString(val));
+          this.recurValue = recurVal; 
+        }
       } else {
         throw new STDException("Invalid recurrence value");
       }
     }
 
     public boolean isOccurringToday() {
+      if (recurValue == null) return false;
+
       boolean result = false;
       Calendar c = Calendar.getInstance();
-      int mDay = c.get(Calendar.DAY_OF_MONTH);
-      for (int date : (int[])recurValue) {
-        if (mDay == date) {
-          result = true;  break;
+      long monDay = c.get(Calendar.DAY_OF_MONTH);
+      
+      if (recurValue instanceof int []) {
+        for (int date : (int[]) recurValue) {
+          if (monDay == date) {
+            result = true;
+            break;
+          }
         }
+      } else if (recurValue instanceof Long) {
+        monDay = 1 << (monDay-1);
+        long recur = (recurValue!=null) ? ((Long)recurValue) : 0;
+        result =  (monDay & recur) != 0 ;
       }
+      
       return result;
+    }
+    
+    public String toString() {
+      return String.valueOf(recurValue);
     }
   }
 }

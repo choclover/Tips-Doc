@@ -1,6 +1,24 @@
 package com.studentpal.engine.request;
 
-import static com.studentpal.engine.Event.*;
+import static com.studentpal.engine.Event.ERRCODE_MSG_FORMAT_ERR;
+import static com.studentpal.engine.Event.ERRCODE_NOERROR;
+import static com.studentpal.engine.Event.TAGNAME_ACCESS_CATEGORIES;
+import static com.studentpal.engine.Event.TAGNAME_ACCESS_CATE_ID;
+import static com.studentpal.engine.Event.TAGNAME_ACCESS_CATE_NAME;
+import static com.studentpal.engine.Event.TAGNAME_ACCESS_RULES;
+import static com.studentpal.engine.Event.TAGNAME_ACCESS_TIMERANGES;
+import static com.studentpal.engine.Event.TAGNAME_APPLICATIONS;
+import static com.studentpal.engine.Event.TAGNAME_APP_CLASSNAME;
+import static com.studentpal.engine.Event.TAGNAME_APP_NAME;
+import static com.studentpal.engine.Event.TAGNAME_APP_PKGNAME;
+import static com.studentpal.engine.Event.TAGNAME_ERR_CODE;
+import static com.studentpal.engine.Event.TAGNAME_ERR_DESC;
+import static com.studentpal.engine.Event.TAGNAME_RESULT;
+import static com.studentpal.engine.Event.TAGNAME_RULE_AUTH_TYPE;
+import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_ENDTIME;
+import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_STARTTIME;
+import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_TYPE;
+import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_VALUE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,10 +42,12 @@ import com.studentpal.util.logger.Logger;
 
 public class SetAppAccessCategoryRequest extends Request {
 
+  @Override
   public String getName() {
     return Event.TASKNAME_SetAppAccessCategory;
   }
   
+  @Override
   public void execute() {
     try {
       JSONObject respObj = super.generateGenericReplyHeader(getName());
@@ -39,7 +59,7 @@ public class SetAppAccessCategoryRequest extends Request {
           //TODO add description to "result" obj
           
         } else {
-          Map<Integer, AccessCategory> catesMap = 
+          Map<Integer, AccessCategory> catesMap =
             new HashMap<Integer, AccessCategory>();
           
           JSONObject argsParam = new JSONObject(inputArguments);
@@ -54,7 +74,12 @@ public class SetAppAccessCategoryRequest extends Request {
           for (Integer key : catesMap.keySet()) {
             catesList.add(catesMap.get(key));
           }
+
+          //save to DB
+          ClientEngine.getInstance().getDBaseManager().saveAccessCategoriesToDB(
+              catesList);
           
+          //update the access controller
           ClientEngine.getInstance().getAccessController().setAccessCategories(
               catesList);
           
@@ -71,7 +96,7 @@ public class SetAppAccessCategoryRequest extends Request {
         }
         if (respObj != null) {
           setOutputContent(respObj.toString());
-        }        
+        }
       }
 
     } catch (JSONException ex) {
@@ -122,7 +147,7 @@ public class SetAppAccessCategoryRequest extends Request {
   
         AccessCategory aCate = new AccessCategory();
         aCate.set_id(cateObj.getInt(TAGNAME_ACCESS_CATE_ID));
-        aCate.set_name(cateObj.getString(TAGNAME_ACCESS_CATE_NAME)); 
+        aCate.set_name(cateObj.getString(TAGNAME_ACCESS_CATE_NAME));
   
         JSONArray rulesAry = cateObj.getJSONArray(TAGNAME_ACCESS_RULES);
         for (int m=0; m<rulesAry.length(); m++) {
