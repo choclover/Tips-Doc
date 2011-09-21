@@ -60,11 +60,11 @@ public class WsClientCli {
   }
   
   public void wsSayHello() throws Exception {
-    P(pcWsInst.sayHello("张三"));  
+    P(pcWsInst.sayHello("张三"));
   }
   
   public void wsGetAppList() {
-    //next test client will use next phone number 
+    //next test client will use next phone number
     //phone_number3 = String.valueOf(Integer.parseInt(phone_number3)+1);
     
     P(pcWsInst.getAppList(this.phoneNo));
@@ -101,7 +101,7 @@ public class WsClientCli {
   private void execute() {
     boolean stop = false;
     while (!stop) {
-      try {      
+      try {
         printWsUsage();
         
         String cmd = new BufferedReader(new InputStreamReader(System.in))
@@ -153,7 +153,7 @@ public class WsClientCli {
   }
   
   private static void P(String s) {
-    System.out.println(s); 
+    System.out.println(s);
   }
   
   private JSONArray createAccessCategories() throws JSONException {
@@ -232,6 +232,12 @@ public class WsClientCli {
      * Set content for Access Cate 2
      */
     //TODO
+    aCateObj = new JSONObject();
+    aCateObj.put(Message.TAGNAME_ACCESS_CATE_ID, 102);
+    aCateObj.put(Message.TAGNAME_ACCESS_CATE_NAME, "Cate 2");
+    aCateObj.put(Message.TAGNAME_ACCESS_RULES, (JSONArray)null);
+    
+    catesAry.put(aCateObj);
     
     return catesAry;
   }
