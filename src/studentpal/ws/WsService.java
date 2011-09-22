@@ -42,8 +42,8 @@ public class WsService {
     try {
       String domainName = InetAddress.getLocalHost().getHostAddress();
       if (false) {
-        domainName = "localhost";
-        domainName = "coeustec.gicp.net";
+//        domainName = "localhost";
+//        domainName = "coeustec.gicp.net";
       }
       
       result = "http://" +domainName+ ":" + wsPort + wsLocation;
@@ -53,6 +53,8 @@ public class WsService {
     
     return result;
   }
+  
+  //////////////////////////////////////////////////////////////////////////////
   public static void main(String[] args) {
     WsService wsServiceInst = WsService.getInstance();
     wsServiceInst.publishWs();
