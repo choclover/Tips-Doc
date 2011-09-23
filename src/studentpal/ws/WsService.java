@@ -37,6 +37,9 @@ public class WsService {
     }
   }
   
+  /*
+   * Sample: http://<Server's IP>:9090/StudentPal/PhoneConnector?wsdl
+   */
   public static String getWsUrl() {
     String result = "";
     try {
