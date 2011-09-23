@@ -1,8 +1,9 @@
 
 bin/*
-.classpath_bak
+.classpath*
 .project_bak
 .settings/*
 .svn
 .svn/*
+build/*
 
