@@ -28,7 +28,7 @@ public class WsService {
     try {
       String wsUrl = getWsUrl();
       
-      logger.info("** Prepare to publish WS @ " +wsUrl+ " **");
+      logger.info("** Preparing to publish WS @ " +wsUrl+ " **");
       Endpoint.publish(wsUrl, phoneConnWs);
       logger.info("** Completed publish WS! **");
       

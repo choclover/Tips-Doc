@@ -6,4 +6,7 @@ bin/*
 .svn
 .svn/*
 build/*
+WebContent/WEB-INF/lib
+lib/*
+src/studentpal/ws/wsclient/*
 
