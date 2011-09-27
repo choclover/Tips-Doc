@@ -260,10 +260,10 @@ public class AccessController implements AppHandler {
     int nowSec = now.get(Calendar.SECOND);
     Logger.i(TAG, "Now is: " + nowHour + ':' + nowMin + ':' + nowSec);
     
-    int delay = ((start_h-nowHour)*60 + (start_m-nowMin))*60 + (start_s-nowSec);
-    if (delay > 0) {
+    int delaySec = ((start_h-nowHour)*60 + (start_m-nowMin))*60 + (start_s-nowSec);
+    if (delaySec > 0) {
       engine.getMsgHandler().sendEmptyMessageDelayed(
-        Event.SIGNAL_ACCESS_RESCHEDULE_DAILY, delay);
+        Event.SIGNAL_ACCESS_RESCHEDULE_DAILY, delaySec*1000);
     }
   }
   
@@ -274,7 +274,7 @@ public class AccessController implements AppHandler {
     // intoList.add(this.getDailyCate());
     // }
     
-      try {
+    try {
       List<AccessCategory> catesList = ClientEngine.getInstance()
           .getDBaseManager().loadAccessCategoriesFromDB();
       

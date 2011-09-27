@@ -79,6 +79,9 @@ public class ClientEngine implements AppHandler {
     //Create Telephony Manager
     this._teleManager = (TelephonyManager)this._launcher.getSystemService(Context.TELEPHONY_SERVICE);
     
+    /**
+     * App Handlers
+     */
     //Create MessageHandler instance
     this.msgHandler = MessageHandler.getInstance();
     
@@ -96,7 +99,7 @@ public class ClientEngine implements AppHandler {
       appHandlerAry.add(msgHandler);
       appHandlerAry.add(ioHandler);
       appHandlerAry.add(accController);
-      appHandlerAry.add(dbaseManager);
+//      appHandlerAry.add(dbaseManager);
     }
     
   }

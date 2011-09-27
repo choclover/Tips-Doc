@@ -29,12 +29,12 @@ import com.studentpal.model.rules.Recurrence;
 import com.studentpal.model.rules.TimeRange;
 import com.studentpal.util.logger.Logger;
 
-public class DBaseManager implements AppHandler {
+public class DBaseManager /*implements AppHandler*/ {
   /*
    * Constants
    */
   private static final String TAG = "@@ DBaseManager";
-  private static final String DATABASE_ROOT = "/studentpal/db/";  //"/sdcard/studentpal/db/";
+//  private static final String DATABASE_ROOT = "/mnt/sdcard/studentpal/db/";;  //"/studentpal/db/"
   private static final String DATABASE_NAME = "studentpal.db";
   
   private static final String  TABLE_NAME_ACCESS_CATEGORIES  = "access_catories";
@@ -60,19 +60,12 @@ public class DBaseManager implements AppHandler {
   }
 
   private DBaseManager() {
+    initialize();
   }
 
-  public void launch() {
-    mDb = openDB();
-    if (mDb != null) {
-      createTables(mDb);
-      mDb.close();
-    }
-  }
-  
-  public void terminate() {
-    if (mDb != null) mDb.close();
-  }
+//  public void terminate() {
+//    if (mDb != null) mDb.close();
+//  }
 
   public void saveAccessCategoriesToDB(List<AccessCategory> catesList) {
     if (catesList==null || catesList.size()==0) return;
@@ -201,17 +194,47 @@ public class DBaseManager implements AppHandler {
   }
   
   //////////////////////////////////////////////////////////////////////////////
+  private String getDatabaseRoot() {
+    String result = "";
+    
+    int apiVer = android.os.Build.VERSION.SDK_INT;
+    if (apiVer <= android.os.Build.VERSION_CODES.ECLAIR_MR1) {
+      // for API 2.1 and earlier version
+      result = "/mnt/sdcard/studentpal/db/";
+    } else if (apiVer >= android.os.Build.VERSION_CODES.FROYO) {
+      // for API 2.2 and higher version
+      result = "/mnt/sdcard/studentpal/db/";
+    }
+    return result;
+  }
+  
+  private void initialize() {
+    mDb = openDB();
+    if (mDb != null) {
+      createTables(mDb);
+      mDb.close();
+    }
+  }
+  
+  private String getDbFilePath() {
+    String dbFolderPath = getDatabaseRoot();
+    dbFolderPath = getDatabaseRoot() + DATABASE_NAME;
+    
+    return dbFolderPath;
+  }
+  
   /*
    * 打开数据库
    */
   private  synchronized SQLiteDatabase openDB() {
     SQLiteDatabase db = null;
+    String DATABASE_ROOT = getDatabaseRoot();
     try {
       File file = new File(DATABASE_ROOT);
       if (!file.exists()) {
         file.mkdirs();
       }
-      db = SQLiteDatabase.openDatabase(DATABASE_ROOT + DATABASE_NAME,
+      db = SQLiteDatabase.openDatabase(getDbFilePath(),
           null, SQLiteDatabase.OPEN_READWRITE + SQLiteDatabase.CREATE_IF_NECESSARY);
     } catch (Exception e) {
       Logger.w(TAG, e.toString());
@@ -230,36 +253,34 @@ public class DBaseManager implements AppHandler {
     
     final String create_catory_table_sql = new StringBuffer().append(
       "CREATE TABLE IF NOT EXISTS ").append(TABLE_NAME_ACCESS_CATEGORIES).append(
-      "( " +TAGNAME_ACCESS_CATE_ID+ "    INTEGER PRIMARY KEY ").append(
-      ", " +TAGNAME_ACCESS_CATE_NAME+ "  TEXT").append(
+      "( " +TAGNAME_ACCESS_CATE_ID+   " INTEGER PRIMARY KEY ").append(
+      ", " +TAGNAME_ACCESS_CATE_NAME+ " TEXT").append(
       ");").toString();
     dbase.execSQL(create_catory_table_sql);
     
     final String create_rules_table_sql = new StringBuffer().append(
       "CREATE TABLE IF NOT EXISTS ").append(TABLE_NAME_ACCESS_RULES).append(
-      "(  _id           INTEGER PRIMARY KEY AUTOINCREMENT ").append(
-      ", " +TAGNAME_RULE_AUTH_TYPE+ "        INTEGER").append(
-      ", " +TAGNAME_RULE_REPEAT_TYPE+ "      INTEGER").append(
-      ", " +TAGNAME_RULE_REPEAT_VALUE+ "     INTEGER").append(
+      "(  _id INTEGER PRIMARY KEY AUTOINCREMENT ").append(
+      ", " +TAGNAME_RULE_AUTH_TYPE+        " INTEGER").append(
+      ", " +TAGNAME_RULE_REPEAT_TYPE+      " INTEGER").append(
+      ", " +TAGNAME_RULE_REPEAT_VALUE+     " INTEGER").append(
       ", " +TAGNAME_RULE_REPEAT_STARTTIME+ " TEXT").append(
       ", " +TAGNAME_RULE_REPEAT_ENDTIME+   " TEXT").append(
-      ", " +TAGNAME_ACCESS_CATE_ID+ "        INTEGER").append(
+      ", " +TAGNAME_ACCESS_CATE_ID+        " INTEGER").append(
       ", FOREIGN KEY(" +TAGNAME_ACCESS_CATE_ID+ ") REFERENCES " +TABLE_NAME_ACCESS_CATEGORIES+ "(" +TAGNAME_ACCESS_CATE_ID+ ")").append(
       ");").toString();
     dbase.execSQL(create_rules_table_sql);
     
     final String create_applications_table_sql = new StringBuffer().append(
         "CREATE TABLE IF NOT EXISTS ").append(TABLE_NAME_ACCESS_MANAGEDAPPS).append(
-        "( _id            INTEGER PRIMARY KEY AUTOINCREMENT ").append(
-        ", " +TAGNAME_APP_NAME+       "  TEXT").append(
-        ", " +TAGNAME_APP_PKGNAME+    "  TEXT").append(
-        ", " +TAGNAME_APP_CLASSNAME+  "  TEXT").append(
-        ", " +TAGNAME_ACCESS_CATE_ID+ "  INTEGER").append(
+        "( _id INTEGER PRIMARY KEY AUTOINCREMENT ").append(
+        ", " +TAGNAME_APP_NAME+       " TEXT").append(
+        ", " +TAGNAME_APP_PKGNAME+    " TEXT").append(
+        ", " +TAGNAME_APP_CLASSNAME+  " TEXT").append(
+        ", " +TAGNAME_ACCESS_CATE_ID+ " INTEGER").append(
         ", FOREIGN KEY(" +TAGNAME_ACCESS_CATE_ID+ ") REFERENCES " +TABLE_NAME_ACCESS_CATEGORIES+ "(" +TAGNAME_ACCESS_CATE_ID+ ")").append(
         ");").toString();
     dbase.execSQL(create_applications_table_sql);
-    
-    
   }
 }
 

@@ -22,7 +22,7 @@ public class LaunchScreen extends Activity {
    * Contants
    */
   private static final int RESULT_DEVICE_ADMIN_ENABLE = 1;
-  private static final boolean showUI = false;
+  private static final boolean showUI = true;
   
   /*
    * Member fields

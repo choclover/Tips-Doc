@@ -149,6 +149,8 @@ public class SetAppAccessCategoryRequest extends Request {
         aCate.set_id(cateObj.getInt(TAGNAME_ACCESS_CATE_ID));
         aCate.set_name(cateObj.getString(TAGNAME_ACCESS_CATE_NAME));
   
+        if (cateObj.has(TAGNAME_ACCESS_RULES) == false) continue;
+        
         JSONArray rulesAry = cateObj.getJSONArray(TAGNAME_ACCESS_RULES);
         for (int m=0; m<rulesAry.length(); m++) {
           JSONObject ruleObj = rulesAry.getJSONObject(m);

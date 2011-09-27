@@ -40,7 +40,7 @@ public class MainAppService extends Service {
   
   @Override
   public void onCreate() {
-    Logger.w(TAG, "onCreate()!");
+    Logger.i(TAG, "onCreate()!");
     super.onCreate();
     
     engine = ClientEngine.getInstance();
@@ -56,7 +56,7 @@ public class MainAppService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    Logger.w(TAG, "onStartCommand()!\tstartId: "+startId);
+    Logger.i(TAG, "onStartCommand()!\tstartId: "+startId);
 
     // No intent, tell the system not to restart us.
     if (intent == null) {
