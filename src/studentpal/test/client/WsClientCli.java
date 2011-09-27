@@ -173,8 +173,8 @@ public class WsClientCli {
     //Rule 1
     trsAry = new JSONArray();
     aTrObj = new JSONObject();
-    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "9:36");
-    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "9:47");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "8:23");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "8:25");
     trsAry.put(aTrObj);
     
     aTrObj = new JSONObject();
@@ -198,8 +198,8 @@ public class WsClientCli {
     //Rule 2
     trsAry = new JSONArray();
 
-    int hour = 14;
-    int min = 14;
+    int hour = 8;
+    int min = 22;
     aTrObj = new JSONObject();
     aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, ""+hour+":"+min);
     aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, ""+hour+":"+(min+1));
@@ -214,7 +214,8 @@ public class WsClientCli {
     aRuleObj.put(Message.TAGNAME_RULE_AUTH_TYPE, Message.ACCESS_TYPE_PERMITTED);
     aRuleObj.put(Message.TAGNAME_RULE_REPEAT_TYPE, Message.RECUR_TYPE_WEEKLY);
     int recureVal = 0;
-    recureVal |= (1 << (Calendar.THURSDAY-1) );
+    recureVal |= (1 << (Calendar.TUESDAY-1) );
+    recureVal |= (1 << (Calendar.WEDNESDAY-1) );
     recureVal |= (1 << (Calendar.FRIDAY-1) );
     aRuleObj.put(Message.TAGNAME_RULE_REPEAT_VALUE, recureVal);
     aRuleObj.put(Message.TAGNAME_ACCESS_TIMERANGES, trsAry);
@@ -279,6 +280,8 @@ public class WsClientCli {
   
   ///////////////////////////////////////////////////
   public static void main(String[] args) {
+    System.out.println("enter WsClientCli's main()!");
+    
     WsClientCli client = new WsClientCli();
     client.parse_args(args);
     client.execute();
