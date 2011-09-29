@@ -3,11 +3,21 @@ package com.studentpal.util;
 public class Utils {
 
   public static boolean isValidPhoneNumber(String phoneNum) {
-    return (phoneNum != null && phoneNum.length() == 11);
+    return (phoneNum != null && phoneNum.trim().length() == 11);
   }
 
+  //International Mobile Equipment Identification Number
+  public static boolean isValidPhoneIMEI(String phoneIMEI) {
+    return (phoneIMEI != null && phoneIMEI.trim().length() == 15);
+  }
+  
+  //International Mobile Subscriber Identification Number
+  public static boolean isValidPhoneIMSI(String phoneIMSI) {
+    return (phoneIMSI != null && phoneIMSI.trim().length() == 15);
+  }
+  
   public static boolean isEmptyString(String str) {
-    return (str!=null && str.trim().length()>0);
+    return (str==null || str.trim().length()==0);
   }
   
   public static final int byteArrayToInt(byte[] b) {

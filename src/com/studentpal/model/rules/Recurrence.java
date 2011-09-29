@@ -42,6 +42,10 @@ public abstract class Recurrence {
   public int getRecurType() {
     return recurType;
   }
+
+  public Object getRecurValue() {
+    return recurValue;
+  }
   
   /**
    * Inner class

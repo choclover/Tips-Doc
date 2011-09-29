@@ -14,9 +14,11 @@ import com.studentpal.util.logger.Logger;
 
 public class LoginRequest extends Request {
   private String phoneNum = null;
+  private String phoneImsi = null;
   
-  public LoginRequest(String phoneNum) {
+  public LoginRequest(String phoneNum, String phoneImsi) {
     this.phoneNum  = phoneNum;
+    this.phoneImsi = phoneImsi;
   }
   
   public String getName() {
@@ -27,6 +29,7 @@ public class LoginRequest extends Request {
     try {
       JSONObject argsObj = new JSONObject();
       argsObj.put(Event.TAGNAME_PHONE_NUM, this.phoneNum);
+      argsObj.put(Event.TAGNAME_PHONE_IMSI, this.phoneImsi);
       
       JSONObject reqObj = new JSONObject();
       reqObj.put(Event.TAGNAME_MSG_TYPE, Event.MESSAGE_HEADER_REQ);

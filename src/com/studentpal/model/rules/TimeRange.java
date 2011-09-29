@@ -6,7 +6,10 @@ import com.studentpal.util.logger.Logger;
 
 public class TimeRange {
   private static final String TAG = "@@ TimeRange";
-
+  
+  public static final int TIME_TYPE_START = 0x1;
+  public static final int TIME_TYPE_END = 0x2;
+  
   private ScheduledTime startTime, endTime;
 
   public TimeRange() {
@@ -18,20 +21,56 @@ public class TimeRange {
     setEndTime(endHour, endMin);
   }
   
-  public void setStartTime(int hour, int minute) throws STDException {
+  //@Deprecated
+  private void setStartTime(int hour, int minute) throws STDException {
     if (startTime == null) {
       startTime = new ScheduledTime(ResourceManager.RES_STR_START_TIME, true);
     }
     _setTime(startTime, hour, minute);
   }
 
-  public void setEndTime(int hour, int minute) throws STDException {
+  //@Deprecated
+  private void setEndTime(int hour, int minute) throws STDException {
     if (endTime == null) {
       endTime = new ScheduledTime(ResourceManager.RES_STR_END_TIME, false);
     }
     _setTime(endTime, hour, minute);
   }
-
+  
+  public void setTime(int timeType, int hour, int minute) throws STDException {
+    switch (timeType) {
+    case TIME_TYPE_START:
+      setStartTime(hour, minute);
+      break;
+      
+    case TIME_TYPE_END:
+      setEndTime(hour, minute);
+      break;
+      
+    default:
+      Logger.d(TAG, "Invalid Time type of "+timeType);
+      break;
+    }
+  }
+  
+  public void setTime(int timeType, String timeStr) throws STDException {
+    try {
+      int idx = timeStr.indexOf(':');
+      if (idx != -1) {
+        int hour = Integer.parseInt(timeStr.substring(0, idx));
+        int min  = Integer.parseInt(timeStr.substring(idx+1));
+        setTime(timeType, hour, min);
+        
+      } else {
+        throw new STDException("Invalid time range format!");
+      }
+      
+    } catch (Exception ex) {
+      Logger.w(TAG, ex.toString());
+      throw new STDException(ex.toString());
+    }
+  }
+  
   public ScheduledTime getStartTime() {
     return startTime;
   }

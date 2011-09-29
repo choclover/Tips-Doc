@@ -115,9 +115,12 @@ public class SetAppAccessCategoryRequest extends Request {
       for (int i = 0; i < appsAry.length(); i++) {
         JSONObject appObj = appsAry.getJSONObject(i);
         
-        String appName = appObj.getString(TAGNAME_APP_NAME);
-        String pkgName = appObj.getString(TAGNAME_APP_PKGNAME);
-        String className = appObj.getString(TAGNAME_APP_CLASSNAME);
+        String appName, pkgName, className = null;
+        appName = appObj.getString(TAGNAME_APP_NAME);
+        pkgName = appObj.getString(TAGNAME_APP_PKGNAME);
+        if (appObj.has(TAGNAME_APP_CLASSNAME)) {
+          className = appObj.getString(TAGNAME_APP_CLASSNAME);
+        }
         ClientAppInfo appInfo = new ClientAppInfo(appName, pkgName, className);
         
         int cateId = appObj.getInt(TAGNAME_ACCESS_CATE_ID);
@@ -149,43 +152,43 @@ public class SetAppAccessCategoryRequest extends Request {
         aCate.set_id(cateObj.getInt(TAGNAME_ACCESS_CATE_ID));
         aCate.set_name(cateObj.getString(TAGNAME_ACCESS_CATE_NAME));
   
-        if (cateObj.has(TAGNAME_ACCESS_RULES) == false) continue;
-        
-        JSONArray rulesAry = cateObj.getJSONArray(TAGNAME_ACCESS_RULES);
-        for (int m=0; m<rulesAry.length(); m++) {
-          JSONObject ruleObj = rulesAry.getJSONObject(m);
-          
-          AccessRule aRule = new AccessRule();
-          aRule.setAccessType(ruleObj.getInt(TAGNAME_RULE_AUTH_TYPE));
-          Recurrence recur = Recurrence.getInstance(ruleObj.getInt(TAGNAME_RULE_REPEAT_TYPE));
-          if (recur.getRecurType() != Recurrence.DAILY) {
-            recur.setRecurValue(ruleObj.getInt(TAGNAME_RULE_REPEAT_VALUE));
-          }
-          aRule.setRecurrence(recur);
-          
-          JSONArray timerangeAry = ruleObj.getJSONArray(TAGNAME_ACCESS_TIMERANGES);
-          for (int k=0; k<timerangeAry.length(); k++) {
-            JSONObject trObj = timerangeAry.getJSONObject(k);
-  
-            TimeRange tr = new TimeRange();
-            String time = trObj.getString(TAGNAME_RULE_REPEAT_STARTTIME);
-            int idx = time.indexOf(':');
-            int hour = Integer.parseInt(time.substring(0, idx));
-            int min  = Integer.parseInt(time.substring(idx+1));
-            tr.setStartTime(hour, min);
+        if (cateObj.has(TAGNAME_ACCESS_RULES) == true) {
+          JSONArray rulesAry = cateObj.getJSONArray(TAGNAME_ACCESS_RULES);
+          for (int m=0; m<rulesAry.length(); m++) {
+            JSONObject ruleObj = rulesAry.getJSONObject(m);
             
-            time = trObj.getString(TAGNAME_RULE_REPEAT_ENDTIME);
-            idx = time.indexOf(':');
-            hour = Integer.parseInt(time.substring(0, idx));
-            min  = Integer.parseInt(time.substring(idx+1));
-            tr.setEndTime(hour, min);
+            AccessRule aRule = new AccessRule();
+            aRule.setAccessType(ruleObj.getInt(TAGNAME_RULE_AUTH_TYPE));
+            Recurrence recur = Recurrence.getInstance(ruleObj.getInt(TAGNAME_RULE_REPEAT_TYPE));
+            if (recur.getRecurType() != Recurrence.DAILY) {
+              recur.setRecurValue(ruleObj.getInt(TAGNAME_RULE_REPEAT_VALUE));
+            }
+            aRule.setRecurrence(recur);
             
-            aRule.addTimeRange(tr);
-          }//for time_ranges
-          
-          aCate.addAccessRule(aRule);
-          
-        }//for rules
+            JSONArray timerangeAry = ruleObj.getJSONArray(TAGNAME_ACCESS_TIMERANGES);
+            for (int k=0; k<timerangeAry.length(); k++) {
+              JSONObject trObj = timerangeAry.getJSONObject(k);
+    
+              TimeRange tr = new TimeRange();
+              String time = trObj.getString(TAGNAME_RULE_REPEAT_STARTTIME);
+              int idx = time.indexOf(':');
+              int hour = Integer.parseInt(time.substring(0, idx));
+              int min  = Integer.parseInt(time.substring(idx+1));
+              tr.setTime(TimeRange.TIME_TYPE_START, hour, min);
+              
+              time = trObj.getString(TAGNAME_RULE_REPEAT_ENDTIME);
+              idx = time.indexOf(':');
+              hour = Integer.parseInt(time.substring(0, idx));
+              min  = Integer.parseInt(time.substring(idx+1));
+              tr.setTime(TimeRange.TIME_TYPE_END, hour, min);
+              
+              aRule.addTimeRange(tr);
+            }//for time_ranges
+            
+            aCate.addAccessRule(aRule);
+            
+          }//for rules
+        }
         
         intoMap.put(aCate.get_id(), aCate);
         

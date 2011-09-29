@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.studentpal.app.RuleScheduler;
 import com.studentpal.model.rules.AccessRule;
+import com.studentpal.model.rules.TimeRange;
 import com.studentpal.util.logger.Logger;
 
 public class AccessCategory {
@@ -128,6 +129,29 @@ public class AccessCategory {
 
   public void set_id(int id) {
     _id = id;
+  }
+  
+  public String toString() {
+    StringBuffer buff = new StringBuffer();
+    buff.append("\nCate ID: "+_id).append("\tCate Name: "+_name);
+    for (AccessRule rule : _rulesList) {
+      buff.append("\nRule auth type: " + rule.getAccessType())
+          .append("\nRule recur type: " + rule.getRecurrence().getName())
+          .append("\tRecur value: " + rule.getRecurrence().getRecurValue());
+      
+      for (TimeRange tr : rule.getTimeRangeList()) {
+        buff.append("\nStart Time: " + tr.getStartTime().toString())
+        .append("\tEnd Time: " +  tr.getEndTime().toString());
+      }
+    }
+    
+    for (ClientAppInfo appInfo : _managedAppsMap.keySet()) {
+      buff.append("\nManaged App: " + appInfo.getAppName())
+        .append(", "+ appInfo.getAppPkgname())
+        .append(", "+ appInfo.getAppClassname());
+    }
+    
+    return buff.toString();
   }
 
 }

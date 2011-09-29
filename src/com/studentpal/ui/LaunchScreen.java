@@ -7,12 +7,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.studentpal.R;
 import com.studentpal.app.MainAppService;
 import com.studentpal.app.receiver.MyDeviceAdminReceiver;
+import com.studentpal.engine.ClientEngine;
 import com.studentpal.util.ActivityUtil;
+import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
 
 public class LaunchScreen extends Activity {
@@ -45,7 +48,13 @@ public class LaunchScreen extends Activity {
           public void onClick(View view) {
             Logger.i(TAG, btnStart.getText()+" is clicked!");
             
-            startWatchingService();
+            EditText editSvrIP = (EditText) findViewById(R.id.editSvrIP);
+            String svrIP = editSvrIP.getEditableText().toString().trim();
+            if (Utils.isEmptyString(svrIP) == false) {
+              ClientEngine.getInstance().getIoHandler().setServerIP(svrIP);
+            }
+            
+            _startWatchingService();
             service_status.setText("SERVICE STARTED");
             
             btnStart.setClickable(false);
@@ -58,7 +67,7 @@ public class LaunchScreen extends Activity {
           public void onClick(View view) {
             Logger.i(TAG, btnStop.getText()+" is clicked!");
             
-            stopWatchingService();
+            _stopWatchingService();
             service_status.setText("STOPPED");
             
             btnStart.setClickable(true);
@@ -69,12 +78,12 @@ public class LaunchScreen extends Activity {
     } else {
       if (false == MainAppService
           .isServiceRunning(this, MainAppService.class.getName())) {
-        startWatchingService();
+        _startWatchingService();
       }
       finish();
     }
     
-    setAppDeviceAdmin(true);
+    _setAppDeviceAdmin(true);
   }
 
   @Override
@@ -99,20 +108,20 @@ public class LaunchScreen extends Activity {
   }
   
   //////////////////////////////////////////////////////////////////////////////
-  private void startWatchingService() {
+  private void _startWatchingService() {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
 //    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     i.putExtra("command", com.studentpal.app.MainAppService.CMD_START_WATCHING_APP);
     startService(i);
   }
   
-  private void stopWatchingService() {
+  private void _stopWatchingService() {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
 //    i.putExtra("command", com.studentpal.app.MainAppService.CMD_STOP_WATCHING_APP);
     stopService(i);
   }
   
-  private void setAppDeviceAdmin(boolean active) {
+  private void _setAppDeviceAdmin(boolean active) {
     ComponentName mDeviceAdminInst = new ComponentName(LaunchScreen.this,
         MyDeviceAdminReceiver.class);
     

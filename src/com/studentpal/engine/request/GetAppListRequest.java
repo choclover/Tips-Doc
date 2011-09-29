@@ -32,7 +32,7 @@ public class GetAppListRequest extends Request {
             app.put(Event.TAGNAME_APP_NAME, appInfo.getAppName());
             //app.put(Event.TAGNAME_APP_CLASSNAME, appInfo.getAppClassname());
             app.put(Event.TAGNAME_APP_PKGNAME, appInfo.getAppPkgname());
-            app.put(Event.TAGNAME_ACCESS_CATEGORY, 1);  //TODO
+            app.put(Event.TAGNAME_ACCESS_CATEGORY, 1);  //FIXME
             
             appAry.put(app);
           }

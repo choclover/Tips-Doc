@@ -18,6 +18,7 @@ import com.studentpal.engine.Event;
 import com.studentpal.engine.request.Request;
 import com.studentpal.model.codec.Codec;
 import com.studentpal.model.exception.STDException;
+import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
 
 import android.os.Handler;
@@ -42,6 +43,7 @@ public class IoHandler implements AppHandler {
   private BufferedInputStream bis = null;
   private BufferedOutputStream bos = null;
   //private boolean isLogin = false;  //TODO how to use this flag in client?
+  private static String serverIP = "";
   
   private InputConnectionThread inputConnThread  = null;
   private OutputConnectionThread outputConnThread  = null;
@@ -114,8 +116,14 @@ public class IoHandler implements AppHandler {
      * Do NOT use localhost/127.0.0.1 which is the phone itself 
      */
     // TODO read from config
-    String addr = "192.168.1.250";
-    //addr = "10.60.4.58";
+    String addr = "";
+    addr = "192.168.1.250";
+    addr = "10.60.4.58";
+    
+    //Read from Launcher Screen
+    if (Utils.isEmptyString(serverIP) == false) {
+      addr = serverIP;
+    }
     
     return addr;
   }
@@ -148,6 +156,10 @@ public class IoHandler implements AppHandler {
   
   public void handleResponseMessage(JSONObject msgObj) {
     //TODO
+  }
+  
+  public static void setServerIP(String ip) {
+    serverIP = ip;
   }
   
   //////////////////////////////////////////////////////////////////////////////
@@ -334,7 +346,7 @@ public class IoHandler implements AppHandler {
 
             String msgStr = new String(buffer, getEncoding());
             Logger.i(TAG, "AndrClient Got a message:\n" + msgStr);
-            if (msgStr==null || msgStr.trim().length()==0) {
+            if (Utils.isEmptyString(msgStr)) {
               continue;
             }
             

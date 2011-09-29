@@ -136,9 +136,29 @@ public class ClientEngine implements AppHandler {
     String result = "";
     if (this._teleManager != null) {
       result = this._teleManager.getLine1Number();
+//      if (Utils.isEmptyString(result)) {
+//        result = this._teleManager.getDeviceId();
+//      }
     }
     return result;
   }
+  
+  public String getPhoneIMEI() {
+    String result = "";
+    if (this._teleManager != null) {
+      result = this._teleManager.getDeviceId();
+    }
+    return result;
+  }
+  
+  public String getPhoneIMSI() {
+    String result = "";
+    if (this._teleManager != null) {
+      result = this._teleManager.getSubscriberId();
+    }
+    return result;
+  }
+  
 
   public Context getContext() {
     return _launcher;
@@ -237,12 +257,14 @@ public class ClientEngine implements AppHandler {
     Logger.i(TAG, "enter loginServer");
     
     String phoneNum = getPhoneNum();
-    if (! Utils.isValidPhoneNumber(phoneNum)) {
-      throw new STDException("Got invalid phone number of " + phoneNum
-          + ", unable to login!");
+    String imsiNum = getPhoneIMSI();
+    if (Utils.isValidPhoneNumber(phoneNum) == false && 
+        Utils.isValidPhoneIMSI(imsiNum) == false) {
+      throw new STDException("Unable to login, got invalid phone number of " + phoneNum
+          + ", invalid IMSI number of " + imsiNum);
     }
     
-    Request request = new LoginRequest(phoneNum);
+    Request request = new LoginRequest(phoneNum, imsiNum);
     msgHandler.sendRequest(request);
   }
 }

@@ -258,13 +258,15 @@ public class AccessController implements AppHandler {
     int nowHour = now.get(Calendar.HOUR_OF_DAY);
     int nowMin = now.get(Calendar.MINUTE);
     int nowSec = now.get(Calendar.SECOND);
-    Logger.i(TAG, "Now is: " + nowHour + ':' + nowMin + ':' + nowSec);
     
     int delaySec = ((start_h-nowHour)*60 + (start_m-nowMin))*60 + (start_s-nowSec);
     if (delaySec > 0) {
       engine.getMsgHandler().sendEmptyMessageDelayed(
         Event.SIGNAL_ACCESS_RESCHEDULE_DAILY, delaySec*1000);
     }
+    Logger.i(TAG, "Now is: " +nowHour+ ':' +nowMin+ ':' +nowSec+ 
+        ", scheduling DailyRescheduleTask in " +delaySec+ " seconds.");
+    
   }
   
   //////////////////////////////////////////////////////////////////////////////
@@ -283,6 +285,7 @@ public class AccessController implements AppHandler {
           Logger.w(TAG, "Category should NOT be NULL loaded from DB");
           continue;
         }
+        Logger.v(TAG, "Loaded Access Category: "+cate.toString());
         intoList.add(cate);
       }
       
@@ -396,18 +399,18 @@ public class AccessController implements AppHandler {
       TimeRange tr = null;
 
       tr = new TimeRange();
-      tr.setStartTime(9, 45);
-      tr.setEndTime(9, 47);
+      tr.setTime(TimeRange.TIME_TYPE_START, 9, 45);
+      tr.setTime(TimeRange.TIME_TYPE_END,   9, 47);
       aRule.addTimeRange(tr);
 
       tr = new TimeRange();
-      tr.setStartTime(12, 04);
-      tr.setEndTime(12, 05);
+      tr.setTime(TimeRange.TIME_TYPE_START, 12, 04);
+      tr.setTime(TimeRange.TIME_TYPE_END,   12, 05);
       aRule.addTimeRange(tr);
 
       tr = new TimeRange();
-      tr.setStartTime(11, 28);
-      tr.setEndTime(11, 30);
+      tr.setTime(TimeRange.TIME_TYPE_START, 11, 28);
+      tr.setTime(TimeRange.TIME_TYPE_END,   11, 30);
       aRule.addTimeRange(tr);
 
       aCate.addAccessRule(aRule);
@@ -424,8 +427,8 @@ public class AccessController implements AppHandler {
       aRule.setRecurrence(recur);
       
       tr = new TimeRange();
-      tr.setStartTime(15, 53);
-      tr.setEndTime(15, 54);
+      tr.setTime(TimeRange.TIME_TYPE_START, 15, 53);
+      tr.setTime(TimeRange.TIME_TYPE_END,   15, 54);
       aRule.addTimeRange(tr);
       
       aCate.addAccessRule(aRule);

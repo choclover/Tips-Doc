@@ -9,6 +9,7 @@ import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.request.Request;
 import com.studentpal.model.exception.STDException;
+import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
 
 public class MessageHandler extends android.os.Handler implements AppHandler {
@@ -62,7 +63,7 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
         
         } else if (req.isOutgoingReq() && req.isOutputContentReady()) {
           String replyStr = req.getOutputContent();
-          if (replyStr != null && replyStr.trim().length() > 0) {
+          if (Utils.isEmptyString(replyStr) == false) {
             this.ioHandler.sendMsgStr(replyStr);
           } else {
             Logger.d(TAG, "Outgoing reply is NULL or empty for request "+req.getName());
@@ -79,7 +80,7 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
       try {
         engine.loginServer();
       } catch (STDException e1) {
-        Logger.w(TAG, e1.toString());
+        Logger.w(TAG, e1.getMessage());
       }
       break;
       

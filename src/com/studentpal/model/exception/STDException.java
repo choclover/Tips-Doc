@@ -6,4 +6,9 @@ public class STDException extends Exception {
   public STDException(String desc) {
     this.desc = desc;
   }
+  
+  @Override
+  public String getMessage() {
+    return desc;
+  }
 }

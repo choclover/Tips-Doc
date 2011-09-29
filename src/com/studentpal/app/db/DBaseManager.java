@@ -19,8 +19,10 @@ import java.util.StringTokenizer;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 
 import com.studentpal.engine.AppHandler;
+import com.studentpal.engine.ClientEngine;
 import com.studentpal.model.AccessCategory;
 import com.studentpal.model.ClientAppInfo;
 import com.studentpal.model.exception.STDException;
@@ -34,10 +36,10 @@ public class DBaseManager /*implements AppHandler*/ {
    * Constants
    */
   private static final String TAG = "@@ DBaseManager";
-//  private static final String DATABASE_ROOT = "/mnt/sdcard/studentpal/db/";;  //"/studentpal/db/"
+//  private static final String DATABASE_ROOT = "/mnt/sdcard/studentpal/db/";
   private static final String DATABASE_NAME = "studentpal.db";
   
-  private static final String  TABLE_NAME_ACCESS_CATEGORIES  = "access_catories";
+  private static final String  TABLE_NAME_ACCESS_CATEGORIES  = "access_categories";
   private static final String  TABLE_NAME_ACCESS_RULES       = "access_rules";
   private static final String  TABLE_NAME_ACCESS_MANAGEDAPPS = "access_managedapps";
   
@@ -48,6 +50,7 @@ public class DBaseManager /*implements AppHandler*/ {
    */
   private static DBaseManager dataManager;
   private SQLiteDatabase mDb;
+  private File mDbFile;
 
   /*
    * 获取实例，应当在欢迎界面之后建立实例
@@ -63,10 +66,7 @@ public class DBaseManager /*implements AppHandler*/ {
     initialize();
   }
 
-//  public void terminate() {
-//    if (mDb != null) mDb.close();
-//  }
-
+  /////////////////////////////////////////////////////////////////////////////
   public void saveAccessCategoriesToDB(List<AccessCategory> catesList) {
     if (catesList==null || catesList.size()==0) return;
     Logger.i(TAG, "enter saveAccessCategoriesToDB()!");
@@ -76,14 +76,17 @@ public class DBaseManager /*implements AppHandler*/ {
     //clear old records first
     //String sqlStr = "DELETE FROM " + ACCESS_CATEGORY_TABLE_NAME;
     //mDb.execSQL(sqlStr);
-    mDb.delete(TABLE_NAME_ACCESS_CATEGORIES, null, null);
+    long res = -1;
+    res = mDb.delete(TABLE_NAME_ACCESS_CATEGORIES, "1", null);
+    res = mDb.delete(TABLE_NAME_ACCESS_RULES, "1", null);
+    res = mDb.delete(TABLE_NAME_ACCESS_MANAGEDAPPS, "1", null);
     
     ContentValues cv;
     for (AccessCategory aCate : catesList) {
       cv = new ContentValues();
       cv.put(TAGNAME_ACCESS_CATE_ID,    aCate.get_id());
       cv.put(TAGNAME_ACCESS_CATE_NAME,  aCate.get_name());
-      mDb.insert(TABLE_NAME_ACCESS_CATEGORIES, null, cv);
+      res = mDb.insert(TABLE_NAME_ACCESS_CATEGORIES, null, cv);
       
       //Insert access rules records
       for (AccessRule rule : aCate.getAccessRules()) {
@@ -102,7 +105,7 @@ public class DBaseManager /*implements AppHandler*/ {
         cv.put(TAGNAME_RULE_REPEAT_ENDTIME, endTimeStr);
         cv.put(TAGNAME_ACCESS_CATE_ID, aCate.get_id());
         
-        mDb.insert(TABLE_NAME_ACCESS_RULES, null, cv);
+        res = mDb.insert(TABLE_NAME_ACCESS_RULES, null, cv);
       }
       
       //Insert access managed apps records
@@ -113,7 +116,7 @@ public class DBaseManager /*implements AppHandler*/ {
         cv.put(TAGNAME_APP_CLASSNAME, appInfo.getAppClassname());
         cv.put(TAGNAME_ACCESS_CATE_ID, aCate.get_id());
 
-        mDb.insert(TABLE_NAME_ACCESS_MANAGEDAPPS, null, cv);
+        res = mDb.insert(TABLE_NAME_ACCESS_MANAGEDAPPS, null, cv);
       }
     }
     
@@ -141,29 +144,28 @@ public class DBaseManager /*implements AppHandler*/ {
         startIdx = 1;
         aRule.setAccessType(curRule.getInt(startIdx++));  //1
         Recurrence recur = Recurrence.getInstance(curRule.getInt(startIdx++));  //2
-        if (recur.getRecurType() != Recurrence.DAILY) {
+        if (recur.getRecurType() == Recurrence.DAILY) {
+          startIdx++;
+          recur.setRecurValue(0);
+        } else {
           recur.setRecurValue(curRule.getInt(startIdx++));  //3
         }
         aRule.setRecurrence(recur);
         
-        StringTokenizer startTokens = new StringTokenizer(curRule.getString(startIdx++),  //4
+        String timeStr = curRule.getString(startIdx++);
+        StringTokenizer startTokens = new StringTokenizer(timeStr,  //4
             TIME_LIST_DELIMETER);
-        StringTokenizer endTokens = new StringTokenizer(curRule.getString(startIdx++),  //5
+        timeStr = curRule.getString(startIdx++);
+        StringTokenizer endTokens = new StringTokenizer(timeStr,  //5
             TIME_LIST_DELIMETER);
         while (startTokens.hasMoreTokens()) {
           TimeRange tr = new TimeRange();
           
-          String time = startTokens.nextToken();
-          int idx = time.indexOf(':');
-          int hour = Integer.parseInt(time.substring(0, idx));
-          int min  = Integer.parseInt(time.substring(idx+1));
-          tr.setStartTime(hour, min);
+          timeStr = startTokens.nextToken();
+          tr.setTime(TimeRange.TIME_TYPE_START, timeStr);
           
-          time = endTokens.nextToken();
-          idx = time.indexOf(':');
-          hour = Integer.parseInt(time.substring(0, idx));
-          min  = Integer.parseInt(time.substring(idx+1));
-          tr.setEndTime(hour, min);
+          timeStr = endTokens.nextToken();
+          tr.setTime(TimeRange.TIME_TYPE_END, timeStr);
           
           aRule.addTimeRange(tr);
         }//for time_ranges
@@ -182,8 +184,11 @@ public class DBaseManager /*implements AppHandler*/ {
         String className = curApp.getString(startIdx++);  //3
         ClientAppInfo appInfo = new ClientAppInfo(appName, pkgName, className);
         aCate.addManagedApp(appInfo);
+        
       }//while curApp
       curApp.close();
+      
+      catesList.add(aCate);
       
     }//while curCate
     curCate.close();
@@ -197,18 +202,28 @@ public class DBaseManager /*implements AppHandler*/ {
   private String getDatabaseRoot() {
     String result = "";
     
-    int apiVer = android.os.Build.VERSION.SDK_INT;
-    if (apiVer <= android.os.Build.VERSION_CODES.ECLAIR_MR1) {
-      // for API 2.1 and earlier version
-      result = "/mnt/sdcard/studentpal/db/";
-    } else if (apiVer >= android.os.Build.VERSION_CODES.FROYO) {
-      // for API 2.2 and higher version
-      result = "/mnt/sdcard/studentpal/db/";
-    }
+//    int apiVer = android.os.Build.VERSION.SDK_INT;
+//    if (apiVer <= android.os.Build.VERSION_CODES.ECLAIR_MR1) {
+//      // for API 2.1 and earlier version
+//      result = "/sdcard/studentpal/db/";
+//    } else if (apiVer >= android.os.Build.VERSION_CODES.FROYO) {
+//      // for API 2.2 and higher version
+//      result = "/mnt/sdcard/studentpal/db/";
+//    }
+//    result = Environment.getDataDirectory().toString();
+  
+    result = getDbFilePath().getParent();
+    
     return result;
   }
   
   private void initialize() {
+    mDbFile = getDbFilePath();
+    File dbFolder = mDbFile.getParentFile();
+    if (!dbFolder.exists()) {
+      dbFolder.mkdirs();
+    }
+    
     mDb = openDB();
     if (mDb != null) {
       createTables(mDb);
@@ -216,26 +231,24 @@ public class DBaseManager /*implements AppHandler*/ {
     }
   }
   
-  private String getDbFilePath() {
-    String dbFolderPath = getDatabaseRoot();
-    dbFolderPath = getDatabaseRoot() + DATABASE_NAME;
+  private File getDbFilePath() {
+    File result = null;
+    result = ClientEngine.getInstance().getContext().
+                    getApplicationContext().getDatabasePath(DATABASE_NAME);
     
-    return dbFolderPath;
+    return result;
   }
   
   /*
    * 打开数据库
    */
-  private  synchronized SQLiteDatabase openDB() {
+  private synchronized SQLiteDatabase openDB() {
     SQLiteDatabase db = null;
-    String DATABASE_ROOT = getDatabaseRoot();
+    
     try {
-      File file = new File(DATABASE_ROOT);
-      if (!file.exists()) {
-        file.mkdirs();
-      }
-      db = SQLiteDatabase.openDatabase(getDbFilePath(),
+      db = SQLiteDatabase.openDatabase(this.mDbFile.getAbsolutePath(),
           null, SQLiteDatabase.OPEN_READWRITE + SQLiteDatabase.CREATE_IF_NECESSARY);
+
     } catch (Exception e) {
       Logger.w(TAG, e.toString());
     }

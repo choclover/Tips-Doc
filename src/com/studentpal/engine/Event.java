@@ -18,6 +18,8 @@ public class Event {
   public static final String TAGNAME_ARGUMENTS  = "args";
 
   public static final String TAGNAME_PHONE_NUM       = "phone_no";
+  public static final String TAGNAME_PHONE_IMSI      = "phone_imsi";
+  public static final String TAGNAME_PHONE_IMEI      = "phone_imei";
   public static final String TAGNAME_APPLICATIONS    = "applications";
   public static final String TAGNAME_APP_NAME        = "app_name";
   public static final String TAGNAME_APP_CLASSNAME   = "app_classname";
@@ -71,10 +73,10 @@ public class Event {
   public static final int ACCESS_TYPE_DENIED    = 0x01;
   public static final int ACCESS_TYPE_PERMITTED = 0x02;
 
-  public static final int SIGNAL_TYPE_REQACK = 101;
-  public static final int SIGNAL_TYPE_OUTSTREAM_READY = 110;
+  public static final int SIGNAL_TYPE_REQACK                     = 101;
+  public static final int SIGNAL_TYPE_OUTSTREAM_READY            = 110;
   public static final int SIGNAL_SHOW_ACCESS_DENIED_NOTIFICATION = 111;
-  public static final int SIGNAL_ACCESS_RESCHEDULE_DAILY = 112;
+  public static final int SIGNAL_ACCESS_RESCHEDULE_DAILY         = 112;
   
   
   private static final HashMap<Integer, String> ERRCODE_DESC_MAPPER 
