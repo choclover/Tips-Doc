@@ -26,7 +26,7 @@ public class WsClientCli {
    */
   private boolean bDebug = false;
   private String wsUrl = WsService.getWsUrl();
-  private String phoneNo;
+  private String mDeviceId;
   
   static String phone_number1 = "155";
   static String phone_number2 = "5521";
@@ -55,7 +55,7 @@ public class WsClientCli {
     pcWsService = new PhoneConnectorWsService();
     pcWsInst = pcWsService.getPhoneConnectorWsPort();
     
-    this.phoneNo = new StringBuffer().append(phone_number1).append(
+    this.mDeviceId = new StringBuffer().append(phone_number1).append(
         phone_number2).append(phone_number3).toString();
   }
   
@@ -67,7 +67,7 @@ public class WsClientCli {
     //next test client will use next phone number
     //phone_number3 = String.valueOf(Integer.parseInt(phone_number3)+1);
     
-    P(pcWsInst.getAppList(this.phoneNo));
+    P(pcWsInst.getAppList(this.mDeviceId));
   }
 
   public void wsSetAppAccessCategory() throws JSONException {
@@ -80,7 +80,7 @@ public class WsClientCli {
     rootObj.put(Message.TAGNAME_APPLICATIONS, appsObj);
     
     String parmStr = rootObj.toString();
-    P(pcWsInst.setAppAccessCategory(this.phoneNo, parmStr));
+    P(pcWsInst.setAppAccessCategory(this.mDeviceId, parmStr));
   }
   
   public void wsGetPhoneStatus() {
@@ -94,6 +94,11 @@ public class WsClientCli {
     for (String arg : args) {
       if (arg.equals("-debug")) {
         bDebug = true;
+      } else if (arg.equals("-phone")) {
+        this.mDeviceId = "460003093130698";  //Defy / ME525
+        
+      } else if (arg.equals("-emulator")) {
+        
       }
     }
   }
@@ -173,7 +178,7 @@ public class WsClientCli {
     //Rule 1
     trsAry = new JSONArray();
     aTrObj = new JSONObject();
-    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "8:23");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "8:00");
     aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "8:25");
     trsAry.put(aTrObj);
     
@@ -183,8 +188,8 @@ public class WsClientCli {
     trsAry.put(aTrObj);
     
     aTrObj = new JSONObject();
-    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "13:56");
-    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "13:57");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, "23:00");
+    aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, "23:59");
     trsAry.put(aTrObj);
     
     aRuleObj = new JSONObject();
@@ -199,7 +204,7 @@ public class WsClientCli {
     trsAry = new JSONArray();
 
     int hour = 8;
-    int min = 22;
+    int min = 30;
     aTrObj = new JSONObject();
     aTrObj.put(Message.TAGNAME_RULE_REPEAT_STARTTIME, ""+hour+":"+min);
     aTrObj.put(Message.TAGNAME_RULE_REPEAT_ENDTIME, ""+hour+":"+(min+1));
@@ -216,11 +221,11 @@ public class WsClientCli {
     int recureVal = 0;
     recureVal |= (1 << (Calendar.TUESDAY-1) );
     recureVal |= (1 << (Calendar.WEDNESDAY-1) );
-    recureVal |= (1 << (Calendar.FRIDAY-1) );
+    recureVal |= (1 << (Calendar.THURSDAY-1) );
     aRuleObj.put(Message.TAGNAME_RULE_REPEAT_VALUE, recureVal);
     aRuleObj.put(Message.TAGNAME_ACCESS_TIMERANGES, trsAry);
     
-    //rulesAry.put(aRuleObj);
+    rulesAry.put(aRuleObj);
     
     aCateObj = new JSONObject();
     aCateObj.put(Message.TAGNAME_ACCESS_CATE_ID, 101);
@@ -274,6 +279,20 @@ public class WsClientCli {
     anAppObj.put(Message.TAGNAME_APP_CLASSNAME, "com.android.browser.Browser");
     anAppObj.put(Message.TAGNAME_ACCESS_CATE_ID, cateId);
     appsObj.put(anAppObj);
+    
+    anAppObj = new JSONObject();
+    anAppObj.put(Message.TAGNAME_APP_NAME, "开心网");
+    anAppObj.put(Message.TAGNAME_APP_PKGNAME, "com.kaixin001.activity");
+//    anAppObj.put(Message.TAGNAME_APP_CLASSNAME, "com.kaixin001.activity");
+    anAppObj.put(Message.TAGNAME_ACCESS_CATE_ID, cateId);
+    appsObj.put(anAppObj);   
+    
+    anAppObj = new JSONObject();
+    anAppObj.put(Message.TAGNAME_APP_NAME, "植物大战僵尸");
+    anAppObj.put(Message.TAGNAME_APP_PKGNAME, "com.popcap.pvz");
+//    anAppObj.put(Message.TAGNAME_APP_CLASSNAME, "com.kaixin001.activity");
+    anAppObj.put(Message.TAGNAME_ACCESS_CATE_ID, cateId);
+    appsObj.put(anAppObj);     
     
     return appsObj;
   }

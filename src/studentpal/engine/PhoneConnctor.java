@@ -22,6 +22,7 @@ import studentpal.model.connection.PhoneConnection;
 import studentpal.model.message.Message;
 import studentpal.model.task.TaskDefinition;
 import studentpal.model.task.TaskFactory;
+import studentpal.util.Utils;
 
 public class PhoneConnctor extends IoHandlerAdapter {
   private final Logger logger = LoggerFactory.getLogger(PhoneConnctor.class);
@@ -111,10 +112,17 @@ public class PhoneConnctor extends IoHandlerAdapter {
     
     if (cmdType.equals(Message.TASKNAME_LOGIN)) {
       JSONObject argObj = request.getJSONObject(Message.TAGNAME_ARGUMENTS); 
-      String phoneNo    = argObj.getString(Message.TAGNAME_PHONE_NUM);
       
-      PhoneConnection pconn = new PhoneConnection(session, phoneNo);
-      ConnectionManager.addConnection(phoneNo, pconn);
+      String mDeviceId  = argObj.getString(Message.TAGNAME_PHONE_NUM);
+      if (Utils.isEmptyString(mDeviceId)) {
+        mDeviceId  = argObj.getString(Message.TAGNAME_PHONE_IMSI);
+      }
+      if (Utils.isEmptyString(mDeviceId)) {
+        mDeviceId  = argObj.getString(Message.TAGNAME_PHONE_IMEI);
+      }
+      
+      PhoneConnection pconn = new PhoneConnection(session, mDeviceId);
+      ConnectionManager.addConnection(mDeviceId, pconn);
       
       session.setAttribute(PhoneConnection.ATTR_TAGNAME, pconn);
       
