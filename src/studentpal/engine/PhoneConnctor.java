@@ -51,8 +51,7 @@ public class PhoneConnctor extends IoHandlerAdapter {
   public void exceptionCaught(IoSession session, Throwable cause)
       throws Exception {
 //    super.exceptionCaught(session, cause);
-    logger.warn(cause.toString());
-//    logger.warn("Caught an exception!");
+    logger.warn("** Caught an exception " + cause.toString());
     
     if (cause instanceof IOException) {
       session.close(true);
@@ -85,14 +84,10 @@ public class PhoneConnctor extends IoHandlerAdapter {
   
   private void handleResponse(IoSession session, JSONObject response) 
     throws JSONException {
-//    int errcode = response.getInt(Message.TAGNAME_ERR_CODE); 
-//    Object result = response.get(Message.TAGNAME_RESULT);
-//    Message msg = EvntPool.get();
-//    msg.setData(0, errcode, result);
-//    EvntQueue.put(msg);
-    
     /*
      * TODO: Will moved to MessageHandler.handleEvent()
+     * comments -- Will use NIO framework of MINA to handle response/request,
+     * instead of using single thread of MessageHandler to handle them. 
      */
     PhoneConnection pconn = 
       (PhoneConnection)session.getAttribute(PhoneConnection.ATTR_TAGNAME);

@@ -135,12 +135,18 @@ public abstract class TaskDefinition {
     
     try {
       JSONObject replyObj = new JSONObject();
-      int errCode = raw_response.getInt(TAGNAME_ERR_CODE);
+      int errCode = ERRCODE_NOERROR;
+      if (raw_response.has(TAGNAME_ERR_CODE)) {
+        errCode = raw_response.getInt(TAGNAME_ERR_CODE);
+      } else {
+        errCode = ERRCODE_RESP_MSG_FORMAT_ERR;
+      }
+      
       if (errCode == ERRCODE_NOERROR) {
         replyObj.put(TAGNAME_RESULT, "SUCCESS");
       } else {
         replyObj.put(TAGNAME_RESULT, "FAIL");
-        replyObj.put(TAGNAME_ERR_CODE, raw_response.getInt(TAGNAME_ERR_CODE));
+        replyObj.put(TAGNAME_ERR_CODE, errCode);
       }
       
       //populate the response body for each type of task

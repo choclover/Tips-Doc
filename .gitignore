@@ -5,6 +5,7 @@ bin/*
 .settings/*
 .svn
 .svn/*
+StudentPalSvr.jar
 build/*
 WebContent/WEB-INF/lib
 lib/*

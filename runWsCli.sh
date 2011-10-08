@@ -8,6 +8,6 @@ CP_VAR=./bin:./build/classes:/media/Tools/apache-mina-2.0.3/dist/mina-core-2.0.3
 echo "Classpath is:"
 echo $CP_VAR
 
-java -cp $CP_VAR      studentpal.test.client.WsClientCli  %1
+java -cp $CP_VAR      studentpal.test.client.WsClientCli  %1 %2 %3
 
 

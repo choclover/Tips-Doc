@@ -27,7 +27,7 @@ public class ServerEngine {
   public static ServerEngine getInstance() {
     if (engineInst == null) {
       engineInst = new ServerEngine();
-      msgHandler = new MessageHandler(engineInst);
+      //msgHandler = new MessageHandler(engineInst);
     }
     return engineInst;
   }

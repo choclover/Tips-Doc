@@ -13,7 +13,7 @@ public class ConnectionManager {
   private static HashMap<String, Object> phoneConnMap = new HashMap<String, Object>();
   
   public static synchronized void addConnection(String phoneNo, PhoneConnection pconn) {
-    logger.info("Adding Connection for mobileNo: "+phoneNo);
+    logger.info("Adding Connection for Device ID: "+phoneNo);
     
     if (phoneConnMap.containsKey(phoneNo)) {
       phoneConnMap.remove(phoneNo);

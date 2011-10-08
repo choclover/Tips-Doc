@@ -12,8 +12,8 @@ public class MessageHandler implements Runnable {
   private boolean stopped = false;
   private ServerEngine engine;
   
-  public MessageHandler(ServerEngine coreapp) {
-    this.engine = coreapp;
+  public MessageHandler(ServerEngine engine) {
+    this.engine = engine;
     this.stopped = false;
     
     Thread handler = new Thread(this);
@@ -31,7 +31,6 @@ public class MessageHandler implements Runnable {
           } catch (Exception exp) {
             exp.printStackTrace();
           }
-          EvntPool.put(evnt);
         }
         
         Thread.sleep(100);
