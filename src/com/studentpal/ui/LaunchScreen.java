@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import com.studentpal.R;
 import com.studentpal.app.MainAppService;
+import com.studentpal.app.io.IoHandler;
 import com.studentpal.app.receiver.MyDeviceAdminReceiver;
-import com.studentpal.engine.ClientEngine;
 import com.studentpal.util.ActivityUtil;
 import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
@@ -38,58 +38,58 @@ public class LaunchScreen extends Activity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
+
     if (showUI) {
       setContentView(R.layout.main);
-      service_status =(TextView) findViewById(R.id.service_status);
-      
+      service_status = (TextView) findViewById(R.id.service_status);
+
       btnStart = (Button) findViewById(R.id.btnStart);
       btnStart.setOnClickListener(new View.OnClickListener() {
-          public void onClick(View view) {
-            Logger.i(TAG, btnStart.getText()+" is clicked!");
-            
-            EditText editSvrIP = (EditText) findViewById(R.id.editSvrIP);
-            String svrIP = editSvrIP.getEditableText().toString().trim();
-            if (Utils.isEmptyString(svrIP) == false) {
-              ClientEngine.getInstance().getIoHandler().setServerIP(svrIP);
-            }
-            
-            _startWatchingService();
-            service_status.setText("SERVICE STARTED");
-            
-            btnStart.setClickable(false);
-            btnStop.setClickable(true);
+        public void onClick(View view) {
+          Logger.i(TAG, btnStart.getText() + " is clicked!");
+
+          EditText editSvrIP = (EditText) findViewById(R.id.editSvrIP);
+          String svrIP = editSvrIP.getEditableText().toString().trim();
+          if (Utils.isEmptyString(svrIP) == false) {
+            // ClientEngine.getInstance().getIoHandler().setServerIP(svrIP);
+            IoHandler.setServerIP(svrIP);
           }
+
+          _startWatchingService();
+          service_status.setText("SERVICE STARTED");
+
+          btnStart.setClickable(false);
+          btnStop.setClickable(true);
+        }
       });
-      
+
       btnStop = (Button) findViewById(R.id.btnStop);
       btnStop.setOnClickListener(new View.OnClickListener() {
-          public void onClick(View view) {
-            Logger.i(TAG, btnStop.getText()+" is clicked!");
-            
-            _stopWatchingService();
-            service_status.setText("STOPPED");
-            
-            btnStart.setClickable(true);
-            btnStop.setClickable(false);
-          }
+        public void onClick(View view) {
+          Logger.i(TAG, btnStop.getText() + " is clicked!");
+
+          _stopWatchingService();
+          service_status.setText("STOPPED");
+
+          btnStart.setClickable(true);
+          btnStop.setClickable(false);
+        }
       });
-      
+
     } else {
-      if (false == MainAppService
-          .isServiceRunning(this, MainAppService.class.getName())) {
+      if (false == MainAppService.isServiceRunning(this,
+          MainAppService.class.getName())) {
         _startWatchingService();
       }
       finish();
     }
-    
+
     _setAppDeviceAdmin(true);
   }
 
   @Override
   public void onBackPressed() {
-    finish();
-    ActivityUtil.exitApp();
+    ActivityUtil.showQuitAppDialog(this);
   }
   
   @Override

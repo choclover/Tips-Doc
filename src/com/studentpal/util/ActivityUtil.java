@@ -1,11 +1,14 @@
 ﻿package com.studentpal.util;
 
+import com.studentpal.app.ResourceManager;
 import com.studentpal.util.logger.Logger;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -139,6 +142,20 @@ public class ActivityUtil {
     localToast.show();
   }
 
+  public static void showQuitAppDialog(final Activity parent) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(parent);
+    builder.setTitle(ResourceManager.RES_STR_QUITAPP).setMessage(
+        ResourceManager.RES_STR_QUITAPP);
+    builder.setPositiveButton(ResourceManager.RES_STR_OK,
+        new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int whichButton) {
+            parent.finish();
+            exitApp();
+          }
+        }).setNegativeButton(ResourceManager.RES_STR_CANCEL, null);
+
+    builder.create().show();
+  }
   //////////////////////////////////////////////////////////////////////////////
   public static void exitApp() {
     int pid = android.os.Process.myPid();

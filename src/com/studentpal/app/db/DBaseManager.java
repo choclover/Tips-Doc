@@ -14,14 +14,16 @@ import static com.studentpal.engine.Event.TAGNAME_RULE_REPEAT_VALUE;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.Environment;
 
-import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.model.AccessCategory;
 import com.studentpal.model.ClientAppInfo;
@@ -71,129 +73,149 @@ public class DBaseManager /*implements AppHandler*/ {
     if (catesList==null || catesList.size()==0) return;
     Logger.i(TAG, "enter saveAccessCategoriesToDB()!");
     
-    mDb = openDB();
-    
-    //clear old records first
-    //String sqlStr = "DELETE FROM " + ACCESS_CATEGORY_TABLE_NAME;
-    //mDb.execSQL(sqlStr);
-    long res = -1;
-    res = mDb.delete(TABLE_NAME_ACCESS_CATEGORIES, "1", null);
-    res = mDb.delete(TABLE_NAME_ACCESS_RULES, "1", null);
-    res = mDb.delete(TABLE_NAME_ACCESS_MANAGEDAPPS, "1", null);
-    
-    ContentValues cv;
-    for (AccessCategory aCate : catesList) {
-      cv = new ContentValues();
-      cv.put(TAGNAME_ACCESS_CATE_ID,    aCate.get_id());
-      cv.put(TAGNAME_ACCESS_CATE_NAME,  aCate.get_name());
-      res = mDb.insert(TABLE_NAME_ACCESS_CATEGORIES, null, cv);
+    try {
+      mDb = openDB();
       
-      //Insert access rules records
-      for (AccessRule rule : aCate.getAccessRules()) {
+      //clear old records first
+      //String sqlStr = "DELETE FROM " + ACCESS_CATEGORY_TABLE_NAME;
+      //mDb.execSQL(sqlStr);
+      long res = -1;
+      res = mDb.delete(TABLE_NAME_ACCESS_CATEGORIES, "1", null);
+      res = mDb.delete(TABLE_NAME_ACCESS_RULES, "1", null);
+      res = mDb.delete(TABLE_NAME_ACCESS_MANAGEDAPPS, "1", null);
+      
+      ContentValues cv;
+      for (AccessCategory aCate : catesList) {
         cv = new ContentValues();
-        cv.put(TAGNAME_RULE_AUTH_TYPE, rule.getAccessType());
-        cv.put(TAGNAME_RULE_REPEAT_TYPE, rule.getRecurType());
-        cv.put(TAGNAME_RULE_REPEAT_VALUE, rule.getRecurrence().toString());
+        cv.put(TAGNAME_ACCESS_CATE_ID,    aCate.get_id());
+        cv.put(TAGNAME_ACCESS_CATE_NAME,  aCate.get_name());
+        res = mDb.insert(TABLE_NAME_ACCESS_CATEGORIES, null, cv);
         
-        String startTimeStr = "";
-        String endTimeStr = "";
-        for (TimeRange tr : rule.getTimeRangeList()) {
-          startTimeStr += tr.getStartTime().toString() + TIME_LIST_DELIMETER;
-          endTimeStr += tr.getEndTime().toString() + TIME_LIST_DELIMETER;
+        //Insert access rules records
+        List<AccessRule> cateRules = aCate.getAccessRules();
+        if (cateRules!=null && cateRules.size()>0) {
+          for (AccessRule rule : cateRules) {
+            cv = new ContentValues();
+            cv.put(TAGNAME_RULE_AUTH_TYPE, rule.getAccessType());
+            cv.put(TAGNAME_RULE_REPEAT_TYPE, rule.getRecurType());
+            cv.put(TAGNAME_RULE_REPEAT_VALUE, rule.getRecurrence().toString());
+            
+            String startTimeStr = "";
+            String endTimeStr = "";
+            for (TimeRange tr : rule.getTimeRangeList()) {
+              startTimeStr += tr.getStartTime().toString() + TIME_LIST_DELIMETER;
+              endTimeStr += tr.getEndTime().toString() + TIME_LIST_DELIMETER;
+            }
+            cv.put(TAGNAME_RULE_REPEAT_STARTTIME, startTimeStr);
+            cv.put(TAGNAME_RULE_REPEAT_ENDTIME, endTimeStr);
+            cv.put(TAGNAME_ACCESS_CATE_ID, aCate.get_id());
+            
+            res = mDb.insert(TABLE_NAME_ACCESS_RULES, null, cv);
+          }
         }
-        cv.put(TAGNAME_RULE_REPEAT_STARTTIME, startTimeStr);
-        cv.put(TAGNAME_RULE_REPEAT_ENDTIME, endTimeStr);
-        cv.put(TAGNAME_ACCESS_CATE_ID, aCate.get_id());
         
-        res = mDb.insert(TABLE_NAME_ACCESS_RULES, null, cv);
-      }
-      
-      //Insert access managed apps records
-      for (ClientAppInfo appInfo : aCate.getManagedApps().keySet()) {
-        cv = new ContentValues();
-        cv.put(TAGNAME_APP_NAME,      appInfo.getAppName());
-        cv.put(TAGNAME_APP_PKGNAME,   appInfo.getAppPkgname());
-        cv.put(TAGNAME_APP_CLASSNAME, appInfo.getAppClassname());
-        cv.put(TAGNAME_ACCESS_CATE_ID, aCate.get_id());
-
-        res = mDb.insert(TABLE_NAME_ACCESS_MANAGEDAPPS, null, cv);
-      }
-    }
+        //Insert access managed apps records
+        Set<ClientAppInfo> managedApps = aCate.getManagedApps().keySet();
+        if (managedApps!=null && managedApps.size()>0) {
+          for (ClientAppInfo appInfo : managedApps) {
+            cv = new ContentValues();
+            cv.put(TAGNAME_APP_NAME,      appInfo.getAppName());
+            cv.put(TAGNAME_APP_PKGNAME,   appInfo.getAppPkgname());
+            cv.put(TAGNAME_APP_CLASSNAME, appInfo.getAppClassname());
+            cv.put(TAGNAME_ACCESS_CATE_ID, aCate.get_id());
     
-    mDb.close();
+            res = mDb.insert(TABLE_NAME_ACCESS_MANAGEDAPPS, null, cv);
+          }
+        }
+      } 
+      
+    } catch (SQLiteException ex) {
+      Logger.w(TAG, ex.toString());
+      rebuildTables(mDb);
+    } finally {
+      mDb.close();
+    }
   }
   
   public List<AccessCategory> loadAccessCategoriesFromDB() throws STDException {
     List<AccessCategory> catesList = new ArrayList<AccessCategory>();
-    mDb = openDB();
-
-    Cursor curCate = mDb.query(TABLE_NAME_ACCESS_CATEGORIES, null, null, null, null, null, null);
-    while (curCate.moveToNext()) {
-      AccessCategory aCate = new AccessCategory();
-      
-      int startIdx = 0;
-      int cate_id = curCate.getInt(startIdx++);  //0
-      aCate.set_id(cate_id);
-      aCate.set_name(curCate.getString(startIdx++));  //1
-
-      Cursor curRule = mDb.query(TABLE_NAME_ACCESS_RULES, null,
-          TAGNAME_ACCESS_CATE_ID + "=" + aCate.get_id(), null, null, null, null);
-      while (curRule.moveToNext()) {
-        AccessRule aRule = new AccessRule();
-        
-        startIdx = 1;
-        aRule.setAccessType(curRule.getInt(startIdx++));  //1
-        Recurrence recur = Recurrence.getInstance(curRule.getInt(startIdx++));  //2
-        if (recur.getRecurType() == Recurrence.DAILY) {
-          startIdx++;
-          recur.setRecurValue(0);
-        } else {
-          recur.setRecurValue(curRule.getInt(startIdx++));  //3
-        }
-        aRule.setRecurrence(recur);
-        
-        String timeStr = curRule.getString(startIdx++);
-        StringTokenizer startTokens = new StringTokenizer(timeStr,  //4
-            TIME_LIST_DELIMETER);
-        timeStr = curRule.getString(startIdx++);
-        StringTokenizer endTokens = new StringTokenizer(timeStr,  //5
-            TIME_LIST_DELIMETER);
-        while (startTokens.hasMoreTokens()) {
-          TimeRange tr = new TimeRange();
-          
-          timeStr = startTokens.nextToken();
-          tr.setTime(TimeRange.TIME_TYPE_START, timeStr);
-          
-          timeStr = endTokens.nextToken();
-          tr.setTime(TimeRange.TIME_TYPE_END, timeStr);
-          
-          aRule.addTimeRange(tr);
-        }//for time_ranges
-        
-        aCate.addAccessRule(aRule);
-        
-      }//while curRule
-      curRule.close();
-      
-      Cursor curApp = mDb.query(TABLE_NAME_ACCESS_MANAGEDAPPS, null,
-          TAGNAME_ACCESS_CATE_ID + "=" + aCate.get_id(), null, null, null, null);
-      while (curApp.moveToNext()) {
-        startIdx = 1;
-        String appName = curApp.getString(startIdx++);    //1
-        String pkgName = curApp.getString(startIdx++);    //2
-        String className = curApp.getString(startIdx++);  //3
-        ClientAppInfo appInfo = new ClientAppInfo(appName, pkgName, className);
-        aCate.addManagedApp(appInfo);
-        
-      }//while curApp
-      curApp.close();
-      
-      catesList.add(aCate);
-      
-    }//while curCate
-    curCate.close();
+    Logger.i(TAG, "enter loadAccessCategoriesFromDB()!");
     
-    mDb.close();
+    try {
+      mDb = openDB();
+  
+      Cursor curCate = mDb.query(TABLE_NAME_ACCESS_CATEGORIES, null, null, null, null, null, null);
+      while (curCate.moveToNext()) {
+        AccessCategory aCate = new AccessCategory();
+        
+        int startIdx = 0;
+        int cate_id = curCate.getInt(startIdx++);  //0
+        aCate.set_id(cate_id);
+        aCate.set_name(curCate.getString(startIdx++));  //1
+  
+        Cursor curRule = mDb.query(TABLE_NAME_ACCESS_RULES, null,
+            TAGNAME_ACCESS_CATE_ID + "=" + aCate.get_id(), null, null, null, null);
+        while (curRule.moveToNext()) {
+          AccessRule aRule = new AccessRule();
+          
+          startIdx = 1;
+          aRule.setAccessType(curRule.getInt(startIdx++));  //1
+          Recurrence recur = Recurrence.getInstance(curRule.getInt(startIdx++));  //2
+          if (recur.getRecurType() == Recurrence.DAILY) {
+            startIdx++;
+            recur.setRecurValue(0);
+          } else {
+            recur.setRecurValue(curRule.getInt(startIdx++));  //3
+          }
+          aRule.setRecurrence(recur);
+          
+          String timeStr = curRule.getString(startIdx++);
+          StringTokenizer startTokens = new StringTokenizer(timeStr,  //4
+              TIME_LIST_DELIMETER);
+          timeStr = curRule.getString(startIdx++);
+          StringTokenizer endTokens = new StringTokenizer(timeStr,  //5
+              TIME_LIST_DELIMETER);
+          while (startTokens.hasMoreTokens()) {
+            TimeRange tr = new TimeRange();
+            
+            timeStr = startTokens.nextToken();
+            tr.setTime(TimeRange.TIME_TYPE_START, timeStr);
+            
+            timeStr = endTokens.nextToken();
+            tr.setTime(TimeRange.TIME_TYPE_END, timeStr);
+            
+            aRule.addTimeRange(tr);
+          }//for time_ranges
+          
+          aCate.addAccessRule(aRule);
+          
+        }//while curRule
+        curRule.close();
+        
+        Cursor curApp = mDb.query(TABLE_NAME_ACCESS_MANAGEDAPPS, null,
+            TAGNAME_ACCESS_CATE_ID + "=" + aCate.get_id(), null, null, null, null);
+        while (curApp.moveToNext()) {
+          startIdx = 1;
+          String appName = curApp.getString(startIdx++);    //1
+          String pkgName = curApp.getString(startIdx++);    //2
+          String className = curApp.getString(startIdx++);  //3
+          ClientAppInfo appInfo = new ClientAppInfo(appName, pkgName, className);
+          aCate.addManagedApp(appInfo);
+          
+        }//while curApp
+        curApp.close();
+        
+        catesList.add(aCate);
+        
+      }//while curCate
+      curCate.close();
+      
+    } catch (SQLiteException ex) {
+      Logger.w(TAG, ex.toString());
+      rebuildTables(mDb);
+    } finally {
+      mDb.close();
+    }
     
     return catesList;
   }
@@ -249,7 +271,7 @@ public class DBaseManager /*implements AppHandler*/ {
       db = SQLiteDatabase.openDatabase(this.mDbFile.getAbsolutePath(),
           null, SQLiteDatabase.OPEN_READWRITE + SQLiteDatabase.CREATE_IF_NECESSARY);
 
-    } catch (Exception e) {
+    } catch (SQLiteException e) {
       Logger.w(TAG, e.toString());
     }
     return db;
@@ -294,6 +316,25 @@ public class DBaseManager /*implements AppHandler*/ {
         ", FOREIGN KEY(" +TAGNAME_ACCESS_CATE_ID+ ") REFERENCES " +TABLE_NAME_ACCESS_CATEGORIES+ "(" +TAGNAME_ACCESS_CATE_ID+ ")").append(
         ");").toString();
     dbase.execSQL(create_applications_table_sql);
+  }
+  
+  private void rebuildTables(SQLiteDatabase dbase) {
+    if (dbase == null || dbase.isOpen()==false) {
+      Logger.w(TAG, "DBASE is NULL or NOT open!");
+      return;
+    }
+    
+    String[] table_name_ary = {
+        TABLE_NAME_ACCESS_CATEGORIES, 
+        TABLE_NAME_ACCESS_RULES, 
+        TABLE_NAME_ACCESS_MANAGEDAPPS,
+    };
+    for (int i=0; i<table_name_ary.length; i++) {
+      String drop_table_sql = "DROP TABLE " +table_name_ary[i]+ " ;";
+      dbase.execSQL(drop_table_sql);
+    }
+    
+    createTables(dbase);
   }
 }
 

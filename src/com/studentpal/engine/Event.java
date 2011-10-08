@@ -3,7 +3,7 @@ package com.studentpal.engine;
 import java.util.HashMap;
 
 public class Event {
-  private final static String TAG = "Engine.Event";
+  private static final String TAG = "Engine.Event";
 
   public static final String MESSAGE_HEADER_ACK     = "A";
   public static final String MESSAGE_HEADER_REQ     = "R";
@@ -21,6 +21,7 @@ public class Event {
   public static final String TAGNAME_PHONE_IMSI      = "phone_imsi";
   public static final String TAGNAME_PHONE_IMEI      = "phone_imei";
   public static final String TAGNAME_APPLICATIONS    = "applications";
+  public static final String TAGNAME_APP               = "application";
   public static final String TAGNAME_APP_NAME        = "app_name";
   public static final String TAGNAME_APP_CLASSNAME   = "app_classname";
   public static final String TAGNAME_APP_PKGNAME     = "app_pkgname";
@@ -31,23 +32,25 @@ public class Event {
   public static final String TAGNAME_ACCESS_CATE_NAME  = "cate_name";
   
   public static final String TAGNAME_ACCESS_RULES      = "access_rules";
+  public static final String TAGNAME_ACCESS_RULE       = "access_rule";
   public static final String TAGNAME_RULE_AUTH_TYPE    = "auth_type";
   public static final String TAGNAME_RULE_REPEAT_TYPE  = "repeat_type";
   public static final String TAGNAME_RULE_REPEAT_VALUE = "repeat_value";
   public static final String TAGNAME_ACCESS_TIMERANGES = "time_ranges";
-  public static final String TAGNAME_RULE_REPEAT_STARTTIME  = "starttime";
-  public static final String TAGNAME_RULE_REPEAT_ENDTIME    = "endtime";
+  public static final String TAGNAME_ACCESS_TIMERANGE  = "time_range";
+  public static final String TAGNAME_RULE_REPEAT_STARTTIME  = "start_time";
+  public static final String TAGNAME_RULE_REPEAT_ENDTIME    = "end_time";
   
   /*
    * TASK constants
    */
-  public final static String TASKNAME_Generic     = "Generic";
-  public final static String TASKNAME_GetAppList  = "GetAppList";
-  public final static String TASKNAME_SetAppAccessCategory = "SetAppAccessCategory";
-  //public final static String TASKNAME_SetAccessCategories  = "SetAccessCategories";
+  public static final String TASKNAME_Generic     = "Generic";
+  public static final String TASKNAME_GetAppList  = "GetAppList";
+  public static final String TASKNAME_SetAppAccessCategory = "SetAppAccessCategory";
+  //public static final String TASKNAME_SetAccessCategories  = "SetAccessCategories";
   /* Tasks from Phone */
-  public final static String TASKNAME_LOGIN   = "LOGIN";
-  public final static String TASKNAME_LOGOUT  = "LOGOUT";
+  public static final String TASKNAME_LOGIN   = "LOGIN";
+  public static final String TASKNAME_LOGOUT  = "LOGOUT";
   
   /*
    * Error code constants 
@@ -57,6 +60,7 @@ public class Event {
   public static final int ERRCODE_CLIENT_CONN_LOST          = 200;
   public static final int ERRCODE_SERVER_CONN_LOST          = 300;
   public static final int ERRCODE_MSG_FORMAT_ERR            = 400;
+  public static final int ERRCODE_RESP_MSG_FORMAT_ERR       = 401;
   public static final int ERRCODE_SERVER_INTERNAL_ERR       = 500;
 
   /*
@@ -65,13 +69,19 @@ public class Event {
   public static final int MSG_ID_INVALID = -1;
   public static final int MSG_ID_NOTUSED = 0;
 
-  public final static int RECUR_TYPE_DAILY    = 0x01;
-  public final static int RECUR_TYPE_WEEKLY   = 0x02;
-  public final static int RECUR_TYPE_MONTHLY  = 0x03;
-  public final static int RECUR_TYPE_YEARLY   = 0x04;
+  public static final int RECUR_TYPE_DAILY    = 0x01;
+  public static final int RECUR_TYPE_WEEKLY   = 0x02;
+  public static final int RECUR_TYPE_MONTHLY  = 0x03;
+  public static final int RECUR_TYPE_YEARLY   = 0x04;
+  public static final String TXT_RECUR_TYPE_DAILY    = "daily";
+  public static final String TXT_RECUR_TYPE_WEEKLY   = "weekly";
+  public static final String TXT_RECUR_TYPE_MONTHLY  = "monthly";
+  public static final String TXT_RECUR_TYPE_YEARLY   = "yearly";
   
   public static final int ACCESS_TYPE_DENIED    = 0x01;
   public static final int ACCESS_TYPE_PERMITTED = 0x02;
+  public static final String TXT_ACCESS_TYPE_DENIED    = "access_denied";
+  public static final String TXT_ACCESS_TYPE_PERMITTED = "access_permitted";
 
   public static final int SIGNAL_TYPE_REQACK                     = 101;
   public static final int SIGNAL_TYPE_OUTSTREAM_READY            = 110;
