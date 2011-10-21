@@ -3,7 +3,7 @@ package com.studentpal.engine.request;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.studentpal.app.MessageHandler;
+import com.studentpal.app.handler.MessageHandler;
 import com.studentpal.engine.Event;
 
 

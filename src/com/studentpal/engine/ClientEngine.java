@@ -14,11 +14,12 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.telephony.TelephonyManager;
 
-import com.studentpal.app.AccessController;
-import com.studentpal.app.MessageHandler;
 import com.studentpal.app.ResourceManager;
 import com.studentpal.app.db.DBaseManager;
-import com.studentpal.app.io.IoHandler;
+import com.studentpal.app.handler.AccessController;
+import com.studentpal.app.handler.DaemonHandler;
+import com.studentpal.app.handler.IoHandler;
+import com.studentpal.app.handler.MessageHandler;
 import com.studentpal.app.receiver.SystemStateReceiver;
 import com.studentpal.engine.request.LoginRequest;
 import com.studentpal.engine.request.Request;
@@ -48,6 +49,7 @@ public class ClientEngine implements AppHandler {
   private MessageHandler      msgHandler        = null;
   private IoHandler           ioHandler         = null;
   private AccessController    accController     = null;
+  private DaemonHandler       daemonHandler     = null;
   private DBaseManager        dbaseManager      = null;
   
   private ClientEngine() {
@@ -90,6 +92,9 @@ public class ClientEngine implements AppHandler {
     
     //Create AccessController instance
     this.accController = AccessController.getInstance();
+    
+    //Create DaemonHandler instance
+    this.daemonHandler = DaemonHandler.getInstance();
     
     //Create DBaseManager instance
     this.dbaseManager = DBaseManager.getInstance();

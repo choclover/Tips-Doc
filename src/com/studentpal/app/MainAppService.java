@@ -1,27 +1,19 @@
 package com.studentpal.app;
 
-import java.util.List;
-
-import com.studentpal.engine.ClientEngine;
-import com.studentpal.model.exception.STDException;
-import com.studentpal.ui.LaunchScreen;
-import com.studentpal.util.logger.Logger;
-
-import android.app.ActivityManager;
 import android.app.Service;
-import android.app.admin.DeviceAdminReceiver;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
+import com.studentpal.engine.ClientEngine;
+import com.studentpal.engine.Event;
+import com.studentpal.model.exception.STDException;
+import com.studentpal.util.logger.Logger;
+
 public class MainAppService extends Service {
   private static final String TAG = "@@ MainAppService";
-  private static final int RESULT_DEVICE_ADMIN_ENABLE = 1;
   
   /* 
-   * Contants
+   * Constants
    */
   public static final int CMD_START_WATCHING_APP = 100;
   public static final int CMD_STOP_WATCHING_APP = 101;
@@ -35,12 +27,13 @@ public class MainAppService extends Service {
   
   @Override
   public IBinder onBind(Intent arg0) {
+    Logger.d(TAG, "onBind()!");
     return null;
   }
   
   @Override
   public void onCreate() {
-    Logger.i(TAG, "onCreate()!");
+    Logger.d(TAG, "onCreate()!");
     super.onCreate();
     
     engine = ClientEngine.getInstance();
@@ -51,6 +44,7 @@ public class MainAppService extends Service {
   // method will not be called.
   @Override
   public void onStart(Intent intent, int startId) {
+    Logger.d(TAG, "onStart()!");
     onStartCommand(intent, 0, startId);
   }
 
@@ -72,6 +66,7 @@ public class MainAppService extends Service {
   
   @Override
   public void onDestroy() {
+    Logger.d(TAG, "onDestroy()!");
     if (engine != null) {
       engine.terminate();
     }
@@ -79,14 +74,23 @@ public class MainAppService extends Service {
     super.onDestroy();  
   }
   
+  @Override  
+  public boolean onUnbind(Intent intent) {
+    Logger.d(TAG, "onUnbind...");
+    return super.onUnbind(intent);
+  }
+  
+  //////////////////////////////////////////////////////////////////////////////
   private void handleCommand(Intent intent) {
-    int cmd = intent.getIntExtra("command", -1);
+    int cmd = intent.getIntExtra(Event.TAGNAME_BUNDLE_PARAM, -1);
     switch (cmd) {
     case CMD_START_WATCHING_APP:
       try {
-//        engine = ClientEngine.getInstance();
         engine.initialize(this);
         engine.launch();
+        
+        launchDaemonTask();
+        
       } catch (STDException e) {
         e.printStackTrace();
       }
@@ -99,28 +103,11 @@ public class MainAppService extends Service {
       break;
     }
   }
-
-  /*
-   * 判断服务是否运行.
-   * @param context
-   * @param className 判断的服务名字
-   */
-  public static boolean isServiceRunning(Context mContext, String className) {
-    boolean isRunning = false;
-    ActivityManager activityManager = (ActivityManager) mContext
-        .getSystemService(Context.ACTIVITY_SERVICE);
-    List<ActivityManager.RunningServiceInfo> serviceList = activityManager
-        .getRunningServices(30);
-
-    for (int i = 0; i < serviceList.size(); i++) {
-      if (serviceList.get(i).service.getClassName().equals(className) == true) {
-        isRunning = true;
-        break;
-      }
-    }
-    return isRunning;
+  
+  private void launchDaemonTask() {
+    Intent i = new Intent();
+    i.setAction("studentpal.daemon");
+    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    startActivity(i);
   }
-  
-  //////////////////////////////////////////////////////////////////////////////
-  
 }

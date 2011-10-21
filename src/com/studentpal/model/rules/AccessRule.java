@@ -3,7 +3,7 @@ package com.studentpal.model.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.studentpal.app.RuleScheduler.RuleExecutor;
+import com.studentpal.app.handler.RuleScheduler.RuleExecutor;
 import com.studentpal.engine.Event;
 import com.studentpal.model.AccessCategory;
 import com.studentpal.util.logger.Logger;

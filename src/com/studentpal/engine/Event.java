@@ -9,19 +9,20 @@ public class Event {
   public static final String MESSAGE_HEADER_REQ     = "R";
   public static final String MESSAGE_HEADER_NOTIF   = "N";
   
-  public static final String TAGNAME_MSG_TYPE   = "msg_type";
-  public static final String TAGNAME_MSG_ID     = "msg_id";
-  public static final String TAGNAME_CMD_TYPE   = "cmd_type";
-  public static final String TAGNAME_ERR_CODE   = "err_code";
-  public static final String TAGNAME_ERR_DESC   = "err_desc";
-  public static final String TAGNAME_RESULT     = "result";
-  public static final String TAGNAME_ARGUMENTS  = "args";
-
+  public static final String TAGNAME_MSG_TYPE       = "msg_type";
+  public static final String TAGNAME_MSG_ID         = "msg_id";
+  public static final String TAGNAME_CMD_TYPE       = "cmd_type";
+  public static final String TAGNAME_ERR_CODE       = "err_code";
+  public static final String TAGNAME_ERR_DESC       = "err_desc";
+  public static final String TAGNAME_RESULT         = "result";
+  public static final String TAGNAME_ARGUMENTS      = "args";
+  public static final String TAGNAME_BUNDLE_PARAM   = "bundle_param";
+  
   public static final String TAGNAME_PHONE_NUM       = "phone_no";
   public static final String TAGNAME_PHONE_IMSI      = "phone_imsi";
   public static final String TAGNAME_PHONE_IMEI      = "phone_imei";
   public static final String TAGNAME_APPLICATIONS    = "applications";
-  public static final String TAGNAME_APP               = "application";
+  public static final String TAGNAME_APP             = "application";
   public static final String TAGNAME_APP_NAME        = "app_name";
   public static final String TAGNAME_APP_CLASSNAME   = "app_classname";
   public static final String TAGNAME_APP_PKGNAME     = "app_pkgname";
@@ -51,6 +52,11 @@ public class Event {
   /* Tasks from Phone */
   public static final String TASKNAME_LOGIN   = "LOGIN";
   public static final String TASKNAME_LOGOUT  = "LOGOUT";
+  
+  /*
+   * Configuration constants
+   */
+  public static final String CFG_SHOW_LAUNCHER_UI = "show_launcher_ui";
   
   /*
    * Error code constants 

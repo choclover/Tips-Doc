@@ -12,8 +12,9 @@ import android.widget.TextView;
 
 import com.studentpal.R;
 import com.studentpal.app.MainAppService;
-import com.studentpal.app.io.IoHandler;
+import com.studentpal.app.handler.IoHandler;
 import com.studentpal.app.receiver.MyDeviceAdminReceiver;
+import com.studentpal.engine.Event;
 import com.studentpal.util.ActivityUtil;
 import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
@@ -22,68 +23,43 @@ public class LaunchScreen extends Activity {
   private static final String TAG = "LaunchScreen";
   
   /* 
-   * Contants
+   * Constants
    */
   private static final int RESULT_DEVICE_ADMIN_ENABLE = 1;
-  private static final boolean showUI = true;
+  private static boolean showUI = true;
   
   /*
    * Member fields
    */
   private Button btnStart, btnStop;
-  private TextView service_status;
-//  private Intent intentMainAppSvc = null;
+  private TextView tvMainSvcStatus;
+  
   
   /** Called when the activity is first created. */
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    Bundle cfgParams = getIntent().getExtras();
+    if (cfgParams != null) {
+      showUI = cfgParams.getBoolean(Event.CFG_SHOW_LAUNCHER_UI, showUI) ;
+    }
+    
     if (showUI) {
-      setContentView(R.layout.main);
-      service_status = (TextView) findViewById(R.id.service_status);
-
-      btnStart = (Button) findViewById(R.id.btnStart);
-      btnStart.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View view) {
-          Logger.i(TAG, btnStart.getText() + " is clicked!");
-
-          EditText editSvrIP = (EditText) findViewById(R.id.editSvrIP);
-          String svrIP = editSvrIP.getEditableText().toString().trim();
-          if (Utils.isEmptyString(svrIP) == false) {
-            // ClientEngine.getInstance().getIoHandler().setServerIP(svrIP);
-            IoHandler.setServerIP(svrIP);
-          }
-
-          _startWatchingService();
-          service_status.setText("SERVICE STARTED");
-
-          btnStart.setClickable(false);
-          btnStop.setClickable(true);
-        }
-      });
-
-      btnStop = (Button) findViewById(R.id.btnStop);
-      btnStop.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View view) {
-          Logger.i(TAG, btnStop.getText() + " is clicked!");
-
-          _stopWatchingService();
-          service_status.setText("STOPPED");
-
-          btnStart.setClickable(true);
-          btnStop.setClickable(false);
-        }
-      });
-
+      setContentView(R.layout.laucher_screen);
+      
+      initMainSvcView();
+      initDaemonSvcView();
+      
     } else {
-      if (false == MainAppService.isServiceRunning(this,
+      if (false == ActivityUtil.isServiceRunning(this,
           MainAppService.class.getName())) {
         _startWatchingService();
       }
       finish();
     }
 
+    //Enable the AppDeviceAdmin 
     _setAppDeviceAdmin(true);
   }
 
@@ -97,9 +73,9 @@ public class LaunchScreen extends Activity {
     switch (requestCode) {
     case RESULT_DEVICE_ADMIN_ENABLE:
       if (resultCode == Activity.RESULT_OK) {
-        Logger.i("DeviceAdminSample", "Admin enabled!");
+        Logger.i("DeviceAdminSample", "Enable Admin OK!");
       } else {
-        Logger.i("DeviceAdminSample", "Admin enable FAILED!");
+        Logger.i("DeviceAdminSample", "Enable Admin FAILED!");
       }
       return;
     }
@@ -111,13 +87,13 @@ public class LaunchScreen extends Activity {
   private void _startWatchingService() {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
 //    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    i.putExtra("command", com.studentpal.app.MainAppService.CMD_START_WATCHING_APP);
+    i.putExtra(Event.TAGNAME_BUNDLE_PARAM, com.studentpal.app.MainAppService.CMD_START_WATCHING_APP);
     startService(i);
   }
   
   private void _stopWatchingService() {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
-//    i.putExtra("command", com.studentpal.app.MainAppService.CMD_STOP_WATCHING_APP);
+//    i.putExtra(Event.TAGNAME_BUNDLE_PARAM, com.studentpal.app.MainAppService.CMD_STOP_WATCHING_APP);
     stopService(i);
   }
   
@@ -133,4 +109,47 @@ public class LaunchScreen extends Activity {
     startActivityForResult(intent, RESULT_DEVICE_ADMIN_ENABLE);
   }
   
+  private void initMainSvcView() {
+    tvMainSvcStatus = (TextView) findViewById(R.id.mainSvcStatus);
+
+    btnStart = (Button) findViewById(R.id.btnStart);
+    btnStart.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View view) {
+        Logger.i(TAG, btnStart.getText() + " is clicked!");
+
+        EditText editSvrIP = (EditText) findViewById(R.id.editSvrIP);
+        String svrIP = editSvrIP.getEditableText().toString().trim();
+        if (Utils.isEmptyString(svrIP) == false) {
+          // ClientEngine.getInstance().getIoHandler().setServerIP(svrIP);
+          IoHandler.setServerIP(svrIP);
+        }
+
+        _startWatchingService();
+        tvMainSvcStatus.setText("MAIN SERVICE STARTED");
+
+        btnStart.setClickable(false);
+        btnStop.setClickable(true);
+      }
+    });
+
+    btnStop = (Button) findViewById(R.id.btnStop);
+    btnStop.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View view) {
+        Logger.i(TAG, btnStop.getText() + " is clicked!");
+
+        _stopWatchingService();
+        tvMainSvcStatus.setText("MAIN SERVICE STOPPED");
+
+        btnStart.setClickable(true);
+        btnStop.setClickable(false);
+      }
+    });
+
+    btnStart.setClickable(true);
+    btnStop.setClickable(false);
+  }
+  
+  private void initDaemonSvcView() {
+    //TODO
+  }
 }

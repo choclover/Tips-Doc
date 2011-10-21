@@ -1,5 +1,7 @@
 ﻿package com.studentpal.util;
 
+import java.util.List;
+
 import com.studentpal.app.ResourceManager;
 import com.studentpal.util.logger.Logger;
 
@@ -156,6 +158,7 @@ public class ActivityUtil {
 
     builder.create().show();
   }
+  
   //////////////////////////////////////////////////////////////////////////////
   public static void exitApp() {
     int pid = android.os.Process.myPid();
@@ -169,7 +172,8 @@ public class ActivityUtil {
     killProcess(activityManager, p);
   }
   
-  public static boolean killProcess(ActivityManager activityManager, RunningAppProcessInfo p) {
+  public static boolean killProcess(ActivityManager activityManager,
+      RunningAppProcessInfo p) {
     if (activityManager==null || p==null) {
       Logger.w(TAG, "ActivityManager or ProcessInfo should NOT be NULL!");
     }
@@ -190,5 +194,27 @@ public class ActivityUtil {
 
     return true;
   }
+  
+  /*
+   * 判断服务是否运行.
+   * @param context
+   * @param className 判断的服务名字
+   */
+  public static boolean isServiceRunning(Context mContext, String className) {
+    boolean isRunning = false;
+    ActivityManager activityManager = (ActivityManager) mContext
+        .getSystemService(Context.ACTIVITY_SERVICE);
+    List<ActivityManager.RunningServiceInfo> serviceList = activityManager
+        .getRunningServices(30);
+
+    for (int i = 0; i < serviceList.size(); i++) {
+      if (serviceList.get(i).service.getClassName().equals(className) == true) {
+        isRunning = true;
+        break;
+      }
+    }
+    return isRunning;
+  }
+  
   
 }

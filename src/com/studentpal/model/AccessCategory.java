@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.studentpal.app.RuleScheduler;
+import com.studentpal.app.handler.RuleScheduler;
 import com.studentpal.model.rules.AccessRule;
 import com.studentpal.model.rules.TimeRange;
 import com.studentpal.util.logger.Logger;
