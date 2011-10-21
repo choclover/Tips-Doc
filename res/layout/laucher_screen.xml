@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent" android:layout_height="fill_parent"
+  android:weightSum="1" android:orientation="vertical">
+
+  <TextView android:layout_width="fill_parent"
+    android:layout_height="wrap_content" android:text="@string/launcher_name" />
+  <RelativeLayout android:layout_width="match_parent"
+    android:id="@+id/mainSvcLayout" android:layout_height="wrap_content">
+    <Button android:id="@+id/btnStop" android:layout_width="wrap_content"
+      android:text="Stop Service" android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
+      android:layout_alignParentRight="true" android:layout_marginRight="19dp"></Button>
+    <Button android:id="@+id/btnStart" android:layout_width="wrap_content"
+      android:text="Start Service" android:layout_height="wrap_content"
+      android:layout_alignParentTop="true" android:layout_toLeftOf="@+id/btnStop"></Button>
+    <TextView android:layout_width="wrap_content" android:text="INITIAIZED"
+      android:id="@+id/mainSvcStatus" android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
+      android:layout_alignParentLeft="true" android:layout_marginLeft="16dp"></TextView>
+  </RelativeLayout>
+  <RelativeLayout android:layout_width="match_parent"
+    android:id="@+id/relativeLayout1" android:layout_height="wrap_content">
+    <EditText android:layout_marginRight="18dp"
+      android:layout_alignParentRight="true" android:layout_width="170dp"
+      android:text="192.168.10.100" android:layout_alignParentTop="true"
+      android:layout_height="wrap_content" android:id="@+id/editSvrIP">
+      <requestFocus></requestFocus>
+    </EditText>
+    <TextView android:layout_width="wrap_content" android:text="Server IP" android:id="@+id/textView1" android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_centerVertical="true" android:layout_alignParentLeft="true" android:layout_marginLeft="16dp"></TextView>
+  </RelativeLayout>
+
+  <View android:layout_width="wrap_content" android:id="@+id/view1"
+    android:layout_height="5px" android:background="#FFFFFF"></View>
+  <RelativeLayout android:layout_width="match_parent"
+    android:id="@+id/daemonSvrLayout" android:layout_height="wrap_content">
+    <Button android:id="@+id/btnStartDaemon"
+      android:layout_toLeftOf="@+id/btnStopDaemon" android:layout_width="wrap_content"
+      android:text="Start Daemon" android:layout_alignParentTop="true"
+      android:layout_height="wrap_content"></Button>
+    <TextView android:layout_width="wrap_content" android:text="INITIAIZED" android:id="@+id/daemonSvcStatus" android:layout_height="wrap_content" android:layout_alignBaseline="@+id/btnStartDaemon" android:layout_alignBottom="@+id/btnStartDaemon" android:layout_alignParentLeft="true"></TextView>
+    <Button android:id="@+id/btnStopDaemon" android:layout_width="wrap_content" android:text="Stop Daemon" android:layout_height="wrap_content" android:layout_alignParentTop="true" android:layout_alignParentRight="true" android:layout_marginRight="15dp"></Button>
+  </RelativeLayout>
+
+</LinearLayout>
