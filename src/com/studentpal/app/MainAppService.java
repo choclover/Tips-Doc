@@ -26,12 +26,6 @@ public class MainAppService extends Service {
   private ClientEngine engine = null;
   
   @Override
-  public IBinder onBind(Intent arg0) {
-    Logger.d(TAG, "onBind()!");
-    return null;
-  }
-  
-  @Override
   public void onCreate() {
     Logger.d(TAG, "onCreate()!");
     super.onCreate();
@@ -59,6 +53,7 @@ public class MainAppService extends Service {
     }
 
     handleCommand(intent);
+    
     // We want this service to continue running until it is explicitly
     // stopped, so return sticky.
     return START_STICKY;
@@ -74,11 +69,17 @@ public class MainAppService extends Service {
     super.onDestroy();  
   }
   
-  @Override  
-  public boolean onUnbind(Intent intent) {
-    Logger.d(TAG, "onUnbind...");
-    return super.onUnbind(intent);
+  @Override
+  public IBinder onBind(Intent arg0) {
+    Logger.d(TAG, "onBind()!");
+    return null;
   }
+  
+//  @Override  
+//  public boolean onUnbind(Intent intent) {
+//    Logger.d(TAG, "onUnbind...");
+//    return super.onUnbind(intent);
+//  }
   
   //////////////////////////////////////////////////////////////////////////////
   private void handleCommand(Intent intent) {
@@ -88,8 +89,6 @@ public class MainAppService extends Service {
       try {
         engine.initialize(this);
         engine.launch();
-        
-        launchDaemonTask();
         
       } catch (STDException e) {
         e.printStackTrace();
@@ -104,10 +103,4 @@ public class MainAppService extends Service {
     }
   }
   
-  private void launchDaemonTask() {
-    Intent i = new Intent();
-    i.setAction("studentpal.daemon");
-    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    startActivity(i);
-  }
 }

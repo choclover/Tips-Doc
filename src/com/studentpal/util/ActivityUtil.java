@@ -7,6 +7,7 @@ import com.studentpal.util.logger.Logger;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
@@ -140,10 +141,15 @@ public class ActivityUtil {
   }
 
   public static void showToast(Context context, String param) {
-    Toast localToast = Toast.makeText(context, param, Toast.LENGTH_LONG);
+    Toast localToast = Toast.makeText(context, param, Toast.LENGTH_SHORT);
     localToast.show();
   }
 
+  public static void showToastLong(Context context, String param) {
+    Toast localToast = Toast.makeText(context, param, Toast.LENGTH_LONG);
+    localToast.show();
+  }
+  
   public static void showQuitAppDialog(final Activity parent) {
     AlertDialog.Builder builder = new AlertDialog.Builder(parent);
     builder.setTitle(ResourceManager.RES_STR_QUITAPP).setMessage(
@@ -195,26 +201,45 @@ public class ActivityUtil {
     return true;
   }
   
+  public static void killServiceById(Context context, int pid) {
+    //boolean result = false;
+    if (pid > 0) {
+      android.os.Process.killProcess(pid);
+    }
+  }
+  
+  
   /*
    * 判断服务是否运行.
    * @param context
-   * @param className 判断的服务名字
+   * @param className 判断的服务的class name
    */
-  public static boolean isServiceRunning(Context mContext, String className) {
+  public static boolean isServiceRunning(Context mContext, String svcClsName) {
     boolean isRunning = false;
-    ActivityManager activityManager = (ActivityManager) mContext
-        .getSystemService(Context.ACTIVITY_SERVICE);
-    List<ActivityManager.RunningServiceInfo> serviceList = activityManager
-        .getRunningServices(30);
-
-    for (int i = 0; i < serviceList.size(); i++) {
-      if (serviceList.get(i).service.getClassName().equals(className) == true) {
-        isRunning = true;
-        break;
-      }
+    if (null != findRunningService(mContext, svcClsName)) {
+      isRunning = true;
     }
     return isRunning;
   }
   
+  public static RunningServiceInfo findRunningService(
+      Context mContext, String svcClsName) {
+    RunningServiceInfo result = null;
+    
+    ActivityManager activityManager = (ActivityManager) mContext
+        .getSystemService(Context.ACTIVITY_SERVICE);
+    List<RunningServiceInfo> serviceList = activityManager
+        .getRunningServices(30);
+
+    for (int i=0; i<serviceList.size(); i++) {
+      RunningServiceInfo tmpSvc = serviceList.get(i); 
+      if (tmpSvc != null 
+          && tmpSvc.service.getClassName().equals(svcClsName)) {
+        result = tmpSvc;
+        break;
+      }
+    }
+    return result;
+  }
   
 }

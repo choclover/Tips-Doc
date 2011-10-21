@@ -1,6 +1,7 @@
 package com.studentpal.ui;
 
 import android.app.Activity;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.studentpal.R;
 import com.studentpal.app.MainAppService;
+import com.studentpal.app.handler.DaemonHandler;
 import com.studentpal.app.handler.IoHandler;
 import com.studentpal.app.receiver.MyDeviceAdminReceiver;
 import com.studentpal.engine.Event;
@@ -34,6 +36,8 @@ public class LaunchScreen extends Activity {
   private Button btnStart, btnStop;
   private TextView tvMainSvcStatus;
   
+  private Button btnStartDae, btnStopDae;
+  private TextView tvDaeSvcStatus;
   
   /** Called when the activity is first created. */
   @Override
@@ -56,7 +60,10 @@ public class LaunchScreen extends Activity {
           MainAppService.class.getName())) {
         _startWatchingService();
       }
-      finish();
+      
+      _startDaemonService();
+      
+      this.finish();
     }
 
     //Enable the AppDeviceAdmin 
@@ -95,6 +102,28 @@ public class LaunchScreen extends Activity {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
 //    i.putExtra(Event.TAGNAME_BUNDLE_PARAM, com.studentpal.app.MainAppService.CMD_STOP_WATCHING_APP);
     stopService(i);
+  }
+  
+  private void _startDaemonService() {
+    Intent i = new Intent();
+    i.setAction(DaemonHandler.ACTION_DAEMON_SVC);
+    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    startService(i);
+  }
+  
+  private void _stopDaemonService() {
+    //Intent i = new Intent(this, com.studentpaldaemon.app.DaemonService.class);
+    //i.setAction(DaemonHandler.ACTION_DAEMON_SVC);
+    //stopService(i);
+    
+    String svcClsName = "com.studentpaldaemon.app.DaemonService";
+    RunningServiceInfo svcInfo = ActivityUtil.findRunningService(this, svcClsName); 
+    if (svcInfo != null ) {
+      Logger.d("Daemon service is running, to kill it...");
+      ActivityUtil.killServiceById(this, svcInfo.pid);
+    } else {
+      Logger.d("Daemon service is NOT running!");
+    }
   }
   
   private void _setAppDeviceAdmin(boolean active) {
@@ -150,6 +179,36 @@ public class LaunchScreen extends Activity {
   }
   
   private void initDaemonSvcView() {
-    //TODO
+    tvDaeSvcStatus = (TextView) findViewById(R.id.daemonSvcStatus);
+
+    btnStartDae = (Button) findViewById(R.id.btnStartDaemon);
+    btnStartDae.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View view) {
+        Logger.i(TAG, btnStartDae.getText() + " is clicked!");
+
+        _startDaemonService();
+        tvDaeSvcStatus.setText("DAEMON SERVICE STARTED");
+
+        btnStartDae.setClickable(false);
+        btnStopDae.setClickable(true);
+      }
+    });
+
+    btnStopDae = (Button) findViewById(R.id.btnStopDaemon);
+    btnStopDae.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View view) {
+        Logger.i(TAG, btnStopDae.getText() + " is clicked!");
+
+        _stopDaemonService();
+        tvDaeSvcStatus.setText("DAEMON SERVICE STOPPED");
+
+        btnStartDae.setClickable(true);
+        btnStopDae.setClickable(false);
+      }
+    });
+
+    btnStartDae.setClickable(true);
+    btnStopDae.setClickable(false);
+    
   }
 }

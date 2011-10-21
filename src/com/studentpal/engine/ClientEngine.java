@@ -1,8 +1,10 @@
 package com.studentpal.engine;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -45,7 +47,7 @@ public class ClientEngine implements AppHandler {
   private TelephonyManager    _teleManager      = null;
   
   //Handlers
-  private List<AppHandler>    appHandlerAry     = null;
+  private Set<AppHandler>     appHandlerSet     = null;
   private MessageHandler      msgHandler        = null;
   private IoHandler           ioHandler         = null;
   private AccessController    accController     = null;
@@ -81,8 +83,8 @@ public class ClientEngine implements AppHandler {
     //Create Telephony Manager
     this._teleManager = (TelephonyManager)this._launcher.getSystemService(Context.TELEPHONY_SERVICE);
     
-    /**
-     * App Handlers
+    /** 
+     * App Handlers 
      */
     //Create MessageHandler instance
     this.msgHandler = MessageHandler.getInstance();
@@ -99,11 +101,13 @@ public class ClientEngine implements AppHandler {
     //Create DBaseManager instance
     this.dbaseManager = DBaseManager.getInstance();
     
-    if (appHandlerAry == null) {
-      appHandlerAry = new ArrayList<AppHandler>();
-      appHandlerAry.add(msgHandler);
-      appHandlerAry.add(ioHandler);
-      appHandlerAry.add(accController);
+    if (appHandlerSet == null) {
+      appHandlerSet = new HashSet<AppHandler>();
+      appHandlerSet.add(msgHandler);
+      appHandlerSet.add(ioHandler);
+      appHandlerSet.add(accController);
+      appHandlerSet.add(daemonHandler);
+      
 //      appHandlerAry.add(dbaseManager);
     }
     
@@ -112,25 +116,28 @@ public class ClientEngine implements AppHandler {
   //////////////////////////////////////////////////////////////////////////////
   @Override
   public void terminate() {
-    if (appHandlerAry != null) {
-      for (AppHandler handler : appHandlerAry) {
+    if (appHandlerSet != null) {
+      for (AppHandler handler : appHandlerSet) {
         if (handler != null) {
           handler.terminate();
         }
       }
+      appHandlerSet.clear();
+      appHandlerSet = null;
     }
     
     if (_launcher != null) {
       if (_sysStateReceiver != null) {
         _launcher.unregisterReceiver(_sysStateReceiver);
       }
+      _launcher = null;
     }
     
   }
   
   @Override
   public void launch() {
-    for (AppHandler handler : appHandlerAry) {
+    for (AppHandler handler : appHandlerSet) {
       if (handler != null) {
         handler.launch();
       }
