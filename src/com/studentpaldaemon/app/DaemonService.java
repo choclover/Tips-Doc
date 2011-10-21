@@ -1,26 +1,37 @@
-package com.studentpaldaemon;
+package com.studentpaldaemon.app;
 
 import java.util.List;
 
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 
-public class DaemonActivity extends Activity {
+public class DaemonService extends Service {
   private static final String TAG = "@@ DaemonActivity";
   
   ActivityManager activityManager = null;
   
+  /**
+   * Target we publish for clients to send messages to IncomingHandler.
+   */
+  final Messenger mMessenger = new Messenger(new IncomingHandler());
+
+  
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        
+    public void onCreate() {
+        super.onCreate();
+//        setContentView(R.layout.main);
+//        
         activityManager = (ActivityManager)this.getSystemService(Context.ACTIVITY_SERVICE);
         
         Thread t = new Thread(new Runnable() {
@@ -72,4 +83,23 @@ public class DaemonActivity extends Activity {
       }
       return result;
     }
+
+    @Override
+    public IBinder onBind(Intent arg0) {
+      return mMessenger.getBinder();
+
+    }
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * Handler of incoming messages from clients.
+     */
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+        }
+    }
+
 }
