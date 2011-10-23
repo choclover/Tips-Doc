@@ -3,6 +3,7 @@ package com.studentpal.app.handler;
 import static com.studentpal.engine.Event.*;
 
 import android.os.Message;
+import android.os.RemoteException;
 
 import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
@@ -14,9 +15,13 @@ import com.studentpal.util.logger.Logger;
 public class MessageHandler extends android.os.Handler implements AppHandler {
   private static final String TAG = "@@ MessageHandler";
   
+  /*
+   * Field members
+   */  
   private static MessageHandler instance = null;
-  private IoHandler     ioHandler = null;
   private ClientEngine  engine = null;
+  private IoHandler     ioHandler = null;
+  //private DaemonHandler daemonHandler = null;
   
   private MessageHandler() {
   }
@@ -31,7 +36,8 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
   @Override
   public void launch() {
     this.engine = ClientEngine.getInstance();    
-    this.ioHandler = this.engine.getIoHandler();
+    this.ioHandler = engine.getIoHandler();
+    //this.daemonHandler = engine.getDaemonHandler();
   }
   
   @Override
@@ -39,7 +45,7 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
     removeMessages(0);
   }
   
-  public void sendRequest(Request req) {
+  public void sendRequestToSvr(Request req) {
     Message msg = this.obtainMessage(SIGNAL_TYPE_REQACK, req);
     this.sendMessage(msg);
   }
@@ -51,21 +57,24 @@ public class MessageHandler extends android.os.Handler implements AppHandler {
     Logger.i(TAG, "msg type:" /*+msg.getClass().getName()+ "id:"*/ +sigType);
     
     switch(sigType) {
+    /*
+     * REQ / ACK between server
+     */
     case SIGNAL_TYPE_REQACK:
       if (msg instanceof Request) {
         Request req = (Request)msg;
         if (req.isIncomingReq()) {
           //Execute this request in the main thread, 
-          //and then append the processed request (as response) to message queue again
+          //and then append the processed request (i.e. response) to message queue again
           req.execute();
-          this.sendRequest(req);   
+          this.sendRequestToSvr(req);   
         
         } else if (req.isOutgoingReq() && req.isOutputContentReady()) {
           String replyStr = req.getOutputContent();
-          if (Utils.isEmptyString(replyStr) == false) {
-            this.ioHandler.sendMsgStr(replyStr);
-          } else {
+          if (Utils.isEmptyString(replyStr) ) {
             Logger.d(TAG, "Outgoing reply is NULL or empty for request "+req.getName());
+          } else {
+            this.ioHandler.sendMsgStr(replyStr);
           }
           
         } else {

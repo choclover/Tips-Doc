@@ -30,5 +30,12 @@ public class Utils {
         (byte) (value >>> 8), (byte) value };
   }
   
+  public static void sleep(int time) {
+    try {
+      Thread.sleep(time);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
   
 }

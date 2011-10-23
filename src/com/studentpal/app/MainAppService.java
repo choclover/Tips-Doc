@@ -1,5 +1,6 @@
 package com.studentpal.app;
 
+import static com.studentpal.app.ResourceManager.APPLICATION_PKG_NAME;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -11,6 +12,7 @@ import com.studentpal.util.logger.Logger;
 
 public class MainAppService extends Service {
   private static final String TAG = "@@ MainAppService";
+  public static final String NAME = APPLICATION_PKG_NAME + ".app.MainAppService";
   
   /* 
    * Constants
@@ -48,6 +50,7 @@ public class MainAppService extends Service {
 
     // No intent, tell the system not to restart us.
     if (intent == null) {
+      Logger.d(TAG, "Intent should NOT be NULL in onStartCommand(), exiting...");
       stopSelf();
       return START_NOT_STICKY;
     }
@@ -91,7 +94,7 @@ public class MainAppService extends Service {
         engine.launch();
         
       } catch (STDException e) {
-        e.printStackTrace();
+        Logger.w(TAG, e.toString());
       }
       break;
       

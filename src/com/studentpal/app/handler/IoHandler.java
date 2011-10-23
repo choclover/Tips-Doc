@@ -105,8 +105,8 @@ public class IoHandler implements AppHandler {
      */
     // TODO read from config
     String addr = "";
-    addr = "192.168.1.250";
-    addr = "10.60.4.58";
+    addr = "192.168.10.100";
+    //addr = "10.60.4.64";
     
     //Read from Launcher Screen
     if (Utils.isEmptyString(serverIP) == false) {
@@ -377,7 +377,7 @@ public class IoHandler implements AppHandler {
                   }
                   
                   // send incoming request to MessageHandler to handle
-                  msgHandler.sendRequest(request);
+                  msgHandler.sendRequestToSvr(request);
                 }
                 
               } else if (msgType.equals(Event.MESSAGE_HEADER_ACK)) {

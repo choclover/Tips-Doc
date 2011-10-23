@@ -89,14 +89,20 @@ public class Event {
   public static final String TXT_ACCESS_TYPE_DENIED    = "access_denied";
   public static final String TXT_ACCESS_TYPE_PERMITTED = "access_permitted";
 
-  public static final int SIGNAL_TYPE_REQACK                     = 101;
+  //signaling that a request or response is coming in
+  public static final int SIGNAL_TYPE_REQACK                     = 101;  
   public static final int SIGNAL_TYPE_OUTSTREAM_READY            = 102;
   
   public static final int SIGNAL_SHOW_ACCESS_DENIED_NOTIFICATION = 111;
   public static final int SIGNAL_ACCESS_RESCHEDULE_DAILY         = 112;
   
-  public static final int SIGNAL_START_DAEMONTASK                = 121;
-  public static final int SIGNAL_STOP_DAEMONTASK                 = 121;
+  public static final int SIGNAL_TYPE_START_DAEMONTASK           = 121;
+  public static final int SIGNAL_TYPE_STOP_DAEMONTASK            = 122;
+  public static final int SIGNAL_TYPE_EXIT_DAEMONTASK            = 123;
+  //Daemon WatchDog message related
+  public static final int SIGNAL_TYPE_DAEMON_WD_REQ              = 126;  
+  public static final int SIGNAL_TYPE_DAEMON_WD_RESP             = 127;
+  public static final int SIGNAL_TYPE_DAEMON_WD_TIMEOUT          = 128;
   
   
   private static final HashMap<Integer, String> ERRCODE_DESC_MAPPER 
@@ -105,6 +111,7 @@ public class Event {
   // ERRCODE_DESC_MAPPER.put(ERRCODE_NOERROR, "SUCCESS");
   // }
   
+  //////////////////////////////////////////////////////////////////////////////
   /*
    * Member fields
    */
@@ -112,7 +119,6 @@ public class Event {
   private int errcoe = 0;
   private Object data = null;
   
-  //////////////////////////////////////////////////////////////////////////////
   public void setData(int type, int code, Object data) {
     this.type = type;
     this.errcoe = code;

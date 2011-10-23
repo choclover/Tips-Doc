@@ -6,6 +6,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +17,7 @@ import com.studentpal.app.MainAppService;
 import com.studentpal.app.handler.DaemonHandler;
 import com.studentpal.app.handler.IoHandler;
 import com.studentpal.app.receiver.MyDeviceAdminReceiver;
+import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.Event;
 import com.studentpal.util.ActivityUtil;
 import com.studentpal.util.Utils;
@@ -48,6 +50,7 @@ public class LaunchScreen extends Activity {
     if (cfgParams != null) {
       showUI = cfgParams.getBoolean(Event.CFG_SHOW_LAUNCHER_UI, showUI) ;
     }
+    Logger.d(TAG, "showUI is set to: "+showUI);
     
     if (showUI) {
       setContentView(R.layout.laucher_screen);
@@ -80,9 +83,9 @@ public class LaunchScreen extends Activity {
     switch (requestCode) {
     case RESULT_DEVICE_ADMIN_ENABLE:
       if (resultCode == Activity.RESULT_OK) {
-        Logger.i("DeviceAdminSample", "Enable Admin OK!");
+        Logger.i(TAG, "Enable Admin OK!");
       } else {
-        Logger.i("DeviceAdminSample", "Enable Admin FAILED!");
+        Logger.i(TAG, "Enable Admin FAILED!");
       }
       return;
     }
@@ -93,7 +96,7 @@ public class LaunchScreen extends Activity {
   //////////////////////////////////////////////////////////////////////////////
   private void _startWatchingService() {
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
-//    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     i.putExtra(Event.TAGNAME_BUNDLE_PARAM, com.studentpal.app.MainAppService.CMD_START_WATCHING_APP);
     startService(i);
   }
@@ -105,24 +108,23 @@ public class LaunchScreen extends Activity {
   }
   
   private void _startDaemonService() {
-    Intent i = new Intent();
-    i.setAction(DaemonHandler.ACTION_DAEMON_SVC);
-    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    startService(i);
+    ActivityUtil.startDaemonService(this);
   }
   
-  private void _stopDaemonService() {
-    //Intent i = new Intent(this, com.studentpaldaemon.app.DaemonService.class);
-    //i.setAction(DaemonHandler.ACTION_DAEMON_SVC);
-    //stopService(i);
-    
-    String svcClsName = "com.studentpaldaemon.app.DaemonService";
-    RunningServiceInfo svcInfo = ActivityUtil.findRunningService(this, svcClsName); 
-    if (svcInfo != null ) {
-      Logger.d("Daemon service is running, to kill it...");
-      ActivityUtil.killServiceById(this, svcInfo.pid);
+  private void _stopDaemonService(boolean bExitDaemon) {
+    if (ActivityUtil.isServiceRunning(this, MainAppService.class.getName())) {
+      try {
+        int sigType = Event.SIGNAL_TYPE_STOP_DAEMONTASK;
+        if (bExitDaemon) {
+          sigType = Event.SIGNAL_TYPE_EXIT_DAEMONTASK;
+        }
+        ClientEngine.getInstance().getDaemonHandler().sendMsgToDaemon(sigType);
+        
+      } catch (RemoteException e) {
+        e.printStackTrace();
+      }
     } else {
-      Logger.d("Daemon service is NOT running!");
+      ActivityUtil.stopDaemonService(this);
     }
   }
   
@@ -199,16 +201,15 @@ public class LaunchScreen extends Activity {
       public void onClick(View view) {
         Logger.i(TAG, btnStopDae.getText() + " is clicked!");
 
-        _stopDaemonService();
+        _stopDaemonService(true);
         tvDaeSvcStatus.setText("DAEMON SERVICE STOPPED");
 
         btnStartDae.setClickable(true);
-        btnStopDae.setClickable(false);
+        //btnStopDae.setClickable(false);
       }
     });
 
     btnStartDae.setClickable(true);
-    btnStopDae.setClickable(false);
-    
+    //btnStopDae.setClickable(false);
   }
 }

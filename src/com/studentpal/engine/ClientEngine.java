@@ -192,6 +192,10 @@ public class ClientEngine implements AppHandler {
     return accController;
   }
   
+  public DaemonHandler getDaemonHandler() {
+    return daemonHandler;
+  }
+  
   public DBaseManager getDBaseManager() {
     return dbaseManager;
   }
@@ -277,6 +281,6 @@ public class ClientEngine implements AppHandler {
     }
     
     Request request = new LoginRequest(phoneNum, imsiNum);
-    msgHandler.sendRequest(request);
+    msgHandler.sendRequestToSvr(request);
   }
 }

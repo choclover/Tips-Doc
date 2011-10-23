@@ -3,6 +3,7 @@
 import java.util.List;
 
 import com.studentpal.app.ResourceManager;
+import com.studentpal.app.handler.DaemonHandler;
 import com.studentpal.util.logger.Logger;
 
 import android.app.Activity;
@@ -28,7 +29,7 @@ public class ActivityUtil {
    * Constants
    */
   private static final String TAG = "@@ ActivityUtil";
-  private static final String PREFS_NAME = "com.studentpal";
+  private static final String PREFS_NAME = ResourceManager.APPLICATION_PKG_NAME;
 
   private ActivityUtil() {
   }
@@ -202,9 +203,36 @@ public class ActivityUtil {
   }
   
   public static void killServiceById(Context context, int pid) {
-    //boolean result = false;
     if (pid > 0) {
       android.os.Process.killProcess(pid);
+    } else {
+      Logger.d(TAG, "Invalid PID of "+pid);
+    }
+  }
+  
+  public static void startDaemonService(Context context) {
+    Intent i = new Intent();
+    i.setAction(DaemonHandler.ACTION_DAEMON_SVC);
+    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    
+    Object result = context.startService(i);
+    if (result != null) {
+      Logger.d(TAG, "Starting daemon service OK!");
+    } else {
+      Logger.d(TAG, "Starting daemon service FAIL!");
+    }
+  }
+  
+  public static void stopDaemonService(Context context) {
+    Intent i = new Intent();
+    i.setAction(DaemonHandler.ACTION_DAEMON_SVC);
+    Logger.d(TAG, "Ready to stop daemon service!");
+    
+    boolean succ = context.stopService(i);
+    if (succ) {
+      Logger.d(TAG, "Stopping daemon service OK!");
+    } else {
+      Logger.d(TAG, "Stopping daemon service FAIL!");
     }
   }
   
@@ -242,4 +270,23 @@ public class ActivityUtil {
     return result;
   }
   
+  public static RunningAppProcessInfo findRunningAppProcess(
+      Context mContext, String classname) {
+    RunningAppProcessInfo result = null;
+
+    ActivityManager activityManager = (ActivityManager) mContext
+        .getSystemService(Context.ACTIVITY_SERVICE);
+    List<RunningAppProcessInfo> processes = activityManager
+        .getRunningAppProcesses();
+    
+    for (RunningAppProcessInfo process : processes) {
+      String pname = process.processName;
+      // Logger..d(TAG, pname);
+      if (classname.equals(pname)) {
+        result = process;
+        break;
+      }
+    }
+    return result;
+  }
 }
