@@ -1,16 +1,15 @@
 package com.studentpaldaemon.app;
 
+import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_REQ;
+import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_RESP;
+import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_TIMEOUT;
+import static com.studentpal.engine.Event.SIGNAL_TYPE_EXIT_DAEMONTASK;
+import static com.studentpal.engine.Event.SIGNAL_TYPE_START_DAEMONTASK;
+import static com.studentpal.engine.Event.SIGNAL_TYPE_STOP_DAEMONTASK;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static com.studentpal.engine.Event.*;
-
-import com.studentpal.app.MainAppService;
-import com.studentpal.app.ResourceManager;
-import com.studentpal.app.handler.DaemonHandler;
-import com.studentpal.engine.Event;
-import com.studentpaldaemon.util.Logger;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -19,12 +18,19 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+
+import com.studentpal.app.MainAppService;
+import com.studentpal.app.ResourceManager;
+import com.studentpal.app.handler.DaemonHandler;
+import com.studentpal.engine.Event;
+
+import com.studentpaldaemon.app.receiver.MyDeviceAdminReceiver;
+import com.studentpaldaemon.util.logger.Logger;
 
 public class DaemonService extends Service {
   private static final String TAG = "@@ DaemonService";
@@ -33,9 +39,9 @@ public class DaemonService extends Service {
   /* 
    * Field members
    */
-  private ActivityManager   activityManager = null;
-  private Timer             _watchdogTimer = null;
-  private TimerTask         _watchdogTask  = null;
+  private ActivityManager      activityManager = null;
+  private Timer                _watchdogTimer  = null;
+  private TimerTask            _watchdogTask   = null;
 
   /**
    * Target we publish for clients to send messages to IncomingHandler.
@@ -54,6 +60,15 @@ public class DaemonService extends Service {
   @Override
   public void onCreate() {
     Logger.d(TAG, "onCreate!");
+    
+    //Enable the Device Administration 
+    try {
+      MyDeviceAdminReceiver mAdminReceiver = new MyDeviceAdminReceiver(new Activity());
+      mAdminReceiver.enableAdmin();
+    } catch (Exception e) {
+      Logger.w(TAG, e.toString());
+    }
+    
     super.onCreate(); 
   } 
   
@@ -248,6 +263,7 @@ public class DaemonService extends Service {
     } else {
       Logger.d(TAG, procName + " is still running!!");
     }
+    
     return result;
   }
   

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.studentpaldaemon" android:versionCode="1" android:versionName="1.0">
+	package="com.studentpaldaemon" android:versionCode="1"
+	android:versionName="1.0">
 	<uses-sdk android:minSdkVersion="8" />
 
 	<application android:icon="@drawable/icon" android:label="@string/app_name">
@@ -11,5 +12,17 @@
 			</intent-filter>
 		</service>
 
+<!--     <activity android:name=".test.TestActivity"></activity>  -->
+    
+		<receiver android:name=".app.receiver.MyDeviceAdminReceiver"
+			android:label="@string/device_admin_label" android:permission="android.permission.BIND_DEVICE_ADMIN">
+			<meta-data android:name="android.app.device_admin"
+				android:resource="@xml/device_admin_definition" />
+			<intent-filter>
+				<action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+			</intent-filter>
+		</receiver>
+
 	</application>
+
 </manifest>
