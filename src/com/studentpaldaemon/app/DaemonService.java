@@ -136,6 +136,7 @@ public class DaemonService extends Service {
         public void run() {
           int cnt = 1;
           while (false == stop) {
+            if (cnt > 10000) cnt=1;
             Logger.v(TAG, "Daemon is running @ " + cnt++);
 
             try { Thread.sleep(3000); }
@@ -190,9 +191,16 @@ public class DaemonService extends Service {
     
     if (runWD==true) {
       //we cannot reuse the old Timer if it is ever cancelled, so have to recreate one
+        if (_watchdogTimer != null) {
+        _watchdogTimer.purge();
+        _watchdogTimer.cancel();
+      }
       _watchdogTimer = new Timer();
+      
       if (_watchdogTask == null) {
         _watchdogTask = getWatchdogTask();
+      } else {
+        _watchdogTask.cancel();
       }
       _watchdogTimer.schedule(_watchdogTask, 0, DaemonHandler.DAEMON_WATCHDOG_INTERVAL);
       
