@@ -1,9 +1,6 @@
 package com.studentpal.ui;
 
 import android.app.Activity;
-import android.app.ActivityManager.RunningServiceInfo;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -14,11 +11,11 @@ import android.widget.TextView;
 
 import com.studentpal.R;
 import com.studentpal.app.MainAppService;
-import com.studentpal.app.handler.DaemonHandler;
 import com.studentpal.app.handler.IoHandler;
 import com.studentpal.app.receiver.MyDeviceAdminReceiver;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.Event;
+import com.studentpal.model.exception.STDException;
 import com.studentpal.util.ActivityUtil;
 import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
@@ -29,7 +26,6 @@ public class LaunchScreen extends Activity {
   /* 
    * Constants
    */
-  private static final int RESULT_DEVICE_ADMIN_ENABLE = 1;
   private static boolean showUI = true;
   
   /*
@@ -54,23 +50,24 @@ public class LaunchScreen extends Activity {
     
     if (showUI) {
       setContentView(R.layout.laucher_screen);
-      
       initMainSvcView();
       initDaemonSvcView();
       
     } else {
-      if (false == ActivityUtil.isServiceRunning(this,
-          MainAppService.class.getName())) {
-        _startWatchingService();
-      }
-      
+      _startWatchingService();
       _startDaemonService();
       
       this.finish();
     }
 
-    //Enable the AppDeviceAdmin 
-    _setAppDeviceAdmin(true);
+    //Enable the Device Administration 
+    try {
+      MyDeviceAdminReceiver mAdminReceiver =  new MyDeviceAdminReceiver(this);
+      mAdminReceiver.enableAdmin();
+    } catch (STDException e) {
+      Logger.w(TAG, e.toString());
+    }
+    
   }
 
   @Override
@@ -81,7 +78,7 @@ public class LaunchScreen extends Activity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     switch (requestCode) {
-    case RESULT_DEVICE_ADMIN_ENABLE:
+    case Event.SIGNAL_TYPE_DEVICE_ADMIN_ENABLED:
       if (resultCode == Activity.RESULT_OK) {
         Logger.i(TAG, "Enable Admin OK!");
       } else {
@@ -95,6 +92,11 @@ public class LaunchScreen extends Activity {
   
   //////////////////////////////////////////////////////////////////////////////
   private void _startWatchingService() {
+    if (ActivityUtil.isServiceRunning(this, MainAppService.class.getName())) {
+      Logger.d(TAG, "Watching Service is already running!");
+      return;
+    }
+    
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     i.putExtra(Event.TAGNAME_BUNDLE_PARAM, com.studentpal.app.MainAppService.CMD_START_WATCHING_APP);
@@ -102,6 +104,11 @@ public class LaunchScreen extends Activity {
   }
   
   private void _stopWatchingService() {
+    if (false == ActivityUtil.isServiceRunning(this, MainAppService.class.getName())) {
+      Logger.d(TAG, "Watching Service is NOT running!");
+      return;
+    }
+    
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
 //    i.putExtra(Event.TAGNAME_BUNDLE_PARAM, com.studentpal.app.MainAppService.CMD_STOP_WATCHING_APP);
     stopService(i);
@@ -126,18 +133,6 @@ public class LaunchScreen extends Activity {
     } else {
       ActivityUtil.stopDaemonService(this);
     }
-  }
-  
-  private void _setAppDeviceAdmin(boolean active) {
-    ComponentName mDeviceAdminInst = new ComponentName(LaunchScreen.this,
-        MyDeviceAdminReceiver.class);
-    
-    Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-    intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-        mDeviceAdminInst);
-    intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-            "Additional text explaining why this needs to be added.");//FIXME
-    startActivityForResult(intent, RESULT_DEVICE_ADMIN_ENABLE);
   }
   
   private void initMainSvcView() {

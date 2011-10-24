@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.studentpal.app.ResourceManager;
 import com.studentpal.app.handler.DaemonHandler;
+import com.studentpal.app.receiver.MyDeviceAdminReceiver;
+import com.studentpal.ui.LaunchScreen;
 import com.studentpal.util.logger.Logger;
 
 import android.app.Activity;
@@ -11,6 +13,8 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -235,7 +239,6 @@ public class ActivityUtil {
       Logger.d(TAG, "Stopping daemon service FAIL!");
     }
   }
-  
   
   /*
    * 判断服务是否运行.

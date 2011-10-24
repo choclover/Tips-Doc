@@ -93,6 +93,9 @@ public class Event {
   public static final int SIGNAL_TYPE_REQACK                     = 101;  
   public static final int SIGNAL_TYPE_OUTSTREAM_READY            = 102;
   
+  public static final int SIGNAL_TYPE_DEVICE_ADMIN_ENABLED       = 106;
+  public static final int SIGNAL_TYPE_DEVICE_ADMIN_DISABLED      = 107;
+  
   public static final int SIGNAL_SHOW_ACCESS_DENIED_NOTIFICATION = 111;
   public static final int SIGNAL_ACCESS_RESCHEDULE_DAILY         = 112;
   
