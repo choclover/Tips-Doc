@@ -46,7 +46,7 @@ public class MainAppService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    Logger.i(TAG, "onStartCommand()!\tstartId: "+startId);
+    Logger.d(TAG, "onStartCommand()!\tstartId: "+startId);
 
     // No intent, tell the system not to restart us.
     if (intent == null) {

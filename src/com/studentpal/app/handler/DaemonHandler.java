@@ -30,6 +30,7 @@ public class DaemonHandler implements AppHandler {
    * Constants
    */
   public static final String ACTION_DAEMON_SVC = "studentpal.daemon";
+  
   public static final int DAEMON_WATCHDOG_INTERVAL = 500;   //milliseconds为单位
   public static final int DAEMON_WATCHDOG_TIMEOUT  = DAEMON_WATCHDOG_INTERVAL * 2; 
   
@@ -43,12 +44,12 @@ public class DaemonHandler implements AppHandler {
 
   // Flag indicating whether I have bound to Daemon task
   private boolean bBoundToDaemon = false;
-  /** Messenger for communicating with Daemon service. */
+  /* Messenger for communicating with Daemon service. */
   private Messenger mMsgerToDaemon = null;
-  /** Messenger for Daemon service communicating with me. */
+  /* Messenger for Daemon service communicating with me. */
   private Messenger mMsgerToMyself = null;
-  /** Connection for interacting with the main interface of the service. */
-  private ServiceConnection mConnection = null;
+  /* Connection for interacting with the main interface of the service. */
+  private ServiceConnection mSvcConnection = null;
   
   //////////////////////////////////////////////////////////////////////////////
   private DaemonHandler() {
@@ -73,6 +74,7 @@ public class DaemonHandler implements AppHandler {
     doUnbindService();
   }
 
+  
   public void sendMsgToDaemon(int msgtype) throws RemoteException {
     if (mMsgerToDaemon == null) {
       Logger.w(TAG, "Messanger To Daemon should NOT be NULL!");
@@ -93,24 +95,23 @@ public class DaemonHandler implements AppHandler {
      * Target we publish for Daemon service to send messages to MessageHandler/myself.
      */
     mMsgerToMyself = new Messenger(msgHandler);
+    mSvcConnection = new MyServiceConnection();
   }
   
   private void launchDaemonService() {
     //no matter if Daemon service is running or not,
-    //start it and bind to it now.
+    //start it anyway and bind to it next.
     ActivityUtil.startDaemonService(launcher);
-    Utils.sleep(200);  //hemerr -- maybe not useful
+    Utils.sleep(200);  //FIXME -- maybe not useful
     doBindService();  
   }
 
   void doBindService() {
     Logger.d(TAG, "Binding to Daemon task!");
-
-    mConnection = new MyServiceConnection();
     
     // Establish a connection with the service.
     launcher.bindService(new Intent(ACTION_DAEMON_SVC), 
-        mConnection, Context.BIND_AUTO_CREATE);
+        mSvcConnection, Context.BIND_AUTO_CREATE);
     bBoundToDaemon = true;
   }
 
@@ -129,9 +130,9 @@ public class DaemonHandler implements AppHandler {
         }
       }
       
-      if (mConnection != null) {  
+      if (mSvcConnection != null) {  
         // Detach our existing connection.
-        launcher.unbindService(mConnection);
+        launcher.unbindService(mSvcConnection);
       }
       
       bBoundToDaemon = false;
@@ -165,12 +166,10 @@ public class DaemonHandler implements AppHandler {
     public void onServiceDisconnected(ComponentName className) {
       // This is called when the connection with the service has been
       // unexpectedly disconnected -- that is, its process crashed.
-      bBoundToDaemon = false;
+      Logger.d(TAG, "Disconnected from Daemon service @ ");
       
       mMsgerToDaemon = null;
-      mConnection = null;
-      
-      Logger.d(TAG, "Disconnected from Daemon service @ "+className);
+      doUnbindService();
     }
   };
   

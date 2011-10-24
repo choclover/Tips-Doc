@@ -120,10 +120,18 @@ public class AccessController implements AppHandler {
       killRestrictedProcs();
       
       //we cannot reuse the old Timer if it is ever cancelled, so have to recreate one
+      if (_monitorTimer != null) {
+        _monitorTimer.purge();
+        _monitorTimer.cancel();
+      }
       _monitorTimer = new Timer();
+      
       if (_monitorTask == null) {
         _monitorTask = getMonitorTask();
+      } else {
+        _monitorTask.cancel();
       }
+      
       _monitorTimer.schedule(_monitorTask, 0, MONITORTASK_INTERVAL);
       
     } else {

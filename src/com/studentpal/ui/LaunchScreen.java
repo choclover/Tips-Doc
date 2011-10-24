@@ -172,12 +172,12 @@ public class LaunchScreen extends Activity {
         tvMainSvcStatus.setText("MAIN SERVICE STOPPED");
 
         btnStart.setClickable(true);
-        btnStop.setClickable(false);
+        //btnStop.setClickable(false);
       }
     });
 
     btnStart.setClickable(true);
-    btnStop.setClickable(false);
+    //btnStop.setClickable(false);
   }
   
   private void initDaemonSvcView() {
