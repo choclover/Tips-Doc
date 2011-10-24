@@ -6,6 +6,6 @@ set CP_VAR=./bin;D:/ProgramFiles/apache-mina/dist/mina-core-2.0.3.jar;D:/Program
 rem @echo on
 set CMD=java -cp %CP_VAR%       studentpal.test.client.WsClientCli  %1 %2 %3
 set CMD=java -cp %CP_VAR%       studentpal.test.client.WsClientCli -catexml E:\Coding\J2EE\StudentPalSver\res\CateDef.xml  %1 %2 %3 
-ren echo %CMD%
+rem echo %CMD%
 
 %CMD%
