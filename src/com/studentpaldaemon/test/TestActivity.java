@@ -16,7 +16,9 @@ public class TestActivity extends Activity {
 
     try {
       MyDeviceAdminReceiver mAdminReceiver =  new MyDeviceAdminReceiver(this);
-      mAdminReceiver.enableAdmin();
+      if (false) {  //FIXME
+        mAdminReceiver.enableAdmin();
+      }
     } catch (Exception e) {
       Logger.w(TAG, e.toString());
     }

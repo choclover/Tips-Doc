@@ -8,7 +8,7 @@
     <service android:name=".app.DaemonService" android:label="@string/mainapp_name">
       <intent-filter>
  
-        <action android:name="studentpal.daemon" />
+        <action android:name="spaldaemon.intent.action.daemonsvc" />
         <category android:name="android.intent.category.DEFAULT" />
 <!--      
         <action android:name="android.intent.action.MAIN" />
@@ -21,7 +21,7 @@
     <activity android:name=".test.TestActivity" android:label="@string/mainapp_name">
       <intent-filter>
         <!-- <action android:name="android.intent.action.MAIN" /> -->
-        <action android:name="studentpal.daemon1" />
+        <action android:name="spaldaemon.intent.action.launcherscr" />
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
     </activity>

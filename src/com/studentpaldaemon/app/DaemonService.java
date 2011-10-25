@@ -62,12 +62,13 @@ public class DaemonService extends Service {
     Logger.d(TAG, "onCreate!");
     
     //Enable the Device Administration 
-    try {
-      MyDeviceAdminReceiver mAdminReceiver = new MyDeviceAdminReceiver(new Activity());
-      mAdminReceiver.enableAdmin();
-    } catch (Exception e) {
-      Logger.w(TAG, e.toString());
-    }
+    //use TestActivity to do this
+//    try {
+//      MyDeviceAdminReceiver mAdminReceiver = new MyDeviceAdminReceiver(new Activity());
+//      mAdminReceiver.enableAdmin();
+//    } catch (Exception e) {
+//      Logger.w(TAG, e.toString());
+//    }
     
     super.onCreate(); 
   } 
@@ -118,12 +119,12 @@ public class DaemonService extends Service {
   public void onDestroy() {
     Logger.d(TAG, "onDestroy(), stopping myself!");
     
-    stopConterThread();
+    if (forTest) stopConterThread();
     
     runWatchdogTask(false);
     mMsgerToMainApp = null;
-    stopSelf();
     
+    stopSelf();
     exitApp();
   }
 
@@ -192,7 +193,7 @@ public class DaemonService extends Service {
       Message wdMsg = Message.obtain(null, SIGNAL_TYPE_DAEMON_WD_REQ);
       this.mMsgerToMainApp.send(wdMsg);
       this.msgHandler.sendEmptyMessageDelayed(SIGNAL_TYPE_DAEMON_WD_TIMEOUT, 
-          DaemonHandler.DAEMON_WATCHDOG_TIMEOUT);
+          DaemonHandler.DAEMON_WATCHDOG_TIMEOUT_LEN);
     } catch (RemoteException e) {
       Logger.w(TAG, "sendWatchdogReq() got exception with "+e.toString());      
       // The client is dead.
@@ -205,31 +206,27 @@ public class DaemonService extends Service {
     Logger.d(TAG, "Ready to run watchdog is: "+runWD);
     
     if (runWD==true) {
-      //we cannot reuse the old Timer if it is ever cancelled, so have to recreate one
-        if (_watchdogTimer != null) {
-        _watchdogTimer.purge();
-        _watchdogTimer.cancel();
-      }
-      _watchdogTimer = new Timer();
-      
-      if (_watchdogTask == null) {
-        _watchdogTask = getWatchdogTask();
-      } else {
+      //we cannot reuse the old Timer if it is ever cancelled, so have to create a new one
+      if (_watchdogTask != null) {
         _watchdogTask.cancel();
       }
+      _watchdogTask = getWatchdogTask();
+      
+      if (_watchdogTimer != null) {
+        cleanupTimer(_watchdogTimer);
+      }
+      _watchdogTimer = new Timer();
       _watchdogTimer.schedule(_watchdogTask, 0, DaemonHandler.DAEMON_WATCHDOG_INTERVAL);
       
     } else {
       msgHandler.removeMessages(SIGNAL_TYPE_DAEMON_WD_TIMEOUT);
-      
-      if (_watchdogTask != null) {
-        _watchdogTask.cancel();
-        _watchdogTask = null;
-      }
+
+      //firstly stop the task, secondly stop the timer.
       if (_watchdogTimer != null) {
-        _watchdogTimer.purge();
-        _watchdogTimer.cancel();
-        _watchdogTimer = null;
+        cleanupTimer(_watchdogTimer);
+      }
+      if (_watchdogTask != null) {
+        cleanupTimerTask(_watchdogTask);
       }
     }
   }
@@ -258,13 +255,28 @@ public class DaemonService extends Service {
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       intent.putExtra(Event.TAGNAME_BUNDLE_PARAM, MainAppService.CMD_START_WATCHING_APP);
       
-      startService(intent);  //hemerr
+      startService(intent); 
       
     } else {
       Logger.d(TAG, procName + " is still running!!");
     }
     
     return result;
+  }
+  
+  private void cleanupTimer(Timer timer) {
+    if (timer != null) {
+      timer.purge();
+      timer.cancel();
+      timer = null;
+    }
+  }
+  
+  private void cleanupTimerTask(TimerTask task) {
+    if (task != null) {
+      task.cancel();
+      task = null;
+    }
   }
   
   /**
@@ -323,7 +335,8 @@ public class DaemonService extends Service {
        
         case SIGNAL_TYPE_DAEMON_WD_RESP:
           /* received watch dog response from MainAppService, so remove Timeout
-           * signal and send out next watch dog request later.
+           * signal and send out next watch dog request later, which is 
+           * controlled by watch dog timer task.
            */
           this.removeMessages(SIGNAL_TYPE_DAEMON_WD_TIMEOUT);
           break; 
