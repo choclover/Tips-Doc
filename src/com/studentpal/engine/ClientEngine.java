@@ -77,6 +77,7 @@ public class ClientEngine implements AppHandler {
     IntentFilter intentFilter = new IntentFilter();
     intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
     intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+    intentFilter.addAction(Intent.ACTION_MAIN);
     this._sysStateReceiver = new SystemStateReceiver();
     this._launcher.registerReceiver(_sysStateReceiver, intentFilter);
 

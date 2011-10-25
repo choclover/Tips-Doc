@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.studentpal.R;
 import com.studentpal.app.MainAppService;
+import com.studentpal.app.handler.DaemonHandler;
 import com.studentpal.app.handler.IoHandler;
 import com.studentpal.app.receiver.MyDeviceAdminReceiver;
 import com.studentpal.engine.ClientEngine;
@@ -49,7 +50,7 @@ public class LaunchScreen extends Activity {
     Logger.d(TAG, "showUI is set to: "+showUI);
     
     if (showUI) {
-      setContentView(R.layout.laucher_screen);
+      setContentView(R.layout.launcher_screen);
       initMainSvcView();
       initDaemonSvcView();
       
@@ -63,11 +64,13 @@ public class LaunchScreen extends Activity {
     //Enable the Device Administration 
     try {
       MyDeviceAdminReceiver mAdminReceiver =  new MyDeviceAdminReceiver(this);
-      mAdminReceiver.enableAdmin();
+      if (false) {//FIXME
+        mAdminReceiver.enableAdmin();
+      }
       
       Intent daemonIntent = new Intent();
       //daemonIntent = new Intent(this, com.studentpaldaemon.test.TestActivity.class);
-      daemonIntent.setAction("studentpal.daemon1");
+      daemonIntent.setAction(DaemonHandler.ACTION_DAEMON_LAUNCHER_SCR);  //FIXME: should be same action with in Manifest
       this.startActivity(daemonIntent);
       
     } catch (STDException e) {
@@ -120,20 +123,23 @@ public class LaunchScreen extends Activity {
   }
   
   private void _startDaemonService() {
-    ActivityUtil.startDaemonService(this);
+    if (true) {
+      ClientEngine.getInstance().getDaemonHandler().startDaemonTask();
+    } else {
+      ActivityUtil.startDaemonService(this);
+    }
   }
   
   private void _stopDaemonService(boolean bExitDaemon) {
     if (ActivityUtil.isServiceRunning(this, MainAppService.class.getName())) {
       try {
-        int sigType = Event.SIGNAL_TYPE_STOP_DAEMONTASK;
         if (bExitDaemon) {
-          sigType = Event.SIGNAL_TYPE_EXIT_DAEMONTASK;
+          ClientEngine.getInstance().getDaemonHandler().exitDaemonService();
+        } else {
+          ClientEngine.getInstance().getDaemonHandler().stopDaemonTask();
         }
-        ClientEngine.getInstance().getDaemonHandler().sendMsgToDaemon(sigType);
-        
-      } catch (RemoteException e) {
-        e.printStackTrace();
+      } catch (Exception e) {
+        Logger.w(TAG, e.toString());
       }
     } else {
       ActivityUtil.stopDaemonService(this);

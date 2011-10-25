@@ -29,10 +29,11 @@ public class DaemonHandler implements AppHandler {
   /*
    * Constants
    */
-  public static final String ACTION_DAEMON_SVC = "studentpal.daemon";
+  public static final String ACTION_DAEMON_SVC = "spaldaemon.intent.action.daemonsvc";
+  public static final String ACTION_DAEMON_LAUNCHER_SCR = "spaldaemon.intent.action.launcherscr";
   
   public static final int DAEMON_WATCHDOG_INTERVAL = 500;   //milliseconds为单位
-  public static final int DAEMON_WATCHDOG_TIMEOUT  = DAEMON_WATCHDOG_INTERVAL * 2; 
+  public static final int DAEMON_WATCHDOG_TIMEOUT_LEN  = DAEMON_WATCHDOG_INTERVAL * 2; 
   
   /*
    * Field members
@@ -65,17 +66,31 @@ public class DaemonHandler implements AppHandler {
   @Override
   public void launch() {
     initialize();
-    launchDaemonService();
+    startDaemonTask();
   }
 
   @Override
   public void terminate() {
+    stopDaemonTask();
+  }
+
+  public void startDaemonTask() {
+    //no matter if Daemon service is running or not,
+    //start it anyway and bind to it next.
+    ActivityUtil.startDaemonService(launcher);
+    Utils.sleep(200);  //FIXME -- maybe not useful
+    doBindService(); 
+  }
+  
+  public void stopDaemonTask() {
     ((IncomingHandler) this.msgHandler).terminate();
     doUnbindService();
   }
-
   
-  
+  public void exitDaemonService() throws RemoteException {
+    int sigType = Event.SIGNAL_TYPE_EXIT_DAEMONTASK;
+    ClientEngine.getInstance().getDaemonHandler().sendMsgToDaemon(sigType);
+  }
   
   // ///////////////////////////////////////////////////////////////////////////
   private void initialize() {
@@ -90,16 +105,8 @@ public class DaemonHandler implements AppHandler {
     mSvcConnection = new MyServiceConnection();
   }
   
-  private void launchDaemonService() {
-    //no matter if Daemon service is running or not,
-    //start it anyway and bind to it next.
-    ActivityUtil.startDaemonService(launcher);
-    Utils.sleep(200);  //FIXME -- maybe not useful
-    doBindService();  
-  }
-
   private void doBindService() {
-    Logger.d(TAG, "Binding to Daemon task!");
+    Logger.d(TAG, "Binding to Daemon service!");
     
     // Establish a connection with the service.
     launcher.bindService(new Intent(ACTION_DAEMON_SVC), 
@@ -108,7 +115,7 @@ public class DaemonHandler implements AppHandler {
   }
 
   private void doUnbindService() {
-    Logger.d(TAG, "Unbinding from Daemon task!");
+    Logger.d(TAG, "Unbinding from Daemon service!");
     
     if (bBoundToDaemon) {
       // If we have received the service, and hence registered with
@@ -143,6 +150,7 @@ public class DaemonHandler implements AppHandler {
 
   /////////////////////////////////////////////////////////////////////////////
   class MyServiceConnection implements ServiceConnection {
+    
     public void onServiceConnected(ComponentName className, IBinder service) {
       Logger.d(TAG, "Connected to Daemon service @ "+service);
 
@@ -180,7 +188,6 @@ public class DaemonHandler implements AppHandler {
    */
   class IncomingHandler extends Handler {
     //private static final String TAG = "DaemonHandler.IncomingHandler";
-    
     void terminate() {
       Logger.d(TAG, "IncomingHandler.terminate()!");
       removeMessages(SIGNAL_TYPE_DAEMON_WD_TIMEOUT);
@@ -202,7 +209,7 @@ public class DaemonHandler implements AppHandler {
           Logger.w(TAG, e.toString());
         }
         sendEmptyMessageDelayed(SIGNAL_TYPE_DAEMON_WD_TIMEOUT,
-            DaemonHandler.DAEMON_WATCHDOG_TIMEOUT);
+            DaemonHandler.DAEMON_WATCHDOG_TIMEOUT_LEN);
         break;
 
       case SIGNAL_TYPE_DAEMON_WD_TIMEOUT:
@@ -210,7 +217,7 @@ public class DaemonHandler implements AppHandler {
         if (false == ActivityUtil.isServiceRunning(launcher,
             ResourceManager.DAEMON_SVC_PKG_NAME)) {
           Logger.w(TAG, "Daemon is NOT running, relaunching it!");
-          launchDaemonService();
+          startDaemonTask();
 
         } else {
           Logger.w(TAG, "Daemon is still running.");

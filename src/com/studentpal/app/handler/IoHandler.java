@@ -17,6 +17,7 @@ import com.studentpal.engine.Event;
 import com.studentpal.engine.request.Request;
 import com.studentpal.model.codec.Codec;
 import com.studentpal.model.exception.STDException;
+import com.studentpal.R;
 import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
 
@@ -107,6 +108,7 @@ public class IoHandler implements AppHandler {
     String addr = "";
     addr = "192.168.10.100";
     //addr = "10.60.4.64";
+    addr = engine.getContext().getResources().getString(R.string.target_svr_ip);
     
     //Read from Launcher Screen
     if (Utils.isEmptyString(serverIP) == false) {
