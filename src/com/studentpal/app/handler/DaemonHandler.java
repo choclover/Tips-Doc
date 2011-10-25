@@ -75,15 +75,7 @@ public class DaemonHandler implements AppHandler {
   }
 
   
-  public void sendMsgToDaemon(int msgtype) throws RemoteException {
-    if (mMsgerToDaemon == null) {
-      Logger.w(TAG, "Messanger To Daemon should NOT be NULL!");
-      throw new RemoteException();
-    }
-    Message msg = Message.obtain(null, msgtype);
-    msg.replyTo = mMsgerToMyself;
-    mMsgerToDaemon.send(msg);
-  }
+  
   
   // ///////////////////////////////////////////////////////////////////////////
   private void initialize() {
@@ -106,7 +98,7 @@ public class DaemonHandler implements AppHandler {
     doBindService();  
   }
 
-  void doBindService() {
+  private void doBindService() {
     Logger.d(TAG, "Binding to Daemon task!");
     
     // Establish a connection with the service.
@@ -115,7 +107,7 @@ public class DaemonHandler implements AppHandler {
     bBoundToDaemon = true;
   }
 
-  void doUnbindService() {
+  private void doUnbindService() {
     Logger.d(TAG, "Unbinding from Daemon task!");
     
     if (bBoundToDaemon) {
@@ -137,6 +129,16 @@ public class DaemonHandler implements AppHandler {
       
       bBoundToDaemon = false;
     }
+  }
+  
+  private void sendMsgToDaemon(int msgtype) throws RemoteException {
+    if (mMsgerToDaemon == null) {
+      Logger.w(TAG, "Messanger To Daemon should NOT be NULL!");
+      throw new RemoteException();
+    }
+    Message msg = Message.obtain(null, msgtype);
+    msg.replyTo = mMsgerToMyself;
+    mMsgerToDaemon.send(msg);
   }
 
   /////////////////////////////////////////////////////////////////////////////

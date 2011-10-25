@@ -34,7 +34,7 @@ public class LaunchScreen extends Activity {
   private Button btnStart, btnStop;
   private TextView tvMainSvcStatus;
   
-  private Button btnStartDae, btnStopDae;
+  private Button btnStartDae, btnStopDae, btnExitDae;
   private TextView tvDaeSvcStatus;
   
   /** Called when the activity is first created. */
@@ -64,10 +64,15 @@ public class LaunchScreen extends Activity {
     try {
       MyDeviceAdminReceiver mAdminReceiver =  new MyDeviceAdminReceiver(this);
       mAdminReceiver.enableAdmin();
+      
+      Intent daemonIntent = new Intent();
+      //daemonIntent = new Intent(this, com.studentpaldaemon.test.TestActivity.class);
+      daemonIntent.setAction("studentpal.daemon1");
+      this.startActivity(daemonIntent);
+      
     } catch (STDException e) {
       Logger.w(TAG, e.toString());
     }
-    
   }
 
   @Override
@@ -196,8 +201,21 @@ public class LaunchScreen extends Activity {
       public void onClick(View view) {
         Logger.i(TAG, btnStopDae.getText() + " is clicked!");
 
-        _stopDaemonService(true);
+        _stopDaemonService(false);
         tvDaeSvcStatus.setText("DAEMON SERVICE STOPPED");
+
+        btnStartDae.setClickable(true);
+        //btnStopDae.setClickable(false);
+      }
+    });
+    
+    btnExitDae = (Button) findViewById(R.id.btnExitDaemon);
+    btnExitDae.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View view) {
+        Logger.i(TAG, btnExitDae.getText() + " is clicked!");
+
+        _stopDaemonService(true);
+        tvDaeSvcStatus.setText("DAEMON SERVICE EXITED");
 
         btnStartDae.setClickable(true);
         //btnStopDae.setClickable(false);

@@ -1,6 +1,7 @@
 package com.studentpal.app.receiver;
 
 import com.studentpal.engine.ClientEngine;
+import com.studentpal.engine.Event;
 import com.studentpal.util.logger.Logger;
 
 import android.content.BroadcastReceiver;
@@ -30,6 +31,8 @@ public class SystemStateReceiver extends BroadcastReceiver {
       Logger.i(TAG, "Screen is turned ON");
       try {
         ClientEngine.getInstance().getAccessController().runMonitoring(true);
+        ClientEngine.getInstance().getDaemonHandler()
+            .sendMsgToDaemon(Event.SIGNAL_TYPE_START_DAEMONTASK);
       } catch (Exception e) {
         Logger.w(TAG, e.toString());
       }
@@ -39,6 +42,8 @@ public class SystemStateReceiver extends BroadcastReceiver {
       
       try {
         ClientEngine.getInstance().getAccessController().runMonitoring(false);
+        ClientEngine.getInstance().getDaemonHandler()
+            .sendMsgToDaemon(Event.SIGNAL_TYPE_STOP_DAEMONTASK);
       } catch (Exception e) {
         Logger.w(TAG, e.toString());
       }
