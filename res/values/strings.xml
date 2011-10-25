@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, DaemonActivity!</string>
-    <string name="app_name">StudentPalClientDaemon</string>
-    <string name="device_admin_label">学伴成长守护进程</string>
-    <string name="device_admin_deactivated_warning">
-      若禁用此选项，您可能丧失对目标终端的管理。确定此操作吗？
-    </string>
+  <string name="mainapp_name">2SpalDaemon</string>
+  <string name="device_admin_label">学伴成长守护进程</string>
+  <string name="device_admin_deactivated_warning">
+    若禁用此选项，您可能丧失对目标终端的管理。确定此操作吗？
+  </string>
 </resources>

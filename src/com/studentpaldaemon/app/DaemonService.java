@@ -91,7 +91,7 @@ public class DaemonService extends Service {
     }
     
     if (forTest) {
-      runConterThread();
+      startConterThread();
     }
     
     // We want this service to continue running until it is explicitly
@@ -149,10 +149,10 @@ public class DaemonService extends Service {
       inner_th = new Thread(new Runnable() {
         @Override
         public void run() {
-          int cnt = 1;
+          int counter = 1;
           while (false == stop) {
-            if (cnt > 10000) cnt=1;
-            Logger.v(TAG, "Daemon is running @ " + cnt++);
+            if (counter > 10000) counter=1;
+            Logger.v(TAG, "Daemon is running @ " + counter++);
 
             try { Thread.sleep(3000); }
             catch (InterruptedException e) { }
@@ -164,7 +164,7 @@ public class DaemonService extends Service {
     }
   }
   
-  private void runConterThread() {
+  private void startConterThread() {
     if (forTest) CounterThread.start();
   }
   private void stopConterThread() {
@@ -268,7 +268,7 @@ public class DaemonService extends Service {
   }
   
   /**
-   * Utility Functions
+   * Utility Functions -- will moved to common class shared with MainAppService
    */
   private RunningAppProcessInfo findRunningAppProcess(String appProcName) {
     RunningAppProcessInfo result = null;
@@ -322,6 +322,9 @@ public class DaemonService extends Service {
           break;
        
         case SIGNAL_TYPE_DAEMON_WD_RESP:
+          /* received watch dog response from MainAppService, so remove Timeout
+           * signal and send out next watch dog request later.
+           */
           this.removeMessages(SIGNAL_TYPE_DAEMON_WD_TIMEOUT);
           break; 
           
