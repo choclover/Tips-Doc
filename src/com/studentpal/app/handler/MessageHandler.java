@@ -5,7 +5,6 @@ import static com.studentpal.engine.Event.*;
 import android.os.Message;
 import android.os.RemoteException;
 
-import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.request.Request;
 import com.studentpal.model.exception.STDException;

@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import com.studentpal.engine.AppHandler;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.model.AccessCategory;
 import com.studentpal.model.ClientAppInfo;

@@ -19,6 +19,7 @@ import android.telephony.TelephonyManager;
 import com.studentpal.app.ResourceManager;
 import com.studentpal.app.db.DBaseManager;
 import com.studentpal.app.handler.AccessController;
+import com.studentpal.app.handler.AppHandler;
 import com.studentpal.app.handler.DaemonHandler;
 import com.studentpal.app.handler.IoHandler;
 import com.studentpal.app.handler.MessageHandler;

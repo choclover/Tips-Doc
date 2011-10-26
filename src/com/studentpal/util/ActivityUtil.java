@@ -12,6 +12,7 @@ import com.studentpal.util.logger.Logger;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.AlertDialog;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.admin.DevicePolicyManager;
@@ -172,6 +173,17 @@ public class ActivityUtil {
   }
   
   //////////////////////////////////////////////////////////////////////////////
+  public static String getTopActivityName(Object app) {
+    String actName = "";
+    if (app instanceof RunningAppProcessInfo) {
+      actName = ((RunningAppProcessInfo)app).processName;
+    } else if (app instanceof RunningTaskInfo) {
+      actName = ((RunningTaskInfo)app).topActivity.getPackageName();
+    }
+    
+    return actName;
+  }
+  
   public static void exitApp() {
     int pid = android.os.Process.myPid();
     android.os.Process.killProcess(pid);

@@ -3,8 +3,7 @@ package com.studentpal.app.handler;
 import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_REQ;
 import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_RESP;
 import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_TIMEOUT;
-import static com.studentpal.engine.Event.SIGNAL_TYPE_START_DAEMONTASK;
-import static com.studentpal.engine.Event.SIGNAL_TYPE_STOP_DAEMONTASK;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,14 +15,14 @@ import android.os.Messenger;
 import android.os.RemoteException;
 
 import com.studentpal.app.ResourceManager;
-import com.studentpal.engine.AppHandler;
+import com.studentpal.app.listener.ProcessListener;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.Event;
 import com.studentpal.util.ActivityUtil;
 import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
 
-public class DaemonHandler implements AppHandler {
+public class DaemonHandler implements AppHandler, ProcessListener {
   private static final String TAG = "@@ DaemonHandler";
   
   /*
@@ -87,6 +86,15 @@ public class DaemonHandler implements AppHandler {
   public void exitDaemonService() throws RemoteException {
     int sigType = Event.SIGNAL_TYPE_EXIT_DAEMONTASK;
     sendMsgToDaemon(sigType);
+  }
+  
+  @Override
+  public void notifyProcessIsForeground(boolean isForeground) {
+    if (isForeground) {
+      startDaemonTask();
+    } else {
+      stopDaemonTask();
+    }
   }
   
   // ///////////////////////////////////////////////////////////////////////////
@@ -226,5 +234,6 @@ public class DaemonHandler implements AppHandler {
 
       }
     }
-  }
+  }//class IncomingHandler
+
 }
