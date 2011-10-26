@@ -4,9 +4,9 @@
 		<access_cate cate_id="101" cate_name="Cate 1">
 			<access_rule auth_type="access_denied" repeat_type="daily"
 				repeat_value="0">
-				<time_range start_time="7:30" end_time="8:00"></time_range>
-				<time_range start_time="12:04" end_time="12:06"></time_range>
-				<time_range start_time="0:2" end_time="0:30"></time_range>
+				<time_range start_time="0:1" end_time="0:30"></time_range>
+				<time_range start_time="20:04" end_time="20:45"></time_range>
+				<time_range start_time="22:0" end_time="22:30"></time_range>
 			</access_rule>
 
 			<access_rule auth_type="access_permitted" repeat_type="weekly"

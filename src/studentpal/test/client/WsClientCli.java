@@ -55,7 +55,7 @@ public class WsClientCli {
   
   /*
    * JDK6 WS client
-   * wsimport -d ./bin/ -s ./src -p studentpal.ws.wsclient http://192.168.10.100:9090/StudentPal/PhoneConnector?wsdl
+   * wsimport -d ./bin/ -s ./src -p studentpal.ws.wsclient http://192.168.1.250:9090/StudentPal/PhoneConnector?wsdl
    * wsimport -d ./bin/ -s ./src -p studentpal.ws.wsclient http://coeustec.gicp.net:9090/StudentPal/PhoneConnector?wsdl
    */
   private PhoneConnectorWsService pcWsService;
