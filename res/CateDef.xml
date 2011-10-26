@@ -5,13 +5,13 @@
 			<access_rule auth_type="access_denied" repeat_type="daily"
 				repeat_value="0">
 				<time_range start_time="0:1" end_time="0:30"></time_range>
-				<time_range start_time="20:04" end_time="20:45"></time_range>
+				<time_range start_time="7:04" end_time="7:45"></time_range>
 				<time_range start_time="22:0" end_time="22:30"></time_range>
 			</access_rule>
 
 			<access_rule auth_type="access_permitted" repeat_type="weekly"
 				repeat_value="wednesday,thursday,friday,saturday">
-				<time_range start_time="7:54" end_time="7:55"></time_range>
+				<time_range start_time="8:54" end_time="8:55"></time_range>
 				<time_range start_time="17:56" end_time="18:59"></time_range>
 			</access_rule>
  
@@ -21,7 +21,7 @@
 			<access_rule auth_type="access_denied" repeat_type="weekly"
 				repeat_value="monday,tuesday,sunday">
 				<time_range start_time="6:25" end_time="6:32"></time_range>
-				<time_range start_time="7:0" end_time="7:23"></time_range>
+				<time_range start_time="8:0" end_time="8:23"></time_range>
 			</access_rule>
 		</access_cate>
 	</access_categories>
