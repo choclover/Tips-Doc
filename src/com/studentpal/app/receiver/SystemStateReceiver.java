@@ -48,15 +48,20 @@ public class SystemStateReceiver extends BroadcastReceiver {
       }
       
     } else if (action.equals(Intent.ACTION_MAIN)) {
-      ComponentName cmp = intent.getComponent();
-      Logger.i(TAG, "Got Intent of Pkg Name:" +cmp.getPackageName()+ "\tCls Name:"+cmp.getClassName());
-      if (cmp.getClassName().equals("com.android.settings.ManangeApplications")) {
-        Logger.i(TAG, "Setting->Manage applications is launched, to start DAEMON task!");
-        ClientEngine.getInstance().getDaemonHandler().startDaemonTask();
-      } else {
-        Logger.i(TAG, "Other application is launched, to stop DAEMON task!");
-        ClientEngine.getInstance().getDaemonHandler().stopDaemonTask();
-      }
+      //Launching an activity does NOT broadcast a MAIN action
+      Logger.i(TAG, "Received ACTION_MAIN!");
+      
+//      ComponentName cmp = intent.getComponent();
+//      if (cmp != null) {
+//        Logger.i(TAG, "Got Intent of Pkg Name:" +cmp.getPackageName()+ "\tCls Name:"+cmp.getClassName());
+//        if (cmp.getClassName().equals("com.android.settings.ManangeApplications")) {
+//          Logger.i(TAG, "Setting->Manage applications is launched, to start DAEMON task!");
+//          ClientEngine.getInstance().getDaemonHandler().startDaemonTask();
+//        } else {
+//          Logger.i(TAG, "Other application is launched, to stop DAEMON task!");
+//          ClientEngine.getInstance().getDaemonHandler().stopDaemonTask();
+//        }
+//      }
     }
   }
 

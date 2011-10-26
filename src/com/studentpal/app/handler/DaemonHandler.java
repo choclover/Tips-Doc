@@ -29,9 +29,6 @@ public class DaemonHandler implements AppHandler {
   /*
    * Constants
    */
-  public static final String ACTION_DAEMON_SVC = "spaldaemon.intent.action.daemonsvc";
-  public static final String ACTION_DAEMON_LAUNCHER_SCR = "spaldaemon.intent.action.launcherscr";
-  
   public static final int DAEMON_WATCHDOG_INTERVAL = 500;   //milliseconds为单位
   public static final int DAEMON_WATCHDOG_TIMEOUT_LEN  = DAEMON_WATCHDOG_INTERVAL * 2; 
   
@@ -89,7 +86,7 @@ public class DaemonHandler implements AppHandler {
   
   public void exitDaemonService() throws RemoteException {
     int sigType = Event.SIGNAL_TYPE_EXIT_DAEMONTASK;
-    ClientEngine.getInstance().getDaemonHandler().sendMsgToDaemon(sigType);
+    sendMsgToDaemon(sigType);
   }
   
   // ///////////////////////////////////////////////////////////////////////////
@@ -109,7 +106,7 @@ public class DaemonHandler implements AppHandler {
     Logger.d(TAG, "Binding to Daemon service!");
     
     // Establish a connection with the service.
-    launcher.bindService(new Intent(ACTION_DAEMON_SVC), 
+    launcher.bindService(new Intent(Event.ACTION_DAEMON_SVC), 
         mSvcConnection, Context.BIND_AUTO_CREATE);
     bBoundToDaemon = true;
   }

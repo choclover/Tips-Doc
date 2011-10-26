@@ -5,6 +5,7 @@ import java.util.List;
 import com.studentpal.app.ResourceManager;
 import com.studentpal.app.handler.DaemonHandler;
 import com.studentpal.app.receiver.MyDeviceAdminReceiver;
+import com.studentpal.engine.Event;
 import com.studentpal.ui.LaunchScreen;
 import com.studentpal.util.logger.Logger;
 
@@ -216,7 +217,7 @@ public class ActivityUtil {
   
   public static void startDaemonService(Context context) {
     Intent i = new Intent();
-    i.setAction(DaemonHandler.ACTION_DAEMON_SVC);
+    i.setAction(Event.ACTION_DAEMON_SVC);
     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     
     Object result = context.startService(i);
@@ -229,7 +230,7 @@ public class ActivityUtil {
   
   public static void stopDaemonService(Context context) {
     Intent i = new Intent();
-    i.setAction(DaemonHandler.ACTION_DAEMON_SVC);
+    i.setAction(Event.ACTION_DAEMON_SVC);
     Logger.d(TAG, "Ready to stop daemon service!");
     
     boolean succ = context.stopService(i);
@@ -275,13 +276,18 @@ public class ActivityUtil {
   
   public static RunningAppProcessInfo findRunningAppProcess(
       Context mContext, String classname) {
-    RunningAppProcessInfo result = null;
-
     ActivityManager activityManager = (ActivityManager) mContext
         .getSystemService(Context.ACTIVITY_SERVICE);
+    
+    return findRunningAppProcess(activityManager, classname);
+  }
+  
+  public static RunningAppProcessInfo findRunningAppProcess(
+      ActivityManager activityManager, String classname) {
+    RunningAppProcessInfo result = null;
+
     List<RunningAppProcessInfo> processes = activityManager
         .getRunningAppProcesses();
-    
     for (RunningAppProcessInfo process : processes) {
       String pname = process.processName;
       // Logger..d(TAG, pname);
@@ -292,4 +298,9 @@ public class ActivityUtil {
     }
     return result;
   }
-}
+  
+  
+}//class ActivityUtil
+  
+  
+  

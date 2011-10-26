@@ -33,6 +33,7 @@ public class LaunchScreen extends Activity {
    * Member fields
    */
   private Button btnStart, btnStop;
+  private Button btnSendAction;
   private TextView tvMainSvcStatus;
   
   private Button btnStartDae, btnStopDae, btnExitDae;
@@ -70,7 +71,7 @@ public class LaunchScreen extends Activity {
       
       Intent daemonIntent = new Intent();
       //daemonIntent = new Intent(this, com.studentpaldaemon.test.TestActivity.class);
-      daemonIntent.setAction(DaemonHandler.ACTION_DAEMON_LAUNCHER_SCR);  //FIXME: should be same action with in Manifest
+      daemonIntent.setAction(Event.ACTION_DAEMON_LAUNCHER_SCR);  
       this.startActivity(daemonIntent);
       
     } catch (STDException e) {
@@ -182,6 +183,16 @@ public class LaunchScreen extends Activity {
       }
     });
 
+    btnSendAction = (Button) findViewById(R.id.btnSendAction);
+    btnSendAction.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View view) {
+        Logger.i(TAG, btnSendAction.getText() + " is clicked!");
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        sendBroadcast(intent);
+      }
+    });
+    
     btnStart.setClickable(true);
     //btnStop.setClickable(false);
   }

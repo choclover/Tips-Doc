@@ -23,6 +23,7 @@ import com.studentpal.model.rules.AccessRule;
 import com.studentpal.model.rules.Recurrence;
 import com.studentpal.model.rules.TimeRange;
 import com.studentpal.ui.AccessDeniedNotification;
+import com.studentpal.util.ActivityUtil;
 import com.studentpal.util.logger.Logger;
 
 
@@ -33,7 +34,7 @@ public class AccessController implements AppHandler {
   private static final String TAG = "@@ AccessController";
   //private static final boolean forTest = true;
 
-  private static final int MONITORTASK_INTERVAL = 2000;  //mill-seconds
+  private static final int MONITORTASK_INTERVAL = 3000;  //mill-seconds
   private static final int MAX_WATCHED_APP_NUMBER = 64;
   
   /*
@@ -120,15 +121,15 @@ public class AccessController implements AppHandler {
       killRestrictedProcs();
       
       //we cannot reuse the old Timer if it is ever cancelled, so have to recreate one
-      if (_monitorTask == null) {
-        _monitorTask = getMonitorTask();
-      } else {
+      if (_monitorTask != null) {
         _monitorTask.cancel();
       }
+      _monitorTask = getMonitorTask();
       
       if (_monitorTimer != null) {
         _monitorTimer.purge();
         _monitorTimer.cancel();
+        _monitorTimer = null;
       }
       _monitorTimer = new Timer();
       _monitorTimer.schedule(_monitorTask, 0, MONITORTASK_INTERVAL);
@@ -196,7 +197,7 @@ public class AccessController implements AppHandler {
         
       for (Object app : runningApps) {
         String pkgName = null;
-        String clzName = null;
+        //String clzName = null;
         if (app instanceof RunningAppProcessInfo) {
           pkgName = ((RunningAppProcessInfo)app).processName;
           
@@ -214,7 +215,7 @@ public class AccessController implements AppHandler {
             appProc = (RunningAppProcessInfo)app;
             
           } else /*if (app instanceof RunningTaskInfo)*/ {
-            appProc = findRunningAppProcess(pkgName);
+            appProc = ActivityUtil.findRunningAppProcess(activityManager, pkgName);
             if (appProc == null) {
               Logger.w(TAG, "Cannot find process for task " + pkgName);
               continue;
@@ -457,21 +458,6 @@ public class AccessController implements AppHandler {
     return aCate;
   }
   
-  private RunningAppProcessInfo findRunningAppProcess(String classname) {
-    RunningAppProcessInfo result = null;
-    
-    List<RunningAppProcessInfo> processes = activityManager
-        .getRunningAppProcesses();
-    for (RunningAppProcessInfo process : processes) {
-      String pname = process.processName;
-      if (classname.equals(pname)) {
-        result = process;
-        break;
-      }
-    }
-    return result;
-  }
-
   private boolean killProcess(RunningAppProcessInfo p) {
     int apiVer = android.os.Build.VERSION.SDK_INT;
     String[] pkgs = p.pkgList;

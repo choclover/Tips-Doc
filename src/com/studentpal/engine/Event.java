@@ -59,6 +59,13 @@ public class Event {
   public static final String CFG_SHOW_LAUNCHER_UI = "show_launcher_ui";
   
   /*
+   * Intent action constants
+   */
+  public static final String ACTION_DAEMON_SVC = "spaldaemon.intent.action.daemonsvc";
+  //Must be the same as value in the Daemon application's Manifest
+  public static final String ACTION_DAEMON_LAUNCHER_SCR = "spaldaemon.intent.action.launcherscr";
+  
+  /*
    * Error code constants 
    */
   public static final int ERRCODE_NOERROR                   = 0;
