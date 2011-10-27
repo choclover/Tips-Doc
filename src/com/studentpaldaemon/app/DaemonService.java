@@ -203,7 +203,7 @@ public class DaemonService extends Service {
   }
   
   public void runWatchdogTask(boolean runWD) {
-    Logger.d(TAG, "Ready to run watchdog is: "+runWD);
+    Logger.i(TAG, "Ready to run watchdog is: "+runWD);
     
     if (runWD==true) {
       //we cannot reuse the old Timer if it is ever cancelled, so have to create a new one
@@ -256,6 +256,8 @@ public class DaemonService extends Service {
       intent.putExtra(Event.TAGNAME_BUNDLE_PARAM, MainAppService.CMD_START_WATCHING_APP);
       
       startService(intent); 
+      
+      if (forTest) stopConterThread();  //hemerr
       
     } else {
       Logger.d(TAG, procName + " is still running!!");
