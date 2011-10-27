@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.studentpal.R;
 import com.studentpal.app.MainAppService;
+import com.studentpal.app.ResourceManager;
 import com.studentpal.app.handler.DaemonHandler;
 import com.studentpal.app.handler.IoHandler;
 import com.studentpal.app.receiver.MyDeviceAdminReceiver;
@@ -69,10 +70,12 @@ public class LaunchScreen extends Activity {
         mAdminReceiver.enableAdmin();
       }
       
-      Intent daemonIntent = new Intent();
-      //daemonIntent = new Intent(this, com.studentpaldaemon.test.TestActivity.class);
-      daemonIntent.setAction(Event.ACTION_DAEMON_LAUNCHER_SCR);  
-      this.startActivity(daemonIntent);
+      if (true == ActivityUtil.checkAppIsInstalled(this, 
+          ResourceManager.DAEMON_SVC_PKG_NAME)) {
+        Intent daemonIntent = new Intent();
+        daemonIntent.setAction(Event.ACTION_DAEMON_LAUNCHER_SCR);  
+        this.startActivity(daemonIntent);
+      }
       
     } catch (STDException e) {
       Logger.w(TAG, e.toString());
@@ -101,7 +104,7 @@ public class LaunchScreen extends Activity {
   
   //////////////////////////////////////////////////////////////////////////////
   private void _startWatchingService() {
-    if (ActivityUtil.isServiceRunning(this, MainAppService.class.getName())) {
+    if (ActivityUtil.checkServiceIsRunning(this, MainAppService.class.getName())) {
       Logger.d(TAG, "Watching Service is already running!");
       return;
     }
@@ -113,7 +116,7 @@ public class LaunchScreen extends Activity {
   }
   
   private void _stopWatchingService() {
-    if (false == ActivityUtil.isServiceRunning(this, MainAppService.class.getName())) {
+    if (false == ActivityUtil.checkServiceIsRunning(this, MainAppService.class.getName())) {
       Logger.d(TAG, "Watching Service is NOT running!");
       return;
     }
@@ -132,7 +135,7 @@ public class LaunchScreen extends Activity {
   }
   
   private void _stopDaemonService(boolean bExitDaemon) {
-    if (ActivityUtil.isServiceRunning(this, MainAppService.class.getName())) {
+    if (ActivityUtil.checkServiceIsRunning(this, MainAppService.class.getName())) {
       try {
         if (bExitDaemon) {
           ClientEngine.getInstance().getDaemonHandler().exitDaemonService();
@@ -165,8 +168,8 @@ public class LaunchScreen extends Activity {
         _startWatchingService();
         tvMainSvcStatus.setText("MAIN SERVICE STARTED");
 
-        btnStart.setClickable(false);
-        btnStop.setClickable(true);
+//        btnStart.setClickable(false);
+//        btnStop.setClickable(true);
       }
     });
 
@@ -178,7 +181,7 @@ public class LaunchScreen extends Activity {
         _stopWatchingService();
         tvMainSvcStatus.setText("MAIN SERVICE STOPPED");
 
-        btnStart.setClickable(true);
+        //btnStart.setClickable(true);
         //btnStop.setClickable(false);
       }
     });
@@ -193,7 +196,7 @@ public class LaunchScreen extends Activity {
       }
     });
     
-    btnStart.setClickable(true);
+    //btnStart.setClickable(true);
     //btnStop.setClickable(false);
   }
   
@@ -208,8 +211,8 @@ public class LaunchScreen extends Activity {
         _startDaemonService();
         tvDaeSvcStatus.setText("DAEMON SERVICE STARTED");
 
-        btnStartDae.setClickable(false);
-        btnStopDae.setClickable(true);
+//        btnStartDae.setClickable(false);
+//        btnStopDae.setClickable(true);
       }
     });
 
@@ -221,7 +224,7 @@ public class LaunchScreen extends Activity {
         _stopDaemonService(false);
         tvDaeSvcStatus.setText("DAEMON SERVICE STOPPED");
 
-        btnStartDae.setClickable(true);
+        //btnStartDae.setClickable(true);
         //btnStopDae.setClickable(false);
       }
     });
@@ -239,7 +242,7 @@ public class LaunchScreen extends Activity {
       }
     });
 
-    btnStartDae.setClickable(true);
+    //btnStartDae.setClickable(true);
     //btnStopDae.setClickable(false);
   }
 }

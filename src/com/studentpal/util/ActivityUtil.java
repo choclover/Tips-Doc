@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -95,9 +96,9 @@ public class ActivityUtil {
     String packageName = PREFS_NAME;
     String result = "";
     try {
-      PackageInfo pkinfo = context.getPackageManager().getPackageInfo(
+      PackageInfo pkginfo = context.getPackageManager().getPackageInfo(
           packageName, PackageManager.GET_CONFIGURATIONS);
-      result = pkinfo.versionName;
+      result = pkginfo.versionName;
     } catch (NameNotFoundException e) {
       Logger.w(TAG, e.toString());
     }
@@ -109,9 +110,9 @@ public class ActivityUtil {
     String packageName = PREFS_NAME;
     int result = 0;
     try {
-      PackageInfo pkinfo = context.getPackageManager().getPackageInfo(
+      PackageInfo pkginfo = context.getPackageManager().getPackageInfo(
           packageName, PackageManager.GET_CONFIGURATIONS);
-      result = pkinfo.versionCode;
+      result = pkginfo.versionCode;
     } catch (NameNotFoundException e) {
       Logger.w(TAG, e.toString());
     }
@@ -174,14 +175,25 @@ public class ActivityUtil {
   
   //////////////////////////////////////////////////////////////////////////////
   public static String getTopActivityName(Object app) {
-    String actName = "";
+    String result = "";
     if (app instanceof RunningAppProcessInfo) {
-      actName = ((RunningAppProcessInfo)app).processName;
+      result = ((RunningAppProcessInfo)app).processName;
     } else if (app instanceof RunningTaskInfo) {
-      actName = ((RunningTaskInfo)app).topActivity.getPackageName();
+      result = ((RunningTaskInfo)app).topActivity.getPackageName();
     }
     
-    return actName;
+    return result;
+  }
+  
+  public static String getTopActivityClassName(Object app) {
+    String result = "";
+    if (app instanceof RunningAppProcessInfo) {
+      result = ((RunningAppProcessInfo)app).processName;
+    } else if (app instanceof RunningTaskInfo) {
+      result = ((RunningTaskInfo)app).topActivity.getClassName();
+    }
+    
+    return result;
   }
   
   public static void exitApp() {
@@ -252,13 +264,38 @@ public class ActivityUtil {
       Logger.d(TAG, "Stopping daemon service FAIL!");
     }
   }
+
+  /*
+   * 判断应用是否已经安装.
+   * @param context
+   * @param className 判断的服务的class name
+   */
+  public static boolean checkAppIsInstalled(Context context, String pkgName) {
+    if (context==null || Utils.isEmptyString(pkgName)) {
+      Logger.w(TAG, "Context is NULL or Service name is empty!");
+      return false;
+    }
+
+    boolean isInstalled = false;
+    try {
+      ApplicationInfo info = context.getPackageManager().getApplicationInfo(
+          pkgName, PackageManager.GET_UNINSTALLED_PACKAGES);
+      if (info != null) {
+        isInstalled = true;
+      }
+    } catch (NameNotFoundException e) {
+      Logger.w(TAG, e.toString());
+    }
+    
+    return isInstalled;
+  }
   
   /*
    * 判断服务是否运行.
    * @param context
    * @param className 判断的服务的class name
    */
-  public static boolean isServiceRunning(Context mContext, String svcClsName) {
+  public static boolean checkServiceIsRunning(Context mContext, String svcClsName) {
     boolean isRunning = false;
     if (null != findRunningService(mContext, svcClsName)) {
       isRunning = true;
@@ -266,8 +303,14 @@ public class ActivityUtil {
     return isRunning;
   }
   
+  
   public static RunningServiceInfo findRunningService(
       Context mContext, String svcClsName) {
+    if (mContext==null || Utils.isEmptyString(svcClsName)) {
+      Logger.w(TAG, "Context is NULL or Service name is empty!");
+      return null;
+    }
+    
     RunningServiceInfo result = null;
     
     ActivityManager activityManager = (ActivityManager) mContext

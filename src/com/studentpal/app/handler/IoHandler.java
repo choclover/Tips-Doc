@@ -51,6 +51,7 @@ public class IoHandler implements AppHandler {
    * Methods
    */
   private IoHandler() {
+    initialize();
   }
   
   public static IoHandler getInstance() {
@@ -65,7 +66,13 @@ public class IoHandler implements AppHandler {
     this.engine = ClientEngine.getInstance();  
     this.msgHandler = this.engine.getMsgHandler();
     
-    initialize();
+    Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        init_network();
+      }
+    };
+    new Thread(r).start();
   }
   
   @Override
@@ -153,13 +160,6 @@ public class IoHandler implements AppHandler {
   
   //////////////////////////////////////////////////////////////////////////////
   private void initialize() {
-    Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        init_network();
-      }
-    };
-    new Thread(r).start();
   }
   
   private void init_network() {

@@ -61,6 +61,7 @@ public class AccessController implements AppHandler {
    * Methods
    */
   private AccessController() {
+    initialize();
   }
   
   public static AccessController getInstance() {
@@ -71,9 +72,6 @@ public class AccessController implements AppHandler {
   }
 
   private void initialize() {
-    this.engine = ClientEngine.getInstance();
-    this.activityManager = engine.getActivityManager();
-
     if (_restrictedAppsMap != null) {
       _restrictedAppsMap.clear();
     } else {
@@ -97,13 +95,13 @@ public class AccessController implements AppHandler {
     } else {
       _accessCategoryList = new ArrayList<AccessCategory>();
     }
-    
   }
   
   @Override
   public void launch() {
-    initialize();
-    
+    this.engine = ClientEngine.getInstance();
+    this.activityManager = engine.getActivityManager();
+
     //_loadRestrictedApps(_restrictedAppsMap);
     //runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
     
@@ -127,12 +125,6 @@ public class AccessController implements AppHandler {
   
   public void runMonitoring(boolean runMonitor) {
     Logger.i(TAG, "Ready to run monitoring is: "+runMonitor);
-    
-    if (runMonitor==true) {
-      engine.getDaemonHandler().startDaemonTask();
-    } else {
-      engine.getDaemonHandler().stopDaemonTask();
-    }
     
     if (runMonitor==true) {
       //First, kill restricted processes that is already running
@@ -163,8 +155,6 @@ public class AccessController implements AppHandler {
         _monitorTimer = null;
       }
     }
-    
-    
   }
   
   public void appendRestrictedApp(ClientAppInfo appInfo) {
@@ -190,7 +180,13 @@ public class AccessController implements AppHandler {
         _restrictedAppsMap.remove(appInfo.getIndexingKey());
       }
     }
-    runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
+    
+    boolean bMonitor = _restrictedAppsMap.size()>0; 
+    runMonitoring(bMonitor);
+    engine.getDaemonHandler().getMsgHandler().sendEmptyMessage(
+        bMonitor ? Event.SIGNAL_TYPE_STOP_DAEMONTASK : 
+        Event.SIGNAL_TYPE_START_DAEMONTASK);
+
   }
   
   //remove and terminate original categories
@@ -202,6 +198,8 @@ public class AccessController implements AppHandler {
   }
   
   public void killRestrictedApps(List runningApps) {
+    if (_restrictedAppsMap==null || _restrictedAppsMap.size()==0) return;
+    
     synchronized (_restrictedAppsMap) {
       boolean restrictedAppFound = false;
         
@@ -288,11 +286,13 @@ public class AccessController implements AppHandler {
   
   public void registerProcessListener(String procName, 
       ProcessListener procListener) {
+    Logger.d(TAG, "Registering process listener for "+procName);
     _modifyProcListenerMap(procName, procListener, true);
   }
 
   public void unregisterProcessListener(String procName, 
       ProcessListener procListener) {
+    Logger.d(TAG, "Unregistering process listener for "+procName);
     _modifyProcListenerMap(procName, procListener, false);
   }
 
@@ -404,7 +404,12 @@ public class AccessController implements AppHandler {
         }
       }//sync
       
-      runMonitoring(_restrictedAppsMap.size()>0 ? true : false);
+      boolean bMonitor = _restrictedAppsMap.size()>0; 
+      runMonitoring(bMonitor);
+      engine.getDaemonHandler().getMsgHandler().sendEmptyMessage(
+          bMonitor ? Event.SIGNAL_TYPE_STOP_DAEMONTASK : 
+          Event.SIGNAL_TYPE_START_DAEMONTASK);
+      
     }
   }
   
@@ -491,10 +496,11 @@ public class AccessController implements AppHandler {
   }
 
   private void killRestrictedProcs() {
-    List<RunningAppProcessInfo> processes = activityManager
-        .getRunningAppProcesses();
+    if (_restrictedAppsMap==null || _restrictedAppsMap.size()==0) return;
     
     synchronized (_restrictedAppsMap) {
+      List<RunningAppProcessInfo> processes = activityManager
+          .getRunningAppProcesses();
       for (RunningAppProcessInfo process : processes) {
         String pname = process.processName;
         if (_restrictedAppsMap.containsKey(pname)
@@ -533,16 +539,17 @@ public class AccessController implements AppHandler {
       return;
     }
    
-    String topActName = ActivityUtil.getTopActivityName(runningApps.get(0));
+    String topClzName = ActivityUtil.getTopActivityClassName(runningApps.get(0));
+    Logger.d(TAG, "Top running activity is: "+topClzName);
     for (String actName : _processListenerMap.keySet()) {
       ProcessListenerInfo listenerInfo = _processListenerMap.get(actName);
       
-      if (actName.equals(topActName)) {
+      if (actName.equals(topClzName)) {
         //如果刚开始监听当前前台activity，前一时刻并没有监听，即该activity刚被启动起来
         if (false == listenerInfo.isForegroundState()) {
           Set<ProcessListener> listenerSet = listenerInfo.getListener();
           for (ProcessListener listener : listenerSet) {
-            listener.notifyProcessIsForeground(true);  //该activity被调度到前台
+            listener.notifyProcessIsForeground(true, actName);  //该activity被调度到前台
           }
           listenerInfo.setToForegroundState(true);
           
@@ -555,21 +562,20 @@ public class AccessController implements AppHandler {
         if (true == listenerInfo.isForegroundState()) {
           Set<ProcessListener> listenerSet = listenerInfo.getListener();
           for (ProcessListener listener : listenerSet) {
-            listener.notifyProcessIsForeground(false);  //该activity被调度到后台
+            listener.notifyProcessIsForeground(false, actName);  //该activity被调度到后台
           }
           listenerInfo.setToForegroundState(false);
         } else {
           //Do nothing
         }
-        
       }
     }
-    
     
   }
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
 class TestCase {
   private final static String TAG = AccessController.TAG+".TestCase";
   

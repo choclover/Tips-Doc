@@ -32,7 +32,8 @@ public class SystemStateReceiver extends BroadcastReceiver {
       Logger.i(TAG, "Screen is turned ON");
       try {
         ClientEngine.getInstance().getAccessController().runMonitoring(true);
-        ClientEngine.getInstance().getDaemonHandler().startDaemonTask();
+        //No need to start daemon task further
+        //ClientEngine.getInstance().getDaemonHandler().startDaemonTask();
       } catch (Exception e) {
         Logger.w(TAG, e.toString());
       }
@@ -42,6 +43,7 @@ public class SystemStateReceiver extends BroadcastReceiver {
       
       try {
         ClientEngine.getInstance().getAccessController().runMonitoring(false);
+        //Do need to stop daemon task
         ClientEngine.getInstance().getDaemonHandler().stopDaemonTask();
       } catch (Exception e) {
         Logger.w(TAG, e.toString());
@@ -54,7 +56,7 @@ public class SystemStateReceiver extends BroadcastReceiver {
 //      ComponentName cmp = intent.getComponent();
 //      if (cmp != null) {
 //        Logger.i(TAG, "Got Intent of Pkg Name:" +cmp.getPackageName()+ "\tCls Name:"+cmp.getClassName());
-//        if (cmp.getClassName().equals("com.android.settings.ManangeApplications")) {
+//        if (cmp.getClassName().equals(Event.ACTIVITY_NAME_MANAGEAPPS)) {
 //          Logger.i(TAG, "Setting->Manage applications is launched, to start DAEMON task!");
 //          ClientEngine.getInstance().getDaemonHandler().startDaemonTask();
 //        } else {

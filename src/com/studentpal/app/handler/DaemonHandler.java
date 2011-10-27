@@ -1,8 +1,6 @@
 package com.studentpal.app.handler;
 
-import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_REQ;
-import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_RESP;
-import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_TIMEOUT;
+import static com.studentpal.engine.Event.*;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -50,6 +48,7 @@ public class DaemonHandler implements AppHandler, ProcessListener {
   
   //////////////////////////////////////////////////////////////////////////////
   private DaemonHandler() {
+    initialize();
   }
 
   public static DaemonHandler getInstance() {
@@ -61,8 +60,21 @@ public class DaemonHandler implements AppHandler, ProcessListener {
 
   @Override
   public void launch() {
-    initialize();
-    startDaemonTask();
+    this.engine = ClientEngine.getInstance();
+    this.launcher = engine.getContext();
+    this.msgHandler = new IncomingHandler();
+    /**
+     * Target we publish for Daemon service to send messages to MessageHandler/myself.
+     */
+    mMsgerToMyself = new Messenger(msgHandler);
+    mSvcConnection = new MyServiceConnection();
+    
+    this.engine.getAccessController().registerProcessListener(
+        ResourceManager.ACTIVITY_NAME_MANAGEAPPS, this);
+    
+    if (false) {  //hemerr
+      startDaemonTask();
+    }
   }
 
   @Override
@@ -70,6 +82,10 @@ public class DaemonHandler implements AppHandler, ProcessListener {
     stopDaemonTask();
   }
 
+  public Handler getMsgHandler() {
+    return this.msgHandler;
+  }
+  
   public void startDaemonTask() {
     //no matter if Daemon service is running or not,
     //start it anyway and bind to it next.
@@ -89,7 +105,7 @@ public class DaemonHandler implements AppHandler, ProcessListener {
   }
   
   @Override
-  public void notifyProcessIsForeground(boolean isForeground) {
+  public void notifyProcessIsForeground(boolean isForeground, String procName) {
     if (isForeground) {
       startDaemonTask();
     } else {
@@ -97,17 +113,18 @@ public class DaemonHandler implements AppHandler, ProcessListener {
     }
   }
   
+  //start or stop Daemon task according to the status of monitoring task 
+  //in AccessController
+  public void handleMonitorTaskRunning(boolean running) {
+    Logger.d(TAG, "To handle Monitor Task Running state of: "+running);
+    if (running) {
+      stopDaemonTask();
+    } else {
+      startDaemonTask();
+    }
+  }
   // ///////////////////////////////////////////////////////////////////////////
   private void initialize() {
-    this.engine = ClientEngine.getInstance();
-    this.launcher = engine.getContext();
-    this.msgHandler = new IncomingHandler();
-    
-    /**
-     * Target we publish for Daemon service to send messages to MessageHandler/myself.
-     */
-    mMsgerToMyself = new Messenger(msgHandler);
-    mSvcConnection = new MyServiceConnection();
   }
   
   private void doBindService() {
@@ -219,7 +236,7 @@ public class DaemonHandler implements AppHandler, ProcessListener {
 
       case SIGNAL_TYPE_DAEMON_WD_TIMEOUT:
         Logger.w(TAG, "Waiting for Daemon Watchdog request has timeout!");
-        if (false == ActivityUtil.isServiceRunning(launcher,
+        if (false == ActivityUtil.checkServiceIsRunning(launcher,
             ResourceManager.DAEMON_SVC_PKG_NAME)) {
           Logger.w(TAG, "Daemon is NOT running, relaunching it!");
           startDaemonTask();
@@ -228,7 +245,15 @@ public class DaemonHandler implements AppHandler, ProcessListener {
           Logger.w(TAG, "Daemon is still running.");
         }
         break;
-
+        
+      case SIGNAL_TYPE_START_DAEMONTASK:
+        startDaemonTask();
+        break;
+      
+      case SIGNAL_TYPE_STOP_DAEMONTASK:
+        stopDaemonTask();
+        break;
+        
       default:
         super.handleMessage(msg);
 
