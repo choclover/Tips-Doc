@@ -5,6 +5,7 @@ public class ResourceManager {
   public static final String APPLICATION_PKG_NAME = "com.studentpal"; 
   public static final String DAEMON_SVC_PKG_NAME = "com.studentpaldaemon";
   public static final String ACTIVITY_NAME_MANAGEAPPS  = "com.android.settings.ManageApplications";
+  public static final String ACTIVITY_NAME_APPSDETAILS = "com.android.settings.InstalledAppDetails";
   
   public static final String RES_STR_OK = "\u786e\u5b9a"; // 确定
   public static final String RES_STR_CANCEL = "\u53d6\u6d88"; // 取消

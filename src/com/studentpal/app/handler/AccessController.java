@@ -21,6 +21,7 @@ import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.Event;
 import com.studentpal.model.AccessCategory;
 import com.studentpal.model.ClientAppInfo;
+import com.studentpal.model.ProcessListenerInfo;
 import com.studentpal.model.exception.STDException;
 import com.studentpal.model.rules.AccessRule;
 import com.studentpal.model.rules.Recurrence;
@@ -55,7 +56,11 @@ public class AccessController implements AppHandler {
   private HashMap<String, String> _restrictedAppsMap;
   private Set<String>             _processInKillingSet;
   
-  private Map<String, ProcessListenerInfo>   _processListenerMap;
+  private Set<ProcessListenerInfo>   _processListenerAry;
+  
+  //标志位指示所有的category是否已经加载
+  private boolean catesReschduled = false;
+  
   
   /*
    * Methods
@@ -84,10 +89,10 @@ public class AccessController implements AppHandler {
       _processInKillingSet = new HashSet<String>();
     }
     
-    if (_processListenerMap != null) {
-      _processListenerMap.clear();
+    if (_processListenerAry != null) {
+      _processListenerAry.clear();
     } else {
-      _processListenerMap = new HashMap<String, ProcessListenerInfo>();
+      _processListenerAry = new HashSet<ProcessListenerInfo>();
     }
     
     if (_accessCategoryList != null) {
@@ -157,20 +162,22 @@ public class AccessController implements AppHandler {
     }
   }
   
-  public void appendRestrictedApp(ClientAppInfo appInfo) {
-    ArrayList<ClientAppInfo> appList = new ArrayList<ClientAppInfo>(1);
-    appendRestrictedAppList(appList);
-  }
+  //Not invoked yet
+//  public void appendRestrictedApp(ClientAppInfo appInfo) {
+//    ArrayList<ClientAppInfo> appList = new ArrayList<ClientAppInfo>(1);
+//    appendRestrictedAppList(appList);
+//  }
   
   public void appendRestrictedAppList(List<ClientAppInfo> appList) {
     boolean append = true;
     _setRestrictedAppList(this._restrictedAppsMap, appList, append);
   }
   
-  public void setRestrictedAppList(List<ClientAppInfo> appList) {
-    boolean append = false;
-    _setRestrictedAppList(this._restrictedAppsMap, appList, append);
-  }
+  //Not invoked yet
+//  public void setRestrictedAppList(List<ClientAppInfo> appList) {
+//    boolean append = false;
+//    _setRestrictedAppList(this._restrictedAppsMap, appList, append);
+//  }
   
   public void removeRestrictedAppList(List<ClientAppInfo> appList) {
     if (appList==null || appList.size()==0) return;
@@ -183,9 +190,6 @@ public class AccessController implements AppHandler {
     
     boolean bMonitor = _restrictedAppsMap.size()>0; 
     runMonitoring(bMonitor);
-    engine.getDaemonHandler().getMsgHandler().sendEmptyMessage(
-        bMonitor ? Event.SIGNAL_TYPE_STOP_DAEMONTASK : 
-        Event.SIGNAL_TYPE_START_DAEMONTASK);
 
   }
   
@@ -258,11 +262,23 @@ public class AccessController implements AppHandler {
   }
   
   public void rescheduleAccessCategories() {
+    catesReschduled = false;
+    
     for (AccessCategory accessCate : _accessCategoryList) {
       List<AccessRule> rules = accessCate.getAccessRules();
       RuleScheduler scheduler = accessCate.getScheduler();
       scheduler.reScheduleRules(rules);
     }
+    
+    //根据受限程序列表的情况，决定是否启动DAEMON TASK
+    engine.getDaemonHandler().getMsgHandler().sendEmptyMessage(
+        _restrictedAppsMap.size()>0 ? Event.SIGNAL_TYPE_STOP_DAEMONTASK : 
+        Event.SIGNAL_TYPE_START_DAEMONTASK);
+    
+    for (ProcessListenerInfo listenerInfo : _processListenerAry) {
+      listenerInfo.setToForegroundState(false);
+    }
+    catesReschduled = true;
   }
   
   public void runDailyRescheduleTask() {
@@ -284,61 +300,19 @@ public class AccessController implements AppHandler {
     
   }
   
-  public void registerProcessListener(String procName, 
-      ProcessListener procListener) {
-    Logger.d(TAG, "Registering process listener for "+procName);
-    _modifyProcListenerMap(procName, procListener, true);
+  public void registerProcessListener(ProcessListenerInfo listenerInfo) {
+    Logger.d(TAG, "Registering process listener for "+
+        listenerInfo.getListenedProcessStr());
+    _modifyProcListenerMap(listenerInfo, true);
   }
 
-  public void unregisterProcessListener(String procName, 
-      ProcessListener procListener) {
-    Logger.d(TAG, "Unregistering process listener for "+procName);
-    _modifyProcListenerMap(procName, procListener, false);
+  public void unregisterProcessListener(ProcessListenerInfo listenerInfo) {
+    Logger.d(TAG, "Unregistering process listener for "+
+        listenerInfo.getListenedProcessStr());
+    _modifyProcListenerMap(listenerInfo, false);
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  class ProcessListenerInfo {
-    private int _state = PROCESS_IS_BACKGROUND;
-    private Set<ProcessListener> _listeners;
-    
-    public ProcessListenerInfo() {
-      if (_listeners == null) {
-        _listeners = new HashSet<ProcessListener>();
-      }
-    }
-    
-    public Set<ProcessListener> getListener() {
-      return _listeners;
-    }
-    
-    public void addListener(ProcessListener listener) throws STDException {
-      if (listener == null) {
-        throw new STDException("Process Listener should NOT be NULL!");
-      }
-      _listeners.add(listener);
-    }
-    
-    public void removeListener(ProcessListener listener) throws STDException {
-      if (listener == null) {
-        throw new STDException("Process Listener should NOT be NULL!");
-      }
-      
-      if (_listeners == null || false == _listeners.contains(listener)) {
-        throw new STDException("Process Listener is NEVER registered!");
-      }
-      _listeners.remove(_listeners);
-    }
-    
-    public void setToForegroundState(boolean bFG) {
-      _state = bFG ? PROCESS_IS_FOREGROUND : PROCESS_IS_BACKGROUND;
-    }
-    
-    public boolean isForegroundState() {
-      return (_state == PROCESS_IS_FOREGROUND);
-    }
-    
-  }//class ProcessListenerInfo
-  
   private void _loadAccessCategories(List intoList) {
     try {
       List<AccessCategory> catesList = ClientEngine.getInstance()
@@ -406,41 +380,44 @@ public class AccessController implements AppHandler {
       
       boolean bMonitor = _restrictedAppsMap.size()>0; 
       runMonitoring(bMonitor);
-      engine.getDaemonHandler().getMsgHandler().sendEmptyMessage(
-          bMonitor ? Event.SIGNAL_TYPE_STOP_DAEMONTASK : 
-          Event.SIGNAL_TYPE_START_DAEMONTASK);
-      
     }
   }
   
-  private void _modifyProcListenerMap(String procName, 
-      ProcessListener procListener, boolean bAdd) {
-    if (Utils.isEmptyString(procName)) {
-      Logger.w(TAG, "Process Name should NOT be NULL!");
+  private void _modifyProcListenerMap(ProcessListenerInfo listenerInfo, boolean bAdd) {
+    if (listenerInfo == null) {
+      //Logger.w(TAG, "Process Name should NOT be NULL!");
+      Logger.w(TAG, "Listener Info should NOT be NULL!");
       return;
     }
     
     try {
-      if (_processListenerMap.containsKey(procName)) {
-        ProcessListenerInfo plInfo = _processListenerMap.get(procName);
-        if (bAdd) {
-          plInfo.addListener(procListener);
-        } else {
-          plInfo.removeListener(procListener);
-        }
-
+      //old implementation
+//      if (_processListenerAry.containsKey(procName)) {
+//        ProcessListenerInfo plInfo = _processListenerAry.get(procName);
+//        if (bAdd) {
+//          plInfo.addListener(procListener);
+//        } else {
+//          plInfo.removeListener(procListener);
+//        }
+//
+//      } else {
+//        if (bAdd) {
+//          ProcessListenerInfo plInfo = new ProcessListenerInfo();
+//          plInfo.addListener(procListener);
+//          _processListenerAry.put(procName, plInfo);
+//          
+//        } else {
+//          Logger.i(TAG, "Process Listener for "+procName+ " is NOT registered!");
+//        }
+//      }
+      
+      if (bAdd) {
+        _processListenerAry.add(listenerInfo);
       } else {
-        if (bAdd) {
-          ProcessListenerInfo plInfo = new ProcessListenerInfo();
-          plInfo.addListener(procListener);
-          _processListenerMap.put(procName, plInfo);
-          
-        } else {
-          Logger.i(TAG, "Process Listener for "+procName+ " is NOT registered!");
-        }
+        _processListenerAry.remove(listenerInfo);
       }
       
-    } catch (STDException e) {
+    } catch (Exception e) {
       Logger.w(TAG, e.toString());
     }
     
@@ -454,9 +431,11 @@ public class AccessController implements AppHandler {
         if (i>10000) i=0;
         Logger.v(TAG, "Monitor Task starts to run @ "+ ++i);
         
-        List runningApps = getRunningAppsList();
-        killRestrictedApps(runningApps);
-        handleProcessListener(runningApps);
+        if (catesReschduled) {
+          List runningApps = getRunningAppsList();
+          killRestrictedApps(runningApps);
+          handleProcessListener(runningApps);
+        }
       }
     };
     return task;
@@ -534,39 +513,32 @@ public class AccessController implements AppHandler {
       Logger.i(TAG, "Running apps are empty!");
       return;
     }
-    if (_processListenerMap == null || _processListenerMap.size()==0) {
+    if (_processListenerAry == null || _processListenerAry.size()==0) {
       //Logger.i(TAG, "No Process Listener is existing!");
       return;
     }
    
     String topClzName = ActivityUtil.getTopActivityClassName(runningApps.get(0));
-    Logger.d(TAG, "Top running activity is: "+topClzName);
-    for (String actName : _processListenerMap.keySet()) {
-      ProcessListenerInfo listenerInfo = _processListenerMap.get(actName);
-      
-      if (actName.equals(topClzName)) {
+    //Logger.d(TAG, "Top running activity is: "+topClzName);
+    for (ProcessListenerInfo listenerInfo : _processListenerAry) {
+      if (listenerInfo.processIsListened(topClzName)) {
         //如果刚开始监听当前前台activity，前一时刻并没有监听，即该activity刚被启动起来
         if (false == listenerInfo.isForegroundState()) {
-          Set<ProcessListener> listenerSet = listenerInfo.getListener();
-          for (ProcessListener listener : listenerSet) {
-            listener.notifyProcessIsForeground(true, actName);  //该activity被调度到前台
-          }
+          listenerInfo.notifyProcessIsForeground(true, topClzName);  //该activity被调度到前台
           listenerInfo.setToForegroundState(true);
           
         } else {
-          //Do nothing
+          //Logger.v(TAG, "1 - I am doing nothing...");
         }
 
       } else {
-        //如果该activity刚才还是前台的，刚刚被调度到后台
+        //如果该activity刚才还是前台的，刚刚被调度到后台，则通知listener，然后把状态置为后台
         if (true == listenerInfo.isForegroundState()) {
-          Set<ProcessListener> listenerSet = listenerInfo.getListener();
-          for (ProcessListener listener : listenerSet) {
-            listener.notifyProcessIsForeground(false, actName);  //该activity被调度到后台
-          }
+          listenerInfo.notifyProcessIsForeground(false, topClzName);   //该activity被调度到后台
           listenerInfo.setToForegroundState(false);
+          
         } else {
-          //Do nothing
+          //Logger.v(TAG, "2 - I am doing nothing...");
         }
       }
     }

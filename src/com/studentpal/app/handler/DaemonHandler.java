@@ -1,6 +1,7 @@
 package com.studentpal.app.handler;
 
 import static com.studentpal.engine.Event.*;
+import static com.studentpal.app.ResourceManager.*;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -16,6 +17,8 @@ import com.studentpal.app.ResourceManager;
 import com.studentpal.app.listener.ProcessListener;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.Event;
+import com.studentpal.model.ProcessListenerInfo;
+import com.studentpal.model.exception.STDException;
 import com.studentpal.util.ActivityUtil;
 import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
@@ -62,18 +65,26 @@ public class DaemonHandler implements AppHandler, ProcessListener {
   public void launch() {
     this.engine = ClientEngine.getInstance();
     this.launcher = engine.getContext();
-    this.msgHandler = new IncomingHandler();
+    
     /**
      * Target we publish for Daemon service to send messages to MessageHandler/myself.
      */
     mMsgerToMyself = new Messenger(msgHandler);
     mSvcConnection = new MyServiceConnection();
     
-    this.engine.getAccessController().registerProcessListener(
-        ResourceManager.ACTIVITY_NAME_MANAGEAPPS, this);
+    try {
+      ProcessListenerInfo listenerInfo = new ProcessListenerInfo();
+      listenerInfo.addProcess(ACTIVITY_NAME_MANAGEAPPS);
+      listenerInfo.addProcess(ACTIVITY_NAME_APPSDETAILS);
+      listenerInfo.addListener(this);
+      engine.getAccessController().registerProcessListener(listenerInfo);
+
+    } catch (STDException e) {
+      Logger.w(TAG, e.toString());
+    }
     
     if (false) {  //hemerr
-      startDaemonTask();
+      //startDaemonTask();
     }
   }
 
@@ -90,7 +101,7 @@ public class DaemonHandler implements AppHandler, ProcessListener {
     //no matter if Daemon service is running or not,
     //start it anyway and bind to it next.
     ActivityUtil.startDaemonService(launcher);
-    Utils.sleep(200);  //FIXME -- maybe not useful
+    //Utils.sleep(200);  //hemerr -- maybe not useful
     doBindService(); 
   }
   
@@ -125,6 +136,7 @@ public class DaemonHandler implements AppHandler, ProcessListener {
   }
   // ///////////////////////////////////////////////////////////////////////////
   private void initialize() {
+    this.msgHandler = new IncomingHandler();
   }
   
   private void doBindService() {
