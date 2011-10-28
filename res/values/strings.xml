@@ -2,9 +2,9 @@
 <resources>
     <string name="mainapp_name">1StudentPal</string>
     <string name="launcher_name">Launcher</string>
-    <string name="target_svr_ip">10.60.4.79</string>
-    <string name="target_svr_ip2">192.168.11.100</string>
-    <string name="target_svr_ip1">192.168.10.101</string>
+    <string name="target_svr_ip1">10.60.4.79</string>
+    <string name="target_svr_ip">192.168.11.101</string>
+    <string name="target_svr_ip2">192.168.10.101</string>
     <string name="device_admin_label">学伴成长</string>
     <string name="device_admin_deactivated_warning">
       若禁用此选项，您可能丧失对目标终端的管理。确定此操作吗？
