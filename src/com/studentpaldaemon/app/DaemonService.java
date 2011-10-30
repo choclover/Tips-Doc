@@ -1,5 +1,6 @@
 package com.studentpaldaemon.app;
 
+import static com.studentpal.engine.Event.ACTION_DAEMONSVC_INFO_UPDATED;
 import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_REQ;
 import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_RESP;
 import static com.studentpal.engine.Event.SIGNAL_TYPE_DAEMON_WD_TIMEOUT;
@@ -52,7 +53,7 @@ public class DaemonService extends Service {
   private Messenger mMsgerToMainApp = null;
   
   //For test
-  //private boolean stopCounterThd = false;
+  private static CounterThread counterThd = null;
   
   /** 
    * Called when the activity is first created. 
@@ -129,11 +130,11 @@ public class DaemonService extends Service {
   }
 
   // ///////////////////////////////////////////////////////////////////////////
-  static class CounterThread {
-    private static boolean stop = false;
-    private static Thread  inner_th = null;
+  class CounterThread {
+    private boolean stop = false;
+    private Thread  inner_th = null;
 
-    public static void stop() {
+    public void stop() {
       Logger.d(TAG, "CounterThread.stop()");
       stop = true;
       if (inner_th != null) {
@@ -142,7 +143,7 @@ public class DaemonService extends Service {
       }
     }
 
-    public static void start() {
+    public void start() {
       Logger.d(TAG, "CounterThread.start()");
       if (inner_th != null) return;
       
@@ -153,7 +154,15 @@ public class DaemonService extends Service {
           int counter = 1;
           while (false == stop) {
             if (counter > 10000) counter=1;
-            Logger.v(TAG, "Daemon is running @ " + counter++);
+            String info = "Daemon is running @ " + counter++;
+            Logger.v(TAG, info);
+            
+            if (forTest) {
+              Intent intent = new Intent();
+              intent.putExtra("info", info);
+              intent.setAction(ACTION_DAEMONSVC_INFO_UPDATED);
+              DaemonService.this.sendBroadcast(intent);
+            }
 
             try { Thread.sleep(3000); }
             catch (InterruptedException e) { }
@@ -166,10 +175,20 @@ public class DaemonService extends Service {
   }
   
   private void startConterThread() {
-    if (forTest) CounterThread.start();
+    if (forTest) runConterThread(true);
   }
   private void stopConterThread() {
-    if (forTest) CounterThread.stop();
+    if (forTest) runConterThread(false);
+  }
+  private void runConterThread(boolean run) {
+    if (counterThd == null) {
+      counterThd = new CounterThread();
+    }
+    if (run) {
+      counterThd.start();
+    } else {
+      counterThd.stop();
+    }
   }
   
   private TimerTask getWatchdogTask() {
@@ -246,9 +265,9 @@ public class DaemonService extends Service {
       Logger.w(TAG, procName + " is NOT running, relaunching it!");
 
       Intent intent = new Intent();
-//      Bundle bundle = new Bundle();
-//      bundle.putBoolean(CFG_SHOW_LAUNCHER_UI, false);
-//      intent.putExtras(bundle);
+      //Bundle bundle = new Bundle();
+      //bundle.putBoolean(CFG_SHOW_LAUNCHER_UI, false);
+      //intent.putExtras(bundle);
       ComponentName comp = new ComponentName(procName,
           MainAppService.NAME);
       intent.setComponent(comp);
