@@ -133,7 +133,7 @@ public class WsClientCli {
           File file = new File(fname);
           if (file.exists()) {
             cateDefFile = file;
-            logger.info("Loading Category source XML "+fname);
+            logger.info("\n** Loading Category source XML "+fname+" **");
           } else {
             cateDefFile = null;
             logger.warn("Category source XML "+fname+" NOT exists!");
