@@ -16,6 +16,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.telephony.TelephonyManager;
 
+import com.studentpal.app.MainAppService;
 import com.studentpal.app.ResourceManager;
 import com.studentpal.app.db.DBaseManager;
 import com.studentpal.app.handler.AccessController;
@@ -112,7 +113,6 @@ public class ClientEngine implements AppHandler {
       
 //      appHandlerAry.add(dbaseManager);
     }
-    
   }
   
   //////////////////////////////////////////////////////////////////////////////
@@ -284,5 +284,15 @@ public class ClientEngine implements AppHandler {
     
     Request request = new LoginRequest(phoneNum, imsiNum);
     msgHandler.sendRequestToSvr(request);
+  }
+
+  public void updateLauncherScreenInfo(String action, String info) {
+    if (!MainAppService.forTest) return;
+    
+    Intent intent = new Intent();
+    intent.putExtra("info", info);
+    intent.setAction(action);
+    this._launcher.sendBroadcast(intent);
+    
   }
 }

@@ -61,9 +61,13 @@ public class Event {
   /*
    * Intent action / Activity name constants
    */
-  public static final String ACTION_DAEMON_SVC = "spaldaemon.intent.action.daemonsvc";
+  public static final String ACTION_DAEMON_SVC          = "spaldaemon.intent.action.daemonsvc";
   //Must be the same as value in the Daemon application's Manifest
   public static final String ACTION_DAEMON_LAUNCHER_SCR = "spaldaemon.intent.action.launcherscr";
+
+  public static final String ACTION_MAINSVC_INFO_UPDATED    = "studentpal.action.mainappsvc.updated";
+  public static final String ACTION_DAEMONSVC_INFO_UPDATED  = "studentpal.action.daemonsvc.updated";
+
   
   /*
    * Error code constants 

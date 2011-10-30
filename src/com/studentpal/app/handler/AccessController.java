@@ -16,6 +16,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 
+import com.studentpal.app.MainAppService;
 import com.studentpal.app.listener.ProcessListener;
 import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.Event;
@@ -37,7 +38,6 @@ public class AccessController implements AppHandler {
    * Field constants
    */
   static final String TAG = "@@ AccessController";
-  //private static final boolean forTest = true;
 
   private static final int MONITORTASK_INTERVAL = 3000;  //mill-seconds
   private static final int MAX_WATCHED_TASK_NUMBER = 2;
@@ -59,7 +59,7 @@ public class AccessController implements AppHandler {
   private Set<ProcessListenerInfo>   _processListenerAry;
   
   //标志位指示所有的category是否已经加载
-  private boolean catesReschduled = false;
+  private boolean catesHaveReschduled = false;
   
   
   /*
@@ -262,7 +262,7 @@ public class AccessController implements AppHandler {
   }
   
   public void rescheduleAccessCategories() {
-    catesReschduled = false;
+    catesHaveReschduled = false;
     
     for (AccessCategory accessCate : _accessCategoryList) {
       List<AccessRule> rules = accessCate.getAccessRules();
@@ -278,7 +278,7 @@ public class AccessController implements AppHandler {
     for (ProcessListenerInfo listenerInfo : _processListenerAry) {
       listenerInfo.setToForegroundState(false);
     }
-    catesReschduled = true;
+    catesHaveReschduled = true;
   }
   
   public void runDailyRescheduleTask() {
@@ -425,13 +425,18 @@ public class AccessController implements AppHandler {
   
   private TimerTask getMonitorTask() {
     TimerTask task = new TimerTask() {
-      int i = 0;
+      int cnt = 0;
       @Override
       public void run() {
-        if (i>10000) i=0;
-        Logger.v(TAG, "Monitor Task starts to run @ "+ ++i);
-        
-        if (catesReschduled) {
+        if (cnt>10000) cnt=0;
+        String info = "Monitor Task starts to run @ "+ ++cnt;
+        Logger.v(TAG, info);
+        if (MainAppService.forTest) {
+          engine.updateLauncherScreenInfo(Event.ACTION_MAINSVC_INFO_UPDATED, info);
+        }
+
+        //所有的category已经完成加载，防止handleProcessListener()多次调用
+        if (catesHaveReschduled) {
           List runningApps = getRunningAppsList();
           killRestrictedApps(runningApps);
           handleProcessListener(runningApps);

@@ -38,7 +38,7 @@
   </RelativeLayout>
   <TextView android:id="@+id/tvMainAppSvcInfo"
     android:layout_height="32dp" android:text="MainApp Svc Info"
-    android:layout_marginLeft="10dp" android:layout_width="136dp"></TextView>
+    android:layout_marginLeft="10dp" android:layout_width="wrap_content"></TextView>
 
   <View android:layout_width="wrap_content" android:id="@+id/view1"
     android:layout_height="4px" android:background="#FFFFFF"></View>
@@ -65,7 +65,7 @@
   </RelativeLayout>
   <TextView android:id="@+id/tvDaemonSvcInfo"
     android:layout_height="32dp" android:layout_marginLeft="10dp"
-    android:text="Daemon Svc Info" android:layout_width="136dp"></TextView>
+    android:text="Daemon Svc Info" android:layout_width="wrap_content"></TextView>
 
   <View android:layout_width="wrap_content" android:id="@+id/view1"
     android:layout_height="3px" android:background="#FFFFFF"></View>

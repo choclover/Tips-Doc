@@ -1,12 +1,21 @@
 package com.studentpal.ui;
 
+import static com.studentpal.engine.Event.ACTION_DAEMONSVC_INFO_UPDATED;
+import static com.studentpal.engine.Event.ACTION_DAEMON_LAUNCHER_SCR;
+import static com.studentpal.engine.Event.ACTION_MAINSVC_INFO_UPDATED;
+import static com.studentpal.engine.Event.CFG_SHOW_LAUNCHER_UI;
+import static com.studentpal.engine.Event.SIGNAL_TYPE_DEVICE_ADMIN_ENABLED;
+import static com.studentpal.engine.Event.TAGNAME_BUNDLE_PARAM;
+
 import java.io.File;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,11 +24,9 @@ import android.widget.TextView;
 import com.studentpal.R;
 import com.studentpal.app.MainAppService;
 import com.studentpal.app.ResourceManager;
-import com.studentpal.app.handler.DaemonHandler;
 import com.studentpal.app.handler.IoHandler;
 import com.studentpal.app.receiver.MyDeviceAdminReceiver;
 import com.studentpal.engine.ClientEngine;
-import com.studentpal.engine.Event;
 import com.studentpal.model.exception.STDException;
 import com.studentpal.util.ActivityUtil;
 import com.studentpal.util.Utils;
@@ -37,11 +44,12 @@ public class LaunchScreen extends Activity {
    * Member fields
    */
   private Button btnStart, btnStop;
-  private Button btnSendAction, btnInstDaemon;
-  private TextView tvMainSvcStatus;
+  private TextView tvMainSvcStatus, tvMainSvcInfo;
   
   private Button btnStartDae, btnStopDae, btnExitDae;
-  private TextView tvDaeSvcStatus;
+  private TextView tvDaeSvcStatus, tvDaeSvcInfo;
+
+  private Button btnSendAction, btnInstDaemon;
   
   /** Called when the activity is first created. */
   @Override
@@ -50,7 +58,7 @@ public class LaunchScreen extends Activity {
 
     Bundle cfgParams = getIntent().getExtras();
     if (cfgParams != null) {
-      showUI = cfgParams.getBoolean(Event.CFG_SHOW_LAUNCHER_UI, showUI) ;
+      showUI = cfgParams.getBoolean(CFG_SHOW_LAUNCHER_UI, showUI) ;
     }
     Logger.d(TAG, "showUI is set to: "+showUI);
     
@@ -60,6 +68,32 @@ public class LaunchScreen extends Activity {
       setContentView(R.layout.launcher_screen);
       initMainSvcView();
       initDaemonSvcView();
+      
+      IntentFilter intentFilter = new IntentFilter();
+      intentFilter.addAction(ACTION_MAINSVC_INFO_UPDATED);
+      intentFilter.addAction(ACTION_DAEMONSVC_INFO_UPDATED);
+      registerReceiver(new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+          if (intent == null) {
+            Logger.w(TAG, "Intent should NOT be NULL");
+            return;
+          }
+          
+          String action = intent.getAction();
+          String info = intent.getStringExtra("info");
+          //Logger.d(TAG, "Received action in " + action);
+
+          if (action.equals(ACTION_MAINSVC_INFO_UPDATED)) {
+            tvMainSvcInfo.setText(info);
+          } else if (action.equals(ACTION_DAEMONSVC_INFO_UPDATED)) {
+            tvDaeSvcInfo.setText(info);
+          } 
+     
+        }
+      }, intentFilter); 
+      
+     
     } else {
       _startWatchingService();
       _startDaemonService();
@@ -76,7 +110,7 @@ public class LaunchScreen extends Activity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     switch (requestCode) {
-    case Event.SIGNAL_TYPE_DEVICE_ADMIN_ENABLED:
+    case SIGNAL_TYPE_DEVICE_ADMIN_ENABLED:
       if (resultCode == Activity.RESULT_OK) {
         Logger.i(TAG, "Enable Admin OK!");
       } else {
@@ -98,7 +132,7 @@ public class LaunchScreen extends Activity {
       if (true == ActivityUtil.checkAppIsInstalled(this, 
           ResourceManager.DAEMON_SVC_PKG_NAME)) {
         Intent daemonIntent = new Intent();
-        daemonIntent.setAction(Event.ACTION_DAEMON_LAUNCHER_SCR);  
+        daemonIntent.setAction(ACTION_DAEMON_LAUNCHER_SCR);  
         this.startActivity(daemonIntent);
       }
     } catch (STDException e) {
@@ -114,7 +148,7 @@ public class LaunchScreen extends Activity {
     
     Intent i = new Intent(this, com.studentpal.app.MainAppService.class);
     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    i.putExtra(Event.TAGNAME_BUNDLE_PARAM, com.studentpal.app.MainAppService.CMD_START_WATCHING_APP);
+    i.putExtra(TAGNAME_BUNDLE_PARAM, com.studentpal.app.MainAppService.CMD_START_WATCHING_APP);
     startService(i);
   }
   
@@ -155,7 +189,8 @@ public class LaunchScreen extends Activity {
   
   private void initMainSvcView() {
     tvMainSvcStatus = (TextView) findViewById(R.id.mainSvcStatus);
-
+    tvMainSvcInfo   = (TextView) findViewById(R.id.tvMainAppSvcInfo);
+    
     btnStart = (Button) findViewById(R.id.btnStart);
     btnStart.setOnClickListener(new View.OnClickListener() {
       public void onClick(View view) {
@@ -231,7 +266,8 @@ public class LaunchScreen extends Activity {
   
   private void initDaemonSvcView() {
     tvDaeSvcStatus = (TextView) findViewById(R.id.daemonSvcStatus);
-
+    tvDaeSvcInfo   = (TextView)findViewById(R.id.tvDaemonSvcInfo);
+    
     btnStartDae = (Button) findViewById(R.id.btnStartDaemon);
     btnStartDae.setOnClickListener(new View.OnClickListener() {
       public void onClick(View view) {
@@ -275,11 +311,5 @@ public class LaunchScreen extends Activity {
     //btnStopDae.setClickable(false);
   }
   
-  private static TextView tvDaemonInfo = null;
-  public void updateDaemonInfo(String info) {
-    if (tvDaemonInfo == null) {
-      tvDaemonInfo = (TextView)findViewById(R.id.tvDaemonSvcInfo);
-    }
-    tvDaemonInfo.setText(info);
-  }
+  
 }
