@@ -25,6 +25,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
@@ -194,6 +195,17 @@ public class ActivityUtil {
     }
     
     return result;
+  }
+  
+  public static String getFilePathOnSdCard(String rFilePath) {
+    if (rFilePath == null) {
+      Logger.w(TAG, "Input file path parameter is NULL!");
+      return null;
+    }
+    
+    String path = Environment.getExternalStorageDirectory().toString()
+        +'/'+ rFilePath;
+    return path;
   }
   
   public static void exitApp() {
