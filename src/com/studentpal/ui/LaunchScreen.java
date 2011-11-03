@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -241,9 +242,10 @@ public class LaunchScreen extends Activity {
     btnInstDaemon.setOnClickListener(new View.OnClickListener() {
       public void onClick(View view) {
         Logger.i(TAG, btnInstDaemon.getText() + " is clicked!");
-        if (false == ActivityUtil.checkAppIsInstalled(view.getContext(), 
+        if (false == ActivityUtil.checkAppIsInstalled(
+            view.getContext(),
             ResourceManager.DAEMON_SVC_PKG_NAME)) {
-          String apkPath = "/sdcard/SPal_ClientDaemon.apk";
+          String apkPath = Environment.getExternalStorageDirectory() +"/bSpalDaemon.apk";
           //apkPath = "assets/SPal_ClientDaemon.apk";
           File apkFile = new File(apkPath);
           if (false == apkFile.exists()) {
