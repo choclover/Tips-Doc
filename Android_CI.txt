@@ -1,0 +1,142 @@
+
+◎ adb shell 常用命令
+  @ cat sour.txt > dest.txt, eg. cat SdkSetup.apk >  /mnt/sdcard/SdkSetup.apk
+
+◎ adb 常用命令  
+   emulator -avd <avd-name> -partition-size 100
+  
+◎ Acctivity Creator
+  activitycreator [--out <folder>] [--ide intellij] your.package.name.ActivityName
+  
+  ex. 
+  <Android SDK>\tools\activitycreator.bat --out D:\ProgramFiles\android-sdk-windows-1.0_r1\SimonTest com.hemi.test.SimonTest
+
+◎ Install / Uninstall Application
+  <Android SDK>\tools\adb.exe install <project folder>/bin/<appname>.apk 
+  e.g. adb.exe install <project folder>/bin/SimonTest.apk
+  
+  <Android SDK>\tools\adb.exe uninstall com.motorola.fetion.test
+  Or
+  adb.exe -shell -> cd /data/app -> rm *.apk
+  cd /system/app -> rm *.apk
+  
+◎ Kill process
+  ps
+  kill <pid> 
+  
+◎ Android SDK Naming convention
+  android_sdk_<platform>_<release>_<build>. 
+  
+◎ Database location for application:
+  adb shell -> /data/data/com.android.demo.notepad2/databases
+
+◎ 显示/修改目录权限
+# mount -o remount,rw -t yaffs2 /dev/block/mtdblock0 /system
+
+# mount
+rootfs / rootfs ro 0 0
+tmpfs /dev tmpfs rw,mode=755 0 0
+devpts /dev/pts devpts rw,mode=600 0 0
+proc /proc proc rw 0 0
+sysfs /sys sysfs rw 0 0
+none /acct cgroup rw,cpuacct 0 0
+tmpfs /mnt/asec tmpfs rw,mode=755,gid=1000 0 0
+none /dev/cpuctl cgroup rw,cpu 0 0
+"/dev/block/mtdblock0 /system yaffs2 ro 0 0"
+/dev/block/mtdblock1 /data yaffs2 rw,nosuid,nodev 0 0
+/dev/block/mtdblock2 /cache yaffs2 rw,nosuid,nodev 0 0
+/dev/block/vold/179:0 /mnt/sdcard vfat rw,dirsync,nosuid,nodev,noexec,uid=1000,gid=1015,fmask=0702,dmask=0702,allow_utime=0020,codepage=cp437,iocharset=iso8859-1,shortname=mixed,utf8,errors=remount-ro 0 0
+/dev/block/vold/179:0 /mnt/secure/asec vfat rw,dirsync,nosuid,nodev,noexec,uid=1000,gid=1015,fmask=0702,dmask=0702,allow_utime=0020,codepage=cp437,iocharset=iso8859-1,shortname=mixed,utf8,errors=remount-ro 0 0
+tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0  
+
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

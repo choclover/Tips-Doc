@@ -1,0 +1,36 @@
+
+◎ SQLite3
+# cd /mnt/sdcard/studentpal/db
+# sqlite3 studentpal.db
+# .help / .table <table name> / .dump
+# .header on / .schema <table name> 
+# .exit
+
+# select count(*) from access_categories;  
+# drop table access_rules;
+
+◎ Get Directories
+  Environment.getDataDirectory();
+
+◎ MDN / IMSI / IMEI
+String myIMSI = android.os.SystemProperties.get(android.telephony.TelephonyProperties.PROPERTY_IMSI);
+// within my emulator it returns:   310995000000000
+
+String myIMEI = android.os.SystemProperties.get(android.telephony.TelephonyProperties.PROPERTY_IMEI);
+// within my emulator it returns:   000000000000000
+
+◎ API Tips
+  @. Activity.onCreateOptionsMenu(): 只会调用一次，在第一次显示Option菜单的时候。
+  @. startActivity()
+  @. Activity.setResult(int resultCode, Intent intent) -> call parent Activity.onActivityResult(int, resultCode, Intent);    (resultCode == RESULT_OK)
+  If a child activity fails for any reason (such as crashing), the parent activity will receive a result with the code RESULT_CANCELED.
+
+◎ 将Activity中的<category android:name="android.intent.category.LAUNCHER" />去掉，该应用就不会在launcher顶层显示了。
+
+◎
+
+
+◎◎◎◎◎◎◎◎◎◎◎
+
+
+
