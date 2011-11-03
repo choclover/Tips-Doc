@@ -245,7 +245,7 @@ public class LaunchScreen extends Activity {
         if (false == ActivityUtil.checkAppIsInstalled(
             view.getContext(),
             ResourceManager.DAEMON_SVC_PKG_NAME)) {
-          String apkPath = Environment.getExternalStorageDirectory() +"/bSpalDaemon.apk";
+          String apkPath = ActivityUtil.getFilePathOnSdCard("/bSpalDaemon.apk");
           //apkPath = "assets/SPal_ClientDaemon.apk";
           File apkFile = new File(apkPath);
           if (false == apkFile.exists()) {
