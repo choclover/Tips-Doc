@@ -259,7 +259,9 @@ public class LaunchScreen extends Activity {
           startActivity(intent);
           
         } else {
-          Logger.d(TAG, "Daemon APK is already installed!");
+          String info = "Daemon APK is already installed!";
+          ActivityUtil.showToast(LaunchScreen.this, info);
+          Logger.d(TAG, info);
         }
       }
     });
