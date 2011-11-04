@@ -103,7 +103,7 @@ public class InstallAppProgress extends Activity implements View.OnClickListener
                     } else {
                         // Generic error handling for all other error codes.
                         centerTextDrawable = Resources.getSystem().getDrawable(
-                                com.android.internal.R.drawable.ic_bullet_key_permission);
+                            17301888/*com.android.internal.R.drawable.ic_bullet_key_permission*/);
                         centerTextLabel = R.string.install_failed;
                         mLaunchButton.setVisibility(View.INVISIBLE);
                     }
@@ -204,13 +204,15 @@ public class InstallAppProgress extends Activity implements View.OnClickListener
         mOkPanel.setVisibility(View.INVISIBLE);
 
         String installerPackageName = getIntent().getStringExtra(
-                Intent.EXTRA_INSTALLER_PACKAGE_NAME);
+            /*Intent.EXTRA_INSTALLER_PACKAGE_NAME*/"android.intent.extra.INSTALLER_PACKAGE_NAME");
         PackageInstallObserver observer = new PackageInstallObserver();
         pm.installPackage(mPackageURI, observer, installFlags, installerPackageName);
+        
+        android.util.Log.d("HEM", "pm.installPackage() over!");
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
     }
 

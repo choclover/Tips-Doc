@@ -59,7 +59,7 @@ public class UninstallerActivity extends Activity implements OnClickListener,
         case DLG_APP_NOT_FOUND :
             return new AlertDialog.Builder(this)
                     .setTitle(R.string.app_not_found_dlg_title)
-                    .setIcon(com.android.internal.R.drawable.ic_dialog_alert)
+                    .setIcon(17301543/*com.android.internal.R.drawable.ic_dialog_alert*/)
                     .setMessage(R.string.app_not_found_dlg_text)
                     .setNeutralButton(getString(R.string.dlg_ok), 
                             new DialogInterface.OnClickListener() {
@@ -75,7 +75,7 @@ public class UninstallerActivity extends Activity implements OnClickListener,
             // Display uninstall failed dialog
             return new AlertDialog.Builder(this)
                     .setTitle(R.string.uninstall_failed)
-                    .setIcon(com.android.internal.R.drawable.ic_dialog_alert)
+                    .setIcon(17301543/*com.android.internal.R.drawable.ic_dialog_alert*/)
                     .setMessage(dlgText)
                     .setNeutralButton(getString(R.string.dlg_ok), 
                             new DialogInterface.OnClickListener() {

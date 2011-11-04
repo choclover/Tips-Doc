@@ -16,6 +16,8 @@
 */
 package com.android.packageinstaller;
 
+import com.android.packageinstaller.R;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;

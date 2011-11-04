@@ -50,9 +50,9 @@ import android.widget.LinearLayout;
  * sub activity. All state transitions are handled in this activity
  */
 public class PackageInstallerActivity extends Activity implements OnCancelListener, OnClickListener {
-    private static final String TAG = "PackageInstaller";
+    private static final String TAG = "HEM";  //"PackageInstaller";
     private Uri mPackageURI;    
-    private boolean localLOGV = false;
+    private boolean localLOGV = true;
     PackageManager mPm;
     private PackageParser.Package mPkgInfo;
 
@@ -88,7 +88,8 @@ public class PackageInstallerActivity extends Activity implements OnCancelListen
         if(!permVisible){
             permsSection.setVisibility(View.INVISIBLE);
         }
-        mInstallConfirm.setVisibility(View.VISIBLE);
+        
+        //mInstallConfirm.setVisibility(View.VISIBLE);  //hemerr
         mOk = (Button)findViewById(R.id.ok_button);
         mCancel = (Button)findViewById(R.id.cancel_button);
         mOk.setOnClickListener(this);
@@ -224,7 +225,8 @@ public class PackageInstallerActivity extends Activity implements OnCancelListen
             mAppInfo = null;
         }
         if (mAppInfo == null) {
-            startInstallConfirm();
+          android.util.Log.d(TAG, "Ready to call startInstallConfirm()");
+          startInstallConfirm();
         } else {
             if(localLOGV) Log.i(TAG, "Replacing existing package:"+
                     mPkgInfo.applicationInfo.packageName);
@@ -233,7 +235,7 @@ public class PackageInstallerActivity extends Activity implements OnCancelListen
     }
     
     @Override
-    protected void onCreate(Bundle icicle) {
+    public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         //get intent information
         final Intent intent = getIntent();
@@ -247,6 +249,11 @@ public class PackageInstallerActivity extends Activity implements OnCancelListen
             showDialogInner(DLG_PACKAGE_ERROR);
             return;
         }
+        
+        if (true) {  //hemerr
+          installPkg();
+          return;
+        } 
         
         //set view
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -272,22 +279,27 @@ public class PackageInstallerActivity extends Activity implements OnCancelListen
 
     public void onClick(View v) {
         if(v == mOk) {
-            // Start subactivity to actually install the application
-            Intent newIntent = new Intent();
-            newIntent.putExtra(PackageUtil.INTENT_ATTR_APPLICATION_INFO,
-                    mPkgInfo.applicationInfo);
-            newIntent.setData(mPackageURI);
-            newIntent.setClass(this, InstallAppProgress.class);
-            String installerPackageName = getIntent().getStringExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME);
-            if (installerPackageName != null) {
-                newIntent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, installerPackageName);
-            }
-            if(localLOGV) Log.i(TAG, "downloaded app uri="+mPackageURI);
-            startActivity(newIntent);
-            finish();
+          installPkg();
         } else if(v == mCancel) {
             // Cancel and finish
             finish();
         }
+    }
+    
+    private void installPkg() {
+      // Start subactivity to actually install the application
+      Intent newIntent = new Intent();
+      newIntent.putExtra(PackageUtil.INTENT_ATTR_APPLICATION_INFO,
+              mPkgInfo.applicationInfo);
+      newIntent.setData(mPackageURI);
+      newIntent.setClass(this, InstallAppProgress.class);
+      String installerPackageName = getIntent().getStringExtra(/*Intent.EXTRA_INSTALLER_PACKAGE_NAME*/"android.intent.extra.INSTALLER_PACKAGE_NAME");
+      if (installerPackageName != null) {
+          newIntent.putExtra(/*Intent.EXTRA_INSTALLER_PACKAGE_NAME*/"android.intent.extra.INSTALLER_PACKAGE_NAME",
+              installerPackageName);
+      }
+      if(localLOGV) Log.i(TAG, "downloaded app uri="+mPackageURI);
+      startActivity(newIntent);
+      finish();
     }
 }
