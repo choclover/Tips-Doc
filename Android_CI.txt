@@ -4,7 +4,8 @@
 
 ◎ adb 常用命令  
    emulator -avd <avd-name> -partition-size 100
-  
+   emulator -avd erc_noinstall -partition-size 100 
+   
 ◎ Acctivity Creator
   activitycreator [--out <folder>] [--ide intellij] your.package.name.ActivityName
   
@@ -31,7 +32,7 @@
   adb shell -> /data/data/com.android.demo.notepad2/databases
 
 ◎ 显示/修改目录权限
-# mount -o remount,rw -t yaffs2 /dev/block/mtdblock0 /system
+mount -o remount,rw -t yaffs2 /dev/block/mtdblock0 /system
 
 # mount
 rootfs / rootfs ro 0 0
@@ -49,7 +50,9 @@ none /dev/cpuctl cgroup rw,cpu 0 0
 /dev/block/vold/179:0 /mnt/secure/asec vfat rw,dirsync,nosuid,nodev,noexec,uid=1000,gid=1015,fmask=0702,dmask=0702,allow_utime=0020,codepage=cp437,iocharset=iso8859-1,shortname=mixed,utf8,errors=remount-ro 0 0
 tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0  
 
-
+◎ 常见错误解决方法
+1. failed to copy 'xxx.apk' to '/system/app/xxx.apk': Out of memory
+  emulator -avd erc_noinstall -partition-size 100  
 .
 
 .
