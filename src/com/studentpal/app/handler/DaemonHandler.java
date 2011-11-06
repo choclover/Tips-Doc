@@ -3,10 +3,13 @@ package com.studentpal.app.handler;
 import static com.studentpal.engine.Event.*;
 import static com.studentpal.app.ResourceManager.*;
 
+import java.io.File;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -19,6 +22,7 @@ import com.studentpal.engine.ClientEngine;
 import com.studentpal.engine.Event;
 import com.studentpal.model.ProcessListenerInfo;
 import com.studentpal.model.exception.STDException;
+import com.studentpal.ui.LaunchScreen;
 import com.studentpal.util.ActivityUtil;
 import com.studentpal.util.Utils;
 import com.studentpal.util.logger.Logger;
@@ -248,6 +252,38 @@ public class DaemonHandler implements AppHandler, ProcessListener {
 
       case SIGNAL_TYPE_DAEMON_WD_TIMEOUT:
         Logger.w(TAG, "Waiting for Daemon Watchdog request has timeout!");
+        
+        if (false == ActivityUtil.checkAppIsInstalled(launcher,
+            ResourceManager.DAEMON_SVC_PKG_NAME)) {
+          //FIXME: get apk from sdcard or other location
+          String apkPath = ActivityUtil.getFilePathOnSdCard("/bSpalDaemon.apk");
+          apkPath = "/tmp/bSpalDaemon.apk";
+          //apkPath = "assets/SPal_ClientDaemon.apk";
+          File apkFile = new File(apkPath);
+          if (false == apkFile.exists()) {
+            Logger.w(TAG, "Daemon APK file NOT exists!");
+            return;
+          }
+          
+          Uri apkUri = Uri.fromFile(apkFile); 
+          Intent intent = new Intent(Intent.ACTION_VIEW);
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          intent.setDataAndType(apkUri,"application/vnd.android.package-archive");
+          launcher.startActivity(intent);
+          
+          try {
+            Thread.sleep(3000);  //FIXME
+          } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+          
+        } else {
+          String info = "Daemon APK is already installed!";
+          ActivityUtil.showToast(launcher, info);
+          Logger.d(TAG, info);
+        }
+      
         if (false == ActivityUtil.checkServiceIsRunning(launcher,
             ResourceManager.DAEMON_SVC_PKG_NAME)) {
           Logger.w(TAG, "Daemon is NOT running, relaunching it!");
