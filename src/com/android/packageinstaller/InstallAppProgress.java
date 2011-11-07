@@ -54,7 +54,7 @@ import java.util.List;
  * the existing package is replaced with the new one.
  */
 public class InstallAppProgress extends Activity implements View.OnClickListener, OnCancelListener {
-    private final String TAG="InstallAppProgress";
+    private final String TAG="InstallAppProgress -- HEM";
     private boolean localLOGV = false;
     private ApplicationInfo mAppInfo;
     private Uri mPackageURI;
@@ -72,6 +72,10 @@ public class InstallAppProgress extends Activity implements View.OnClickListener
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case INSTALL_COMPLETE:
+                  if (true) {  //hemerr
+                    finish();
+                    return;
+                  }
                     // Update the status text
                     mProgressBar.setVisibility(View.INVISIBLE);
                     // Show the ok button
@@ -174,8 +178,7 @@ public class InstallAppProgress extends Activity implements View.OnClickListener
     }
 
     public void initView() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.op_progress);
+
         int installFlags = 0;
         PackageManager pm = getPackageManager();
         try {
@@ -191,6 +194,11 @@ public class InstallAppProgress extends Activity implements View.OnClickListener
         }
         PackageUtil.AppSnippet as = PackageUtil.getAppSnippet(this, mAppInfo,
                 mPackageURI);
+        
+      if (false) {  //hemerr
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.op_progress);        
+        
         mLabel = as.label;
         PackageUtil.initSnippetForNewApp(this, as, R.id.app_snippet);
         mStatusTextView = (TextView)findViewById(R.id.center_text);
@@ -202,13 +210,14 @@ public class InstallAppProgress extends Activity implements View.OnClickListener
         mDoneButton = (Button)findViewById(R.id.done_button);
         mLaunchButton = (Button)findViewById(R.id.launch_button);
         mOkPanel.setVisibility(View.INVISIBLE);
-
+      }
+      
         String installerPackageName = getIntent().getStringExtra(
             /*Intent.EXTRA_INSTALLER_PACKAGE_NAME*/"android.intent.extra.INSTALLER_PACKAGE_NAME");
         PackageInstallObserver observer = new PackageInstallObserver();
         pm.installPackage(mPackageURI, observer, installFlags, installerPackageName);
         
-        android.util.Log.d("HEM", "pm.installPackage() over!");
+        android.util.Log.i(TAG, "pm.installPackage() over!");
     }
 
     @Override
