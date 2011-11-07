@@ -3,8 +3,9 @@
   @ cat sour.txt > dest.txt, eg. cat SdkSetup.apk >  /mnt/sdcard/SdkSetup.apk
 
 °Ú adb ≥£”√√¸¡Ó  
-   emulator -avd <avd-name> -partition-size 100
+1. emulator -avd <avd-name> -partition-size 100
    emulator -avd erc_noinstall -partition-size 100 
+   
    
 °Ú Acctivity Creator
   activitycreator [--out <folder>] [--ide intellij] your.package.name.ActivityName
