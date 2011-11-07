@@ -6,13 +6,13 @@
 				repeat_value="0">
 				<time_range start_time="0:1" end_time="1:30"></time_range>
 				<time_range start_time="10:04" end_time="11:45"></time_range>
-				<time_range start_time="23:0" end_time="23:59"></time_range>
+				<time_range start_time="23:0" end_time="23:10"></time_range>
 			</access_rule>
 
 			<access_rule auth_type="access_permitted" repeat_type="weekly"
-				repeat_value="wednesday,thursday,friday,saturday">
+				repeat_value="monday,wednesday,thursday,friday,saturday">
 				<time_range start_time="1:4" end_time="1:55"></time_range>
-				<time_range start_time="17:56" end_time="18:59"></time_range>
+				<time_range start_time="23:31" end_time="23:59"></time_range>
 			</access_rule>
  
 		</access_cate>
