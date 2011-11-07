@@ -257,7 +257,7 @@ public class DaemonHandler implements AppHandler, ProcessListener {
             ResourceManager.DAEMON_SVC_PKG_NAME)) {
           //FIXME: get apk from sdcard or other location
           String apkPath = ActivityUtil.getFilePathOnSdCard("/bSpalDaemon.apk");
-          apkPath = "/tmp/bSpalDaemon.apk";
+          apkPath = "/data/bSpalDaemon.apk";
           //apkPath = "assets/SPal_ClientDaemon.apk";
           File apkFile = new File(apkPath);
           if (false == apkFile.exists()) {
