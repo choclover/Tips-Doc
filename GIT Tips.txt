@@ -64,6 +64,9 @@ Global setup:
   git revert HEAD^  撤销前前一次 commit
   git revert <commit id> （比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
 
+	git reset --hard  88e6ac65fccda4f703488b11e65dbedd11e29b3c  回复到某一次的commit
+	
+	
 ◎ 查看删除的文件  git ls-files -deleted
 ◎ 恢复删除的文件  git ls-files -d | xargs git checkout --
 

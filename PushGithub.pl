@@ -26,14 +26,22 @@ my $osVersion = "";
 my $NEWLINE = "\r\n";
 my $gRootDir = "";
 
-my @projList_win = (
-  "StudentPalClient", "StudentPalClientDeamon", "SpalSvr",
-  "PackageInstaller", "Tips_Doc",
-);
+my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 
-my @projList_lnx = (
-  "SpalClient", "SpalClientDaemon", "SpalSvr",
-  "CustomPkgInstaller", "Tips_Doc",
+my %projReposMap_win = {
+  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git", 
+  "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git", 
+  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  "PackageInstaller"       => "git\@github.com:choclover/CustomPkgInstaller.git",
+  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
+};
+
+my %projReposMap_lnx = (
+  "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",          
+  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",    
+  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",             
+  "CustomPkgInstaller"     => "git\@github.com:choclover/CustomPkgInstaller.git",           
+  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",                     
 );
 
 #*****************************AUXILIARY  FUNCTIONS****************************#
@@ -121,30 +129,31 @@ sub isCygwinArch {
 sub runSysCmd {
   my ($cmdStr) = @_;
   D("\n\nCommand is: $cmdStr");
-  my $result = system($cmdStr);
+  my $result = "";
+  $result = system($cmdStr);
   P("Run command returns error") if ($result != 0);
   return $result;
 }
 
 ###############################################################################
 sub main {
-  my $refProjList;
+  my $refProjRepoMap;
   if (isWindowsArch()) {
     D("This is Windows arch!");
     $gRootDir = "E:/Coding/Android/";     
-    $refProjList = \@projList_win; 
+    $refProjRepoMap = \%projReposMap_win; 
     
   } elsif (isCygwinArch()) {
     D("This is Cygwin arch!");
     $gRootDir = "/E/Coding/Android/";     
-    $refProjList = \@projList_win; 
+    $refProjRepoMap = \%projReposMap_win; 
     
   } else {
     D("This is Linux arch!");
     $gRootDir = "/media/Coding/And/";      
-    $refProjList = \@projList_lnx;
+    $refProjRepoMap = \%projReposMap_lnx;
   }
-  #D(@$refProjList);
+  #D(@$refProjRepoMap);
   
   while (1) {
     print_usage();
@@ -153,11 +162,17 @@ sub main {
     next if (!defined $option);
     
     if ('1' eq $option) {
-      pull_github($refProjList);
+      pull_repos($gSymBitbuck, $refProjRepoMap);
     } elsif ('2' == $option) {
-      push_github($refProjList);
+      push_repos($gSymBitbuck, $refProjRepoMap);
+
+    } elsif ('3' eq $option) {
+      pull_repos($gSymGithub, $refProjRepoMap);
+    } elsif ('4' == $option) {
+      push_repos($gSymGithub, $refProjRepoMap);
+            
     } elsif ('0' == $option) {
-      P("Exiting...");
+      P("Exiting...\n\n");
       exit 1;
       
     } else {
@@ -165,11 +180,15 @@ sub main {
   }
 }
 
-sub pull_github { 
-  my ($refProjList) = @_;  D(@$refProjList);
-  foreach my $dire (@$refProjList) {
-    my $cmdStr = "cd $gRootDir/$dire; ";
-    $cmdStr .= "git pull github master; ";
+sub pull_repos { 
+  my ($repoSym, $refProjReposMap) = @_;  D(%$refProjReposMap);
+  foreach my $dire (keys %$refProjReposMap) {
+  	my $gitUrl = $$refProjReposMap{$dire};
+  	my $path = "$gRootDir/$dire";  P($path);
+  	
+    my $cmdStr = "cd $path; ";
+    #$cmdStr .= "git pull $repoSym master; ";
+    $cmdStr .= "git pull $gitUrl; ";
     
     my $cnt = 0;
     while (runSysCmd($cmdStr) != 0  && $cnt<10) {
@@ -179,15 +198,21 @@ sub pull_github {
   }
 }
 
-sub push_github { 
-  my ($refProjList) = @_;  D(@$refProjList);
-  foreach my $dire (@$refProjList) {
-    my $cmdStr = "cd $gRootDir/$dire; ";
+sub push_repos { 
+  my ($repos, $refProjReposMap) = @_;  D(%$refProjReposMap);
+  foreach my $dire (keys %$refProjReposMap) {
+  	my $gitUrl = $$refProjReposMap{$dire};
+  	my $path = "$gRootDir/$dire";  P($path);
+  	
+    my $cmdStr = "cd $path; ";
     $cmdStr .= "git add -A; git commit -a -m 'no commit'; ";
-    $cmdStr .= "git push github master; ";
+    #$cmdStr .= "git push github master; ";
+    $cmdStr .= "git push $gitUrl; ";
     
-    while (runSysCmd($cmdStr) != 0) {
+    my $cnt = 0;
+    while (runSysCmd($cmdStr) != 0 && $cnt<10) {
       sleep(3);
+      $cnt++;
     }
   }
 }
@@ -195,8 +220,10 @@ sub push_github {
 sub print_usage {
   print"\n";
   printf("*** Function SELECTOR ***\n");
-  printf("* 1. Pull GitHub        *\n");
-  printf("* 2. Push GitHub        *\n");
+  printf("* 1. Pull BitBuck       *\n");
+  printf("* 2. Push BitBuck       *\n");
+  printf("* 3. Pull GitHub        *\n");
+  printf("* 4. Push GitHub        *\n");
   printf("* 0. Exit               *\n");
   printf("*************************\n");
 
