@@ -50,7 +50,7 @@ import android.widget.LinearLayout;
  * sub activity. All state transitions are handled in this activity
  */
 public class PackageInstallerActivity extends Activity implements OnCancelListener, OnClickListener {
-    private static final String TAG = "HEM";  //"PackageInstaller";
+    private static final String TAG = "PackageInstaller -- HEM";
     private Uri mPackageURI;    
     private boolean localLOGV = true;
     PackageManager mPm;
