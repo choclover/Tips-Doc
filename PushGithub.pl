@@ -28,13 +28,13 @@ my $gRootDir = "";
 
 my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 
-my %projReposMap_win = {
+my %projReposMap_win = (
   "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git", 
   "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git", 
   "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
   "PackageInstaller"       => "git\@github.com:choclover/CustomPkgInstaller.git",
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
-};
+);
 
 my %projReposMap_lnx = (
   "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",          
@@ -153,7 +153,7 @@ sub main {
     $gRootDir = "/media/Coding/And/";      
     $refProjRepoMap = \%projReposMap_lnx;
   }
-  #D(@$refProjRepoMap);
+  D("ProjRepoMap is:", keys %$refProjRepoMap);
   
   while (1) {
     print_usage();
@@ -172,7 +172,7 @@ sub main {
       push_repos($gSymGithub, $refProjRepoMap);
             
     } elsif ('0' == $option) {
-      P("Exiting...\n\n");
+      P("Exiting...\n");
       exit 1;
       
     } else {
@@ -184,7 +184,7 @@ sub pull_repos {
   my ($repoSym, $refProjReposMap) = @_;  D(%$refProjReposMap);
   foreach my $dire (keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
-  	my $path = "$gRootDir/$dire";  P($path);
+  	my $path = "$gRootDir/$dire";  P("\n$path\n");
   	
     my $cmdStr = "cd $path; ";
     #$cmdStr .= "git pull $repoSym master; ";
@@ -202,7 +202,7 @@ sub push_repos {
   my ($repos, $refProjReposMap) = @_;  D(%$refProjReposMap);
   foreach my $dire (keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
-  	my $path = "$gRootDir/$dire";  P($path);
+  	my $path = "$gRootDir/$dire";  P("\n$path\n");
   	
     my $cmdStr = "cd $path; ";
     $cmdStr .= "git add -A; git commit -a -m 'no commit'; ";
@@ -220,10 +220,10 @@ sub push_repos {
 sub print_usage {
   print"\n";
   printf("*** Function SELECTOR ***\n");
-  printf("* 1. Pull BitBuck       *\n");
-  printf("* 2. Push BitBuck       *\n");
-  printf("* 3. Pull GitHub        *\n");
-  printf("* 4. Push GitHub        *\n");
+  printf("* 1. Pull From Repos    *\n");
+  printf("* 2. Push To Repos      *\n");
+  #printf("* 3. Pull GitHub       *\n");
+  #printf("* 4. Push GitHub       *\n");
   printf("* 0. Exit               *\n");
   printf("*************************\n");
 

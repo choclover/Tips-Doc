@@ -7,7 +7,7 @@
    emulator -avd erc_noinstall -partition-size 100 
    emulator -avd 2.2_noinstall -partition-size 100 
    
-¡ò Acctivity Creator
+¡ò Activity Creator
   activitycreator [--out <folder>] [--ide intellij] your.package.name.ActivityName
   
   ex. 
