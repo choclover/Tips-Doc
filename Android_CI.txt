@@ -5,7 +5,7 @@
 °Ú adb ≥£”√√¸¡Ó  
 1. emulator -avd <avd-name> -partition-size 100
    emulator -avd erc_noinstall -partition-size 100 
-   
+   emulator -avd 2.2_noinstall -partition-size 100 
    
 °Ú Acctivity Creator
   activitycreator [--out <folder>] [--ide intellij] your.package.name.ActivityName

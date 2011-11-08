@@ -32,8 +32,8 @@ my @projList_win = (
 );
 
 my @projList_lnx = (
-  "StudentPalClient", "SpalDaemon", "SpalSvr",
-  "PackageInstaller", "Tips_Doc",
+  "SpalClient", "SpalClientDaemon", "SpalSvr",
+  "CustomPkgInstaller", "Tips_Doc",
 );
 
 #*****************************AUXILIARY  FUNCTIONS****************************#
@@ -133,10 +133,12 @@ sub main {
     D("This is Windows arch!");
     $gRootDir = "E:/Coding/Android/";     
     $refProjList = \@projList_win; 
+    
   } elsif (isCygwinArch()) {
     D("This is Cygwin arch!");
     $gRootDir = "/E/Coding/Android/";     
     $refProjList = \@projList_win; 
+    
   } else {
     D("This is Linux arch!");
     $gRootDir = "/media/Coding/And/";      
@@ -149,12 +151,15 @@ sub main {
     my $option = <STDIN>;   chomp $option;
     D("option is $option") ;
     next if (!defined $option);
+    
     if ('1' eq $option) {
       pull_github($refProjList);
     } elsif ('2' == $option) {
       push_github($refProjList);
     } elsif ('0' == $option) {
+      P("Exiting...");
       exit 1;
+      
     } else {
     }
   }
@@ -166,8 +171,10 @@ sub pull_github {
     my $cmdStr = "cd $gRootDir/$dire; ";
     $cmdStr .= "git pull github master; ";
     
-    while (runSysCmd($cmdStr) != 0) {
+    my $cnt = 0;
+    while (runSysCmd($cmdStr) != 0  && $cnt<10) {
       sleep(3);
+      $cnt++;
     }
   }
 }
