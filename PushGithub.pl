@@ -221,7 +221,7 @@ sub print_usage {
   print"\n";
   printf("*** Function SELECTOR ***\n");
   printf("* 1. Pull From Repos    *\n");
-  printf("* 2. Push To Repos      *\n");
+  printf("* 2. Push To   Repos    *\n");
   #printf("* 3. Pull GitHub       *\n");
   #printf("* 4. Push GitHub       *\n");
   printf("* 0. Exit               *\n");
