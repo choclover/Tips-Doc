@@ -32,7 +32,7 @@ my %projReposMap_win = (
   "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
   "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
-  "PackagInstaller"        => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
+  "PackageInstaller"       => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
   #"PackageInstaller"       => "git\@github.com:choclover/CustomPkgInstaller.git",
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
 );
