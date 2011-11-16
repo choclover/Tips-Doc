@@ -25,7 +25,7 @@ String myIMEI = android.os.SystemProperties.get(android.telephony.TelephonyPrope
   @. Activity.setResult(int resultCode, Intent intent) -> call parent Activity.onActivityResult(int, resultCode, Intent);    (resultCode == RESULT_OK)
   If a child activity fails for any reason (such as crashing), the parent activity will receive a result with the code RESULT_CANCELED.
 
-◎ 将Activity中的<category android:name="android.intent.category.LAUNCHER" />去掉，该应用就不会在launcher顶层显示了。
+◎ 将Activity中的<category android:name="android.intent.category.LAUNCHER" />去掉，该application就不会在launcher顶层显示了。
 
 ◎
 

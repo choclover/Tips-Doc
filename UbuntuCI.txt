@@ -1,0 +1,247 @@
+
+1. PATH -- ~/.bashrc or /etc/profile
+#set Java environment
+export JAVA_HOME=/usr/jdk1.6.0_20
+export JRE_HOME=/usr/jdk1.6.0_20/jre
+export CLASSPATH=.:$JAVA_HOME/lib/tools/jar:$JRE_HOME/lib/dt.jar:$CLASSPATH
+export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:/usr/bin:$PATH
+
+sudo apt-get install sun-java6-jdk
+sudo update-alternatives --config java
+sudo update-alternatives --config javac
+
+◎ SSH / Open SSH
+  /etc/init.d/ssh
+  sudo service ssh restart
+  ~/.ssh/config
+  /etc/ssh/ssh_config
+ 
+◎ 常用命令
+  cat /etc/shadow -- 查看所有用户
+  uname -r -- 查看linux内核版本
+  sudo apt-get autoremove -- 下列软件包将被【卸载】：linux-headers-2.6.31-14 linux-headers-2.6.31-14-generic
+  sudo apt-get install nautilus-open-terminal; killall -9 nautilus -- 在文件浏览器添加“Open in Teminal”。
+  
+◎◎◎◎◎◎◎◎◎◎
+
+# 设置系统的默认语言方式： 修改 /etc/environment
+  PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games"
+  LANGUAGE="en_US:en"
+  LANG="zh_CN.UTF-8"   / "zh_CN.GB18030"
+  
+  source /etc/environment
+
+# 把shell编辑模式改成vi模式：非常爽,vim ~/.bashrc -> set -o vi
+# 配置vim
+   1. sudo vim /etc/vim/vimrc 设置语法高亮 
+   2. if &t_Co > 1
+        syntax enable
+      endif
+   3. set autoindent 使回车时不是在行首，而是跟上一行对齐
+
+
+3. 查看一下 Ubuntu的版本号:
+    cat /etc/issue
+    Ubuntu 7.04 \n \l
+
+    sudo lsb_release -a
+    Distributor ID: Ubuntu
+    Description: Ubuntu 7.04
+    Release: 7.04
+    Codename: feisty
+
+5. dpkg: 
+    dpkg -i/--install webmin_1.290_all.deb
+
+    dpkg --get-selections  |grep linux-image
+        linux-image-2.6.31-14-generic			deinstall
+        linux-image-2.6.31-20-generic			install
+        linux-image-generic				install
+    sudo apt-get remove linux-image-2.6.31-14-generic
+
+    显示已经安装软件的版本号：
+    dpkg -l | grep scim
+    dpkg -l | grep ibus
+
+6. trac + subversion + apache
+# 安装: 
+sudo apt-get install subversion
+sudo apt-get install libapache2-svn  //这个是安装apache部分，如果不使用http协议可以不必装这个
+sudo apt-get install trac
+
+# 查看trac的版本号:
+trac-admin version
+Welcome to trac-admin 0.11.5
+Interactive Trac administration console.
+Copyright (c) 2003-2009 Edgewall Software
+
+Trac Readme: /usr/share/doc/trac/README.Debian
+
+# 配置svn:
+sudo groupadd subversion
+sudo usermod -G subversion -a <当前用戶>
+sudo usermod -G subversion -a www-data
+
+sudo mkdir -p /home/svn/repos
+sudo chown -R root:subversion /home/svn/repos
+sudo chmod -R g+rws /home/svn/repos
+sudo svnadmin create /home/svn/repos
+
+$ sudo vim /<svn>/conf/svnserve.conf //将# [general]和# password-db = passwd的注释取消掉，这表示使用同级目录下的passwd文件做为密码数据库。
+$ sudo vim /<svn>/conf/passwd        //添加admin用户及密码。
+
+$ svn co file:///home/svn/myproject
+$ svn co svn://10.28.158.133/home/svn/myproject –username admin
+
+***************************
+配置PostgreSQL:
+sudo apt-get install postgresql
+sudo apt-get install python-psycopg2
+sudo /etc/init.d/postgresql-8.4 start
+**********************************
+
+配置Trac: 
+一个新的Trac环境是通过使用trac-admin创建出来的，同Subversion一样，Trac环境可以放至在任意位置，由于Trac是个Web应用，是通过Apache来访问的，所以通常将其设在/var/www目录中。
+
+cd /var/www
+sudo mkdir trac
+sudo chown -R www-data:www-data trac
+sudo -u www-data trac-admin trac initenv
+sudo chmod -R g+rsw trac
+
+Project Name [My Project]> cmet （在这里输入你的项目名称）
+Database connection string [sqlite:db/trac.db]>postgres://firehare:123456@localhost/trac （输入PostgreSQL数据库的位置）
+Repository type [svn]>
+Path to repository [/path/to/repos]> /home/svn/repos （在这里输入你的项目对应的Subversion地址,注意Trac默认情况下只能访问本机的Subversion仓库，在上面填写地址时不能加"file://"前缀。）
+Templates directory [/usr/share/trac/templates]>/usr/share/pyshared/trac/templates
+
+    For trac >= 0.11 the *gi scripts have to be generated using the deploy command:
+    sudo trac-admin /path/to/env deploy /path/to/www/trac (该路径需要是不存在的)
+    eg.    sudo trac-admin /var/www/trac deploy /usr/share/trac/
+    sudo chmod 775 /usr/share/trac/cgi-bin/*
+
+*********************
+配置Apache:
+    cd /usr/lib
+    sudo mkdir cgi-bin
+    sudo chown -R www-data:www-data cgi-bin
+    cd cgi-bin
+    sudo -u www-data ln -s /usr/share/trac/cgi-bin/trac.cgi /usr/lib(or lib64)/cgi-bin/trac.cgi
+
+在Apache配置中加入Trac站点的配置信息,在Ubuntu下站点配置通常放在/etc/apache2/sites-available/default这一文件中，可编辑该文件加入以下内容:
+  Alias /trac/ "/usr/share/trac/htdocs/"
+  <Directory "/usr/share/trac/htdocs/">
+        Options Indexes MultiViews
+        AllowOverride None
+        Order allow,deny
+        Allow from all
+  </Directory>
+  <Location "/cgi-bin/trac.cgi">
+        SetEnv TRAC_ENV "/var/www/trac"
+  </Location>
+  <Location "/cgi-bin/trac.cgi/login">
+        AuthType Basic
+        AuthName "trac"
+        AuthUserFile /etc/apache2/trac.htpasswd
+        Require valid-user
+  </location>
+
+    cd /etc/apache2
+    sudo htpasswd -c trac.htpasswd 你的用户名   -c参数是创建新的密码文件
+    [sudo /etc/init.d/apache2 reload]
+
+    sudo /etc/init.d/apache2 restart  /  reload
+
+登录Trac系统： 
+http://localhost/cgi-bin/trac.cgi
+simon / heming
+grace / heming
+
+---------------------------------------------------------------------------     
+7. user, group
+    cat /etc/passwd | cut -f 1 -d:
+
+    /etc/group 的内容包括用户组（Group）、用户组口令、GID及该用户组所包含的用户（User），每个用户组一条记录；格式如下：
+        group_name:passwd:GID:user_list
+    在/etc/group 中的每条记录分四个字段：
+    第一字段：用户组名称；
+    第二字段：用户组密码；
+    第三字段：GID
+    第四字段：用户列表，每个用户之间用,号分割. 本字段可以为空,如果字段为空,表示用户组为GID的用户名；
+
+8. Rabbit VCS
+    http://wiki.rabbitvcs.org/wiki/download
+    RabbitVCS Ubuntu PPA
+    *Karmic and Lucid use: ppa:rabbitvcs/ppa (you can open a terminal and type:
+        sudo add-apt-repository ppa:rabbitvcs 
+
+9. 输入法：
+    ◎ 切换输入法
+    im-switch -s scim -z default/en_US
+    需要重新登录或者重启
+    ◎ scim 
+      http://www.scim-im.org/
+      im-switch -s scim 
+      scim -d 
+      scim-setup
+    ◎ fcitx
+      sudo apt-get install fcitx
+      sudo im-switch -s fcitx -z default
+      gedit ~/.fcitx/config
+      fcitx -d
+    ◎ iBUS
+      http://code.google.com/p/ibus/
+      im-switch -s ibus -z default
+      卸载后，重新安装ibus、ibus-table、ibus-pinyin
+
+    sudo gedit /usr/lib/gtk-2.0/2.10.0/immodule-files.d/scim-gtk2-immodule.immodules
+    将内容改为如下：
+    # automatically generated by dh_gtkmodules, do not edit
+    “/usr/lib/gtk-2.0/2.10.0/immodules/im-scim.so”
+    “scim” “SCIM Input Method” “scim” “/usr/share/locale” “ja:ko” 
+
+**********************************
+    ◎ 巨蟒拼音--与scim-pinyin冲突，不能安装
+    http://code.google.com/p/scim-python/
+    $sudo apt-get install scim-dev
+    $sudo apt-get install python-dev
+    $sudo apt-get install python-enchant
+    $sudo apt-get install python-gtk2-dev
+    $sudo apt-get install libgtk2.0-dev
+    到http://code.google.com/p/scim-python/downloads/下载最新版本，并解压缩到一个文件夹
+    $cd 源码文件夹
+    $./configure --prefix=/usr
+    $make
+    $sudo make install
+*************************************
+    ◎ 查看系统安装的字体
+    fc-list |more       
+    fc-list |grep -i wenquan  
+
+    字体文件存放在： /usr/share/fonts/truetype/wqy 
+
+10. sudo ./configure / make / make install
+    ./configure出现某个package找不到时，需安装相关lib：
+    如： No package 'ibus-1.0' found， 需安装：libibus-dev
+        No package 'gconf-2.0' found， 需安装：libgconf2-dev
+
+11. UltraEdit for Linux / UEX
+    menu -> View -> View As (File Encoding) -> Eastern Asia -> GB18030
+
+◎ NX Server / Client (NO Machine Co.)
+  #sudo /usr/NX/bin/nxserver  --status
+  #sudo /etc/init.d/nxserver
+
+
+
+
+
+
+
+
+
+
+
+
+
+

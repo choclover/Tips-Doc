@@ -123,7 +123,7 @@ sub isWindowsArch {
   return ($osVersion =~ /win32/i);
 }
 sub isCygwinArch {
-  return ($osVersion =~ /msys/i);
+  return ($osVersion =~ /msys|cygwin/i);
 }
 
 sub runSysCmd {
@@ -145,7 +145,7 @@ sub main {
     
   } elsif (isCygwinArch()) {
     D("This is Cygwin arch!");
-    $gRootDir = "/E/Coding/Android/";     
+    $gRootDir = "E:/Coding/Android/";     
     $refProjRepoMap = \%projReposMap_win; 
     
   } else {

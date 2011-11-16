@@ -32,6 +32,10 @@
 ◎ Database location for application:
   adb shell -> /data/data/com.android.demo.notepad2/databases
 
+◎ Android Source Code / AOSP
+  # repo
+  
+  
 ◎ 显示/修改目录权限
 mount -o remount,rw -t yaffs2 /dev/block/mtdblock0 /system
 
