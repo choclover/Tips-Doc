@@ -1,0 +1,9 @@
+
+.svn
+*/.svn
+bin/*
+gen/*
+.classpath
+.project
+.settings/*
+*.apk
