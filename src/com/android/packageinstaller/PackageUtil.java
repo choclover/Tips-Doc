@@ -19,8 +19,6 @@ package com.android.packageinstaller;
 import java.io.File;
 import java.util.List;
 
-import com.android.packageinstaller.R;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
