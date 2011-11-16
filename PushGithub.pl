@@ -29,19 +29,21 @@ my $gRootDir = "";
 my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 
 my %projReposMap_win = (
-  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git", 
-  "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git", 
+  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
+  "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
-  "PackageInstaller"       => "git\@github.com:choclover/CustomPkgInstaller.git",
+  "PackagInstaller"        => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
+  #"PackageInstaller"       => "git\@github.com:choclover/CustomPkgInstaller.git",
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
 );
 
 my %projReposMap_lnx = (
-  "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",          
-  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",    
-  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",             
-  "CustomPkgInstaller"     => "git\@github.com:choclover/CustomPkgInstaller.git",           
-  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",                     
+  "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
+  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
+  #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
+  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
 );
 
 #*****************************AUXILIARY  FUNCTIONS****************************#
@@ -71,7 +73,7 @@ sub LOG_FILE {
 
   open(tmpLogFile, $fileName) || die "Cannot open log file: $fileName!\n";
   foreach (@logPara) {
-    my ($str0D, $str0A) = ('\r', '\n');  
+    my ($str0D, $str0A) = ('\r', '\n');
     s/$str0D//ig;  #remove all '\r' chars
     print tmpLogFile "$_\n";
   }
@@ -140,27 +142,27 @@ sub main {
   my $refProjRepoMap;
   if (isWindowsArch()) {
     D("This is Windows arch!");
-    $gRootDir = "E:/Coding/Android/";     
-    $refProjRepoMap = \%projReposMap_win; 
-    
+    $gRootDir = "E:/Coding/Android/";
+    $refProjRepoMap = \%projReposMap_win;
+
   } elsif (isCygwinArch()) {
     D("This is Cygwin arch!");
-    $gRootDir = "E:/Coding/Android/";     
-    $refProjRepoMap = \%projReposMap_win; 
-    
+    $gRootDir = "E:/Coding/Android/";
+    $refProjRepoMap = \%projReposMap_win;
+
   } else {
     D("This is Linux arch!");
-    $gRootDir = "/media/Coding/And/";      
+    $gRootDir = "/media/Coding/And/";
     $refProjRepoMap = \%projReposMap_lnx;
   }
   D("ProjRepoMap is:", keys %$refProjRepoMap);
-  
+
   while (1) {
     print_usage();
     my $option = <STDIN>;   chomp $option;
     D("option is $option") ;
     next if (!defined $option);
-    
+
     if ('1' eq $option) {
       pull_repos($gSymBitbuck, $refProjRepoMap);
     } elsif ('2' == $option) {
@@ -170,26 +172,26 @@ sub main {
       pull_repos($gSymGithub, $refProjRepoMap);
     } elsif ('4' == $option) {
       push_repos($gSymGithub, $refProjRepoMap);
-            
+
     } elsif ('0' == $option) {
       P("Exiting...\n");
       exit 1;
-      
+
     } else {
     }
   }
 }
 
-sub pull_repos { 
+sub pull_repos {
   my ($repoSym, $refProjReposMap) = @_;  D(%$refProjReposMap);
   foreach my $dire (keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
   	my $path = "$gRootDir/$dire";  P("\n$path\n");
-  	
+
     my $cmdStr = "cd $path; ";
     #$cmdStr .= "git pull $repoSym master; ";
     $cmdStr .= "git pull $gitUrl; ";
-    
+
     my $cnt = 0;
     while (runSysCmd($cmdStr) != 0  && $cnt<10) {
       sleep(3);
@@ -198,17 +200,17 @@ sub pull_repos {
   }
 }
 
-sub push_repos { 
+sub push_repos {
   my ($repos, $refProjReposMap) = @_;  D(%$refProjReposMap);
   foreach my $dire (keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
   	my $path = "$gRootDir/$dire";  P("\n$path\n");
-  	
+
     my $cmdStr = "cd $path; ";
     $cmdStr .= "git add -A; git commit -a -m 'no commit'; ";
     #$cmdStr .= "git push github master; ";
     $cmdStr .= "git push $gitUrl; ";
-    
+
     my $cnt = 0;
     while (runSysCmd($cmdStr) != 0 && $cnt<10) {
       sleep(3);

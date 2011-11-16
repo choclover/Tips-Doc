@@ -3,10 +3,15 @@
   @ cat sour.txt > dest.txt, eg. cat SdkSetup.apk >  /mnt/sdcard/SdkSetup.apk
 
 ◎ adb 常用命令  
-1. emulator -avd <avd-name> -partition-size 100
+   emulator -avd <avd-name> -partition-size 100
    emulator -avd erc_noinstall -partition-size 100 
    emulator -avd 2.2_noinstall -partition-size 100 
    
+   adb pull /system/app/PackageInstaller.apk
+   adb push a.apk /data/
+   adb install a.apk
+
+=======================================================   
 ◎ Activity Creator
   activitycreator [--out <folder>] [--ide intellij] your.package.name.ActivityName
   
@@ -15,7 +20,7 @@
 
 ◎ Install / Uninstall Application
   <Android SDK>\tools\adb.exe install <project folder>/bin/<appname>.apk 
-  e.g. adb.exe install <project folder>/bin/SimonTest.apk
+  e.g. adb install <project folder>/bin/SimonTest.apk
   
   <Android SDK>\tools\adb.exe uninstall com.motorola.fetion.test
   Or
@@ -34,6 +39,18 @@
 
 ◎ Android Source Code / AOSP
   # repo
+  # repo start <BRANCH_NAME> [PROJECT]
+    repo start <hm_pkginstaller> packages/apps/PackageInstaller/
+  
+  # repo branches   or  # cd build/; git branch
+  
+  # build APK
+  $ cd <And Src>/; mmm packages/apps/PackageInstaller/
+  $ ll <And Src>/out/target/product/generic/system/app/PackageInstaller.apk
+  
+◎ APK签名
+  @ 查看签名
+  <JDK>/bin/jarsigner -verify -certs -verbose a.apk
   
   
 ◎ 显示/修改目录权限
