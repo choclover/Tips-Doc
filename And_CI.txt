@@ -11,6 +11,17 @@
    adb push a.apk /data/
    adb install a.apk
 
+◎ adb logcat
+  adb logcat *:[v|d|i|w|e|f]
+  
+  V — Verbose (lowest priority)
+  D — Debug
+  I — Info
+  W — Warning
+  E — Error
+  F — Fatal
+
+S — Silent (highest priority, on which nothing is ever printed)
 =======================================================   
 ◎ Activity Creator
   activitycreator [--out <folder>] [--ide intellij] your.package.name.ActivityName
@@ -39,11 +50,16 @@
 
 ◎ Android Source Code / AOSP
   # repo
+    repo init -u https://android.googlesource.com/platform/manifest -b froyo
+   
   # repo start <BRANCH_NAME> [PROJECT]
     repo start <hm_pkginstaller> packages/apps/PackageInstaller/
   
+  # repo status
   # repo branches   or  # cd build/; git branch
+  # cat .repo/manifests/default.xml
   
+  ==================================================
   # build APK
   $ cd <And Src>/; mmm packages/apps/PackageInstaller/
   $ ll <And Src>/out/target/product/generic/system/app/PackageInstaller.apk
@@ -72,6 +88,10 @@ none /dev/cpuctl cgroup rw,cpu 0 0
 /dev/block/vold/179:0 /mnt/secure/asec vfat rw,dirsync,nosuid,nodev,noexec,uid=1000,gid=1015,fmask=0702,dmask=0702,allow_utime=0020,codepage=cp437,iocharset=iso8859-1,shortname=mixed,utf8,errors=remount-ro 0 0
 tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0  
 
+◎ Tools
+
+1. SuperOneClick
+
 ◎ 常见错误解决方法
 1. failed to copy 'xxx.apk' to '/system/app/xxx.apk': Out of memory
   -- emulator -avd erc_noinstall -partition-size 100  
@@ -82,7 +102,9 @@ tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0
   make: *** No rule to make target `dalvik/libcore//home/<username>/android/system/dalvik/libcore/sub.mk'.  Stop.
  -- Edit your bashrc, remove #export CDPATH
 
-.
+3. Installation error: INSTALL_PARSE_FAILED_NO_CERTIFICATES
+ -- APK文件没有签名，甚至连Eclipse debug签名也没有。
+ 
 
 .
 
