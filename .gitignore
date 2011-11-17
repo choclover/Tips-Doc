@@ -1,13 +1,17 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 23d7abd9c940bf7d9c9968847f6a4d0c3e8b7cb9
+=======
+>>>>>>> 88e6ac65fccda4f703488b11e65dbedd11e29b3c
 .svn
 */.svn
 bin/*
 gen/*
 .classpath
+<<<<<<< HEAD
 <<<<<<< HEAD
 .project
 .settings/*
@@ -30,3 +34,8 @@ src/studentpal/ws/wsclient/*
 .settings/*
 .project
 >>>>>>> 23d7abd9c940bf7d9c9968847f6a4d0c3e8b7cb9
+=======
+.project
+.settings/*
+*.apk
+>>>>>>> 88e6ac65fccda4f703488b11e65dbedd11e29b3c
