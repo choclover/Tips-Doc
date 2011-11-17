@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 .svn
 */.svn
 bin/*
@@ -7,3 +8,17 @@ gen/*
 .project
 .settings/*
 *.apk
+=======
+bin/*
+.classpath*
+.project_bak
+.settings/*
+.svn
+.svn/*
+StudentPalSvr.jar
+build/*
+WebContent/WEB-INF/lib
+lib/*
+src/studentpal/ws/wsclient/*
+
+>>>>>>> d353093f51716e264d6bfc667cfe3683c36044b2
