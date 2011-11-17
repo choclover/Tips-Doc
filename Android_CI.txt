@@ -39,6 +39,9 @@
 
 ¡ò Android Source Code / AOSP
   # repo
+  # repo init -u https://android.googlesource.com/platform/manifest
+  # repo init -u https://android.googlesource.com/platform/manifest -b froyo-release
+  
   # repo start <BRANCH_NAME> [PROJECT]
     repo start <hm_pkginstaller> packages/apps/PackageInstaller/
   

@@ -190,7 +190,7 @@ sub pull_repos {
 
     my $cmdStr = "cd $path; ";
     #$cmdStr .= "git pull $repoSym master; ";
-    $cmdStr .= "git pull $gitUrl; ";
+    $cmdStr .= "git pull $gitUrl master; ";
 
     my $cnt = 0;
     while (runSysCmd($cmdStr) != 0  && $cnt<10) {
@@ -209,7 +209,7 @@ sub push_repos {
     my $cmdStr = "cd $path; ";
     $cmdStr .= "git add -A; git commit -a -m 'no commit'; ";
     #$cmdStr .= "git push github master; ";
-    $cmdStr .= "git push $gitUrl; ";
+    $cmdStr .= "git push $gitUrl master; ";
 
     my $cnt = 0;
     while (runSysCmd($cmdStr) != 0 && $cnt<10) {
