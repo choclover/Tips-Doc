@@ -20,8 +20,8 @@
   W — Warning
   E — Error
   F — Fatal
-
-S — Silent (highest priority, on which nothing is ever printed)
+  S — Silent (highest priority, on which nothing is ever printed)
+  
 =======================================================   
 ◎ Activity Creator
   activitycreator [--out <folder>] [--ide intellij] your.package.name.ActivityName
@@ -50,14 +50,9 @@ S — Silent (highest priority, on which nothing is ever printed)
 
 ◎ Android Source Code / AOSP
   # repo
-<<<<<<< HEAD:Android_CI.txt
   # repo init -u https://android.googlesource.com/platform/manifest
-  # repo init -u https://android.googlesource.com/platform/manifest -b froyo-release
-  
-=======
-    repo init -u https://android.googlesource.com/platform/manifest -b froyo
-   
->>>>>>> 957d7d33deb081daf63f1a9f5afa731c9f2e0f55:And_CI.txt
+  # repo init -u https://android.googlesource.com/platform/manifest -b froyo
+
   # repo start <BRANCH_NAME> [PROJECT]
     repo start <hm_pkginstaller> packages/apps/PackageInstaller/
   
@@ -100,6 +95,7 @@ tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0
 
 1. SuperOneClick
 
+====================================================
 ◎ 常见错误解决方法
 1. failed to copy 'xxx.apk' to '/system/app/xxx.apk': Out of memory
   -- emulator -avd erc_noinstall -partition-size 100  
