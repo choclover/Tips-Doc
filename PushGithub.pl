@@ -38,10 +38,10 @@ my %projReposMap_win = (
 );
 
 my %projReposMap_lnx = (
-  "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
-  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
-  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
-  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
+#  "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
+#  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+#  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+#  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
   #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
 );
@@ -130,13 +130,17 @@ sub isCygwinArch {
 
 sub runSysCmd {
   my ($cmdStr) = @_;
-  D("\n\nCommand is: $cmdStr");
-  my $result = "";
-  $result = system($cmdStr);
+  D("\nCommand is: $cmdStr");
+  my $result = 0;
+  $result = system($cmdStr) if (!$bDEBUG);
   P("Run command returns error") if ($result != 0);
   return $result;
 }
 
+sub getDate {
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time());
+  return sprintf("%04d-%02d-%02d", $year+1900, $mon+1, $mday);
+}
 ###############################################################################
 sub main {
   my $refProjRepoMap;
@@ -155,7 +159,7 @@ sub main {
     $gRootDir = "/media/Coding/And/";
     $refProjRepoMap = \%projReposMap_lnx;
   }
-  D("ProjRepoMap is:", keys %$refProjRepoMap);
+  D("ProjRepoMap is:", sort keys %$refProjRepoMap);
 
   while (1) {
     print_usage();
@@ -183,19 +187,21 @@ sub main {
 }
 
 sub pull_repos {
-  my ($repoSym, $refProjReposMap) = @_;  D(%$refProjReposMap);
-  foreach my $dire (keys %$refProjReposMap) {
+  my ($repoSym, $refProjReposMap) = @_;  
+  D("ProjReposMap is: ", %$refProjReposMap);
+  
+  foreach my $dire (sort keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
   	my $path = "$gRootDir/$dire";  P("\n$path\n");
 
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
     
-    $cmdStr = $cmdStr . "git commit -a -m 'no commit'; ";
-    runSysCmd($cmdStr);
+    #$cmdStr = $cdDir . "git commit -a -m '". getDate() ." commit'; ";
+    #runSysCmd($cmdStr);
     
     #$cmdStr = "git pull $repoSym master; ";
-    $cmdStr = $cmdStr . "git pull $gitUrl master; ";
+    $cmdStr = $cdDir . "git pull $gitUrl master; ";
 
     my $cnt = 0;
     while (runSysCmd($cmdStr) != 0  && $cnt<10) {
@@ -206,19 +212,21 @@ sub pull_repos {
 }
 
 sub push_repos {
-  my ($repos, $refProjReposMap) = @_;  D(%$refProjReposMap);
-  foreach my $dire (keys %$refProjReposMap) {
+  my ($repos, $refProjReposMap) = @_; 
+  D("ProjReposMap is: ", %$refProjReposMap);
+  
+  foreach my $dire (sort keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
   	my $path = "$gRootDir/$dire";  P("\n$path\n");
 
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
     
-    $cmdStr = $cmdStr . "git add -A; git commit -a -m 'no commit'; ";
+    $cmdStr = $cdDir . "git add -A; git commit -a -m '". getDate() ." commit'; ";
     runSysCmd($cmdStr);
     
     #$cmdStr = "git push github master; ";
-    $cmdStr = $cmdStr . "git push $gitUrl master; ";
+    $cmdStr = $cdDir . "git push $gitUrl master; ";
 
     my $cnt = 0;
     while (runSysCmd($cmdStr) != 0 && $cnt<10) {
