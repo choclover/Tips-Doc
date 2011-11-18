@@ -24,6 +24,8 @@ my ($TRUE, $FALSE, $SUCCESS, $FAILED) = (1,0,1,0);
 my $osVersion = "";
 
 my $NEWLINE = "\r\n";
+
+#=====================================================
 my $gRootDir = "";
 
 my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
@@ -38,10 +40,10 @@ my %projReposMap_win = (
 );
 
 my %projReposMap_lnx = (
-#  "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
-#  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
-#  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
-#  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
+  "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
+  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
   #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
 );
@@ -101,7 +103,8 @@ sub parse_args {
 
     }
   }
-  if (defined $^O) {$osVersion =  $^O;} else {$osVersion = "win32"; }  P("osVersion is: $osVersion");
+  if (defined $^O) {$osVersion =  $^O;} else {$osVersion = "win32"; }  
+  P("osVersion is: $osVersion");
 }
 
 sub backupFile {
@@ -173,7 +176,7 @@ sub main {
       push_repos($gSymBitbuck, $refProjRepoMap);
 
     } elsif ('3' eq $option) {
-      pull_repos($gSymGithub, $refProjRepoMap);
+      status_repos($refProjRepoMap);
     } elsif ('4' == $option) {
       push_repos($gSymGithub, $refProjRepoMap);
 
@@ -236,12 +239,29 @@ sub push_repos {
   }
 }
 
+sub status_repos {
+  my ($refProjReposMap) = @_; 
+  D("ProjReposMap is: ", %$refProjReposMap);
+  
+  foreach my $dire (sort keys %$refProjReposMap) {
+  	my $gitUrl = $$refProjReposMap{$dire};
+  	my $path = "$gRootDir/$dire";  P("\n$path\n");
+
+    my $cdDir = "cd $path; ";
+    my $cmdStr = "";
+    
+    $cmdStr = $cdDir . "git status ";
+    runSysCmd($cmdStr);
+  }
+}
+
+
 sub print_usage {
   print"\n";
   printf("*** Function SELECTOR ***\n");
   printf("* 1. Pull From Repos    *\n");
   printf("* 2. Push To   Repos    *\n");
-  #printf("* 3. Pull GitHub       *\n");
+  printf("* 3. Status of Repos    *\n");
   #printf("* 4. Push GitHub       *\n");
   printf("* 0. Exit               *\n");
   printf("*************************\n");
