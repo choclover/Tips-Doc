@@ -29,21 +29,26 @@ my $gRootDir = "";
 my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 
 my %projReposMap_win = (
-  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
+  #1
+  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",        
+  #2
   "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+  #3
   "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
-  "PackageInstaller"       => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
-  #"PackageInstaller"       => "git\@github.com:choclover/CustomPkgInstaller.git",
+  #4
+  "MyPkgInstaller"       => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
+  #"MyPkgInstaller"       => "git\@github.com:choclover/CustomPkgInstaller.git",
+  #5
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
 );
 
 my %projReposMap_lnx = (
   "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
-  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
-  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
-  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
-  #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
-  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
+#  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+#  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+#  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
+#  #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
+#  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
 );
 
 #*****************************AUXILIARY  FUNCTIONS****************************#
@@ -131,7 +136,7 @@ sub isCygwinArch {
 sub runSysCmd {
   my ($cmdStr) = @_;
   D("\n\nCommand is: $cmdStr");
-  my $result = "";
+  my $result = 0;
   $result = system($cmdStr);
   P("Run command returns error") if ($result != 0);
   return $result;
@@ -191,11 +196,11 @@ sub pull_repos {
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
     
-    $cmdStr = $cmdStr . "git commit -a -m 'no commit'; ";
-    runSysCmd($cmdStr);
+    #$cmdStr = $cdDir . "git add -A; git commit -m 'no commit'; ";
+    #runSysCmd($cmdStr);
     
     #$cmdStr = "git pull $repoSym master; ";
-    $cmdStr = $cmdStr . "git pull $gitUrl master; ";
+    $cmdStr = $cdDir . "git pull $gitUrl master; ";
 
     my $cnt = 0;
     while (runSysCmd($cmdStr) != 0  && $cnt<10) {
@@ -214,11 +219,11 @@ sub push_repos {
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
     
-    $cmdStr = $cmdStr . "git add -A; git commit -a -m 'no commit'; ";
+    $cmdStr = $cdDir . "git add -A; git commit --amend -m 'no commit'; ";
     runSysCmd($cmdStr);
     
     #$cmdStr = "git push github master; ";
-    $cmdStr = $cmdStr . "git push $gitUrl master; ";
+    $cmdStr = $cdDir . "git push $gitUrl master; ";
 
     my $cnt = 0;
     while (runSysCmd($cmdStr) != 0 && $cnt<10) {

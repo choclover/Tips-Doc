@@ -67,6 +67,8 @@ S ¡ª Silent (highest priority, on which nothing is ever printed)
   
   ==================================================
   # build APK
+  $ sudo fdisk -l; 
+  $ sudo mount -t ntfs /dev/sda11 /media/BAK -o iocharset=utf8,umask=022
   $ cd <And Src>/; mmm packages/apps/PackageInstaller/
   $ ll <And Src>/out/target/product/generic/system/app/PackageInstaller.apk
   
