@@ -78,6 +78,11 @@
 ◎ 显示/修改目录权限
 mount -o remount,rw -t yaffs2 /dev/block/mtdblock0 /system
 
+cp /tmp/android-she/emulator-V7czVT
+rm userdata-qemu.img cache.img system.img
+mv emulator-V7czVT system.img
+
+===================================
 # mount
 rootfs / rootfs ro 0 0
 tmpfs /dev tmpfs rw,mode=755 0 0
@@ -97,7 +102,7 @@ tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0
 ◎ Tools
 
 1. SuperOneClick
-
+2. 
 ====================================================
 ◎ 常见错误解决方法
 1. failed to copy 'xxx.apk' to '/system/app/xxx.apk': Out of memory

@@ -44,11 +44,11 @@ my %projReposMap_win = (
 
 my %projReposMap_lnx = (
   "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
-#  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
-#  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
-#  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
-#  #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
-#  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
+  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
+  #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
+  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
 );
 
 #*****************************AUXILIARY  FUNCTIONS****************************#
@@ -219,7 +219,7 @@ sub push_repos {
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
     
-    $cmdStr = $cdDir . "git add -A; git commit --amend -m 'no commit'; ";
+    $cmdStr = $cdDir . "git add -A; git commit -m 'no commit'; ";
     runSysCmd($cmdStr);
     
     #$cmdStr = "git push github master; ";
