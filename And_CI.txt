@@ -52,9 +52,10 @@
   # repo
   # repo init -u https://android.googlesource.com/platform/manifest
   # repo init -u https://android.googlesource.com/platform/manifest -b froyo
-
+	# repo sync
+	
   # repo start <BRANCH_NAME> [PROJECT]
-    repo start <hm_pkginstaller> packages/apps/PackageInstaller/
+    repo start hm_pkginstaller packages/apps/PackageInstaller/
   
   # repo status
   # repo branches   or  # cd build/; git branch
@@ -64,6 +65,8 @@
   # build APK
   $ sudo fdisk -l; 
   $ sudo mount -t ntfs /dev/sda11 /media/BAK -o iocharset=utf8,umask=022
+  
+  $ cd <And Src>/out/target/common/obj/APPS/; rm -rf PackageInstaller_intermediates
   $ cd <And Src>/; mmm packages/apps/PackageInstaller/
   $ ll <And Src>/out/target/product/generic/system/app/PackageInstaller.apk
   
@@ -104,12 +107,14 @@ tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0
   /bin/bash: line 0: cd: dalvik/libcore//home/<username>/android/system/dalvik/libcore: No such file or directory
   dalvik/libcore/NativeCode.mk:71: dalvik/libcore//home/<username>/android/system/dalvik/libcore/sub.mk: No such file or directory
   make: *** No rule to make target `dalvik/libcore//home/<username>/android/system/dalvik/libcore/sub.mk'.  Stop.
- -- Edit your bashrc, remove #export CDPATH
+	-- Edit your bashrc, remove #export CDPATH
 
 3. Installation error: INSTALL_PARSE_FAILED_NO_CERTIFICATES
- -- APK文件没有签名，甚至连Eclipse debug签名也没有。
+	-- APK文件没有签名，甚至连Eclipse debug签名也没有。
  
-
+4. build/core/base_rules.mk:128: *** dalvik/libcore: MODULE.TARGET.JAVA_LIBRARIES.core already defined by libcore.   Stop.
+	--For Froyo, 检查<Src Root>/libcore是否为空，不为空则将其删除或者清空。避免该目录与<Src Root>/dalvik/libcore目录冲突。
+	
 .
 
 .

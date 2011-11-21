@@ -27,7 +27,17 @@ String myIMEI = android.os.SystemProperties.get(android.telephony.TelephonyPrope
 
 ◎ 将Activity中的<category android:name="android.intent.category.LAUNCHER" />去掉，该application就不会在launcher顶层显示了。
 
-◎
+◎ Application的后台卸载
+private void setIntentAndFinish(boolean finish, boolean appChanged) {
+  if(localLOGV) Log.i(TAG, "appChanged="+appChanged);
+  Intent intent = new Intent();
+  intent.putExtra(ManageApplications.APP_CHG, appChanged);
+  setResult(ManageApplications.RESULT_OK, intent);
+  if(finish) {
+    finish();
+  }
+}
+（packageName 是包的完整名字）
 
 
 ◎◎◎◎◎◎◎◎◎◎◎

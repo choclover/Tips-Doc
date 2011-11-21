@@ -3,8 +3,8 @@
 #set Java environment
 export JAVA_HOME=/usr/jdk1.6.0_20
 export JRE_HOME=/usr/jdk1.6.0_20/jre
-export CLASSPATH=.:$JAVA_HOME/lib/tools/jar:$JRE_HOME/lib/dt.jar:$CLASSPATH
-export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:/usr/bin:$PATH
+CLASSPATH=.:$JAVA_HOME/lib/tools/jar:$JRE_HOME/lib/dt.jar:$CLASSPATH
+PATH=$JAVA_HOME/bin:$JRE_HOME/bin:/usr/bin:$PATH
 
 sudo apt-get install sun-java6-jdk
 sudo update-alternatives --config java
@@ -15,7 +15,29 @@ sudo update-alternatives --config javac
   sudo service ssh restart
   ~/.ssh/config
   /etc/ssh/ssh_config
- 
+
+◎ SWAP
+ 	# 查看swap分区
+ 	df -h
+	sudo fdisk -l
+	less /proc/swaps 
+	free -m 
+	swapon -s 
+	
+	# 添加swap分区
+	使用fdisk来创建交换分区
+	sudo mkswap /dev/sda10
+	sudo swapon /dev/sda10
+	vim /etc/fstab --> add line:  /dev/sda10 swap swap defaults 0 0
+	
+	# 添加swap文件
+	dd if=/dev/zero of=/swapfile1 bs=1024k count=512 (M)
+	mkswap /swapfile1
+	swapon /swapfile1
+　	vim/etc/fstab --> add line: /swapfile1 swap swap defaults 0 0
+	
+	
+	
 ◎ 常用命令
   cat /etc/shadow -- 查看所有用户
   uname -r -- 查看linux内核版本
