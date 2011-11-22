@@ -24,6 +24,8 @@ my ($TRUE, $FALSE, $SUCCESS, $FAILED) = (1,0,1,0);
 my $osVersion = "";
 
 my $NEWLINE = "\r\n";
+
+#=====================================================
 my $gRootDir = "";
 
 my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
@@ -106,7 +108,8 @@ sub parse_args {
 
     }
   }
-  if (defined $^O) {$osVersion =  $^O;} else {$osVersion = "win32"; }  P("osVersion is: $osVersion");
+  if (defined $^O) {$osVersion =  $^O;} else {$osVersion = "win32"; }  
+  P("osVersion is: $osVersion");
 }
 
 sub backupFile {
@@ -135,13 +138,17 @@ sub isCygwinArch {
 
 sub runSysCmd {
   my ($cmdStr) = @_;
-  D("\n\nCommand is: $cmdStr");
+  D("\nCommand is: $cmdStr");
   my $result = 0;
-  $result = system($cmdStr);
+  $result = system($cmdStr) if (!$bDEBUG);
   P("Run command returns error") if ($result != 0);
   return $result;
 }
 
+sub getDate {
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time());
+  return sprintf("%04d-%02d-%02d", $year+1900, $mon+1, $mday);
+}
 ###############################################################################
 sub main {
   my $refProjRepoMap;
@@ -160,7 +167,7 @@ sub main {
     $gRootDir = "/media/Coding/And/";
     $refProjRepoMap = \%projReposMap_lnx;
   }
-  D("ProjRepoMap is:", keys %$refProjRepoMap);
+  D("ProjRepoMap is:", sort keys %$refProjRepoMap);
 
   while (1) {
     print_usage();
@@ -174,7 +181,7 @@ sub main {
       push_repos($gSymBitbuck, $refProjRepoMap);
 
     } elsif ('3' eq $option) {
-      pull_repos($gSymGithub, $refProjRepoMap);
+      status_repos($refProjRepoMap);
     } elsif ('4' == $option) {
       push_repos($gSymGithub, $refProjRepoMap);
 
@@ -188,15 +195,17 @@ sub main {
 }
 
 sub pull_repos {
-  my ($repoSym, $refProjReposMap) = @_;  D(%$refProjReposMap);
-  foreach my $dire (keys %$refProjReposMap) {
+  my ($repoSym, $refProjReposMap) = @_;  
+  D("ProjReposMap is: ", %$refProjReposMap);
+  
+  foreach my $dire (sort keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
   	my $path = "$gRootDir/$dire";  P("\n$path\n");
 
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
     
-    #$cmdStr = $cdDir . "git add -A; git commit -m 'no commit'; ";
+    #$cmdStr = $cdDir . "git add -A; git commit -a -m '". getDate() ." commit'; ";
     #runSysCmd($cmdStr);
     
     #$cmdStr = "git pull $repoSym master; ";
@@ -211,15 +220,17 @@ sub pull_repos {
 }
 
 sub push_repos {
-  my ($repos, $refProjReposMap) = @_;  D(%$refProjReposMap);
-  foreach my $dire (keys %$refProjReposMap) {
+  my ($repos, $refProjReposMap) = @_; 
+  D("ProjReposMap is: ", %$refProjReposMap);
+  
+  foreach my $dire (sort keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
   	my $path = "$gRootDir/$dire";  P("\n$path\n");
 
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
     
-    $cmdStr = $cdDir . "git add -A; git commit -m 'no commit'; ";
+    $cmdStr = $cdDir . "git add -A; git commit -a -m '". getDate() ." commit'; ";
     runSysCmd($cmdStr);
     
     #$cmdStr = "git push github master; ";
@@ -233,12 +244,29 @@ sub push_repos {
   }
 }
 
+sub status_repos {
+  my ($refProjReposMap) = @_; 
+  D("ProjReposMap is: ", %$refProjReposMap);
+  
+  foreach my $dire (sort keys %$refProjReposMap) {
+  	my $gitUrl = $$refProjReposMap{$dire};
+  	my $path = "$gRootDir/$dire";  P("\n$path\n");
+
+    my $cdDir = "cd $path; ";
+    my $cmdStr = "";
+    
+    $cmdStr = $cdDir . "git status ";
+    runSysCmd($cmdStr);
+  }
+}
+
+
 sub print_usage {
   print"\n";
   printf("*** Function SELECTOR ***\n");
   printf("* 1. Pull From Repos    *\n");
   printf("* 2. Push To   Repos    *\n");
-  #printf("* 3. Pull GitHub       *\n");
+  printf("* 3. Status of Repos    *\n");
   #printf("* 4. Push GitHub       *\n");
   printf("* 0. Exit               *\n");
   printf("*************************\n");

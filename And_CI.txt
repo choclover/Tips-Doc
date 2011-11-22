@@ -77,6 +77,7 @@
   
 ◎ 显示/修改目录权限
 mount -o remount,rw -t yaffs2 /dev/block/mtdblock0 /system
+mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system
 
 cp /tmp/android-she/emulator-V7czVT
 rm userdata-qemu.img cache.img system.img
@@ -121,7 +122,7 @@ tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0
 	--For Froyo, 检查<Src Root>/libcore是否为空，不为空则将其删除或者清空。避免该目录与<Src Root>/dalvik/libcore目录冲突。
 	
 .
-
+It is possible to gain INSTALL_PAKAGES permissions in two ways: signing the app with firmware's key or putting the app in the firmware.
 .
 
 .
