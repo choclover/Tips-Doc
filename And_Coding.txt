@@ -26,7 +26,8 @@ String myIMEI = android.os.SystemProperties.get(android.telephony.TelephonyPrope
   If a child activity fails for any reason (such as crashing), the parent activity will receive a result with the code RESULT_CANCELED.
 
 ◎ 将Activity中的<category android:name="android.intent.category.LAUNCHER" />去掉，该application就不会在launcher顶层显示了。
-
+   但这样也无法用Eclipse来debug了。
+   
 ◎ Application的后台卸载
 private void setIntentAndFinish(boolean finish, boolean appChanged) {
   if(localLOGV) Log.i(TAG, "appChanged="+appChanged);
