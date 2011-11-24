@@ -38,7 +38,13 @@ private void setIntentAndFinish(boolean finish, boolean appChanged) {
     finish();
   }
 }
-（packageName 是包的完整名字）
+(packageName 是包的完整名字)
+
+◎ 判断未知源App是否允许安装
+  private boolean isInstallingUnknownAppsAllowed() {
+    return Settings.Secure.getInt(getContentResolver(),
+           Settings.Secure.INSTALL_NON_MARKET_APPS, 0) > 0;
+  }
 
 
 ◎◎◎◎◎◎◎◎◎◎◎

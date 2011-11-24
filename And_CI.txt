@@ -12,7 +12,9 @@
    adb install a.apk
 
 ¡ò logcat
-  adb logcat *:[v|d|i|w|e|f]
+  adb logcat *:[v|d|i|w|e|f]  [> D:/Temp/1.txt]
+  e.g. 
+  adb logcat PkgInstallerLauncher:v
   
   V ¡ª Verbose (lowest priority)
   D ¡ª Debug
