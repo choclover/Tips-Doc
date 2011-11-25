@@ -35,7 +35,7 @@ my %projReposMap_common = (
   "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
   #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
-  "SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
+  #"SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
   );
   
 my %projReposMap_win = (
