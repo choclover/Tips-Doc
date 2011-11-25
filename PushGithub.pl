@@ -27,9 +27,17 @@ my $NEWLINE = "\r\n";
 
 #=====================================================
 my $gRootDir = "";
+my $gComments = "";
 
 my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 
+my %projReposMap_common = (
+  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
+  #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
+  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
+  "SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
+  );
+  
 my %projReposMap_win = (
   #1
   "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",        
@@ -38,19 +46,13 @@ my %projReposMap_win = (
   #3
   "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
   #4
-  "MyPkgInstaller"       => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
-  #"MyPkgInstaller"       => "git\@github.com:choclover/CustomPkgInstaller.git",
-  #5
-  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
+  
 );
 
 my %projReposMap_lnx = (
   "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
   "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
-  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
-  #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
-  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
 );
 
 #*****************************AUXILIARY  FUNCTIONS****************************#
@@ -104,8 +106,11 @@ sub parse_args {
   for (my $i=0; $i<scalar(@_); $i++) {
     if ($_[$i] eq "-debug") {
       $bDEBUG = $TRUE;   #D("bDEBUG is set to: $bDEBUG");
-    } else {
-
+    } elsif ($_[$i] eq "-m") {
+      if (defined $_[$i+1]) {
+        $gComments = $_[$i+1];
+        $i++;
+      }
     }
   }
   if (defined $^O) {$osVersion =  $^O;} else {$osVersion = "win32"; }  
@@ -151,23 +156,26 @@ sub getDate {
 }
 ###############################################################################
 sub main {
-  my $refProjRepoMap;
+  my %projReposMap;
   if (isWindowsArch()) {
     D("This is Windows arch!");
     $gRootDir = "E:/Coding/Android/";
-    $refProjRepoMap = \%projReposMap_win;
+    %projReposMap = %projReposMap_win;
 
   } elsif (isCygwinArch()) {
     D("This is Cygwin arch!");
     $gRootDir = "E:/Coding/Android/";
-    $refProjRepoMap = \%projReposMap_win;
+    %projReposMap = %projReposMap_win;
 
   } else {
     D("This is Linux arch!");
     $gRootDir = "/media/Coding/And/";
-    $refProjRepoMap = \%projReposMap_lnx;
+    %projReposMap = %projReposMap_lnx;
   }
-  D("ProjRepoMap is:", sort keys %$refProjRepoMap);
+  
+  %projReposMap = (%projReposMap, %projReposMap_common);
+  
+  D("ProjRepoMap is:", sort keys %projReposMap);
 
   while (1) {
     print_usage();
@@ -176,14 +184,14 @@ sub main {
     next if (!defined $option);
 
     if ('1' eq $option) {
-      pull_repos($gSymBitbuck, $refProjRepoMap);
+      pull_repos($gSymBitbuck, \%projReposMap);
     } elsif ('2' == $option) {
-      push_repos($gSymBitbuck, $refProjRepoMap);
+      push_repos($gSymBitbuck, \%projReposMap);
 
     } elsif ('3' eq $option) {
-      status_repos($refProjRepoMap);
+      status_repos(            \%projReposMap);
     } elsif ('4' == $option) {
-      push_repos($gSymGithub, $refProjRepoMap);
+      push_repos($gSymGithub, \%projReposMap);
 
     } elsif ('0' == $option) {
       P("Exiting...\n");
@@ -205,7 +213,7 @@ sub pull_repos {
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
     
-    #$cmdStr = $cdDir . "git add -A; git commit -a -m '". getDate() ." commit'; ";
+    #$cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ." commit'; ";
     #runSysCmd($cmdStr);
     
     #$cmdStr = "git pull $repoSym master; ";
@@ -230,7 +238,7 @@ sub push_repos {
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
     
-    $cmdStr = $cdDir . "git add -A; git commit -a -m '". getDate() ." commit'; ";
+    $cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ."'; ";
     runSysCmd($cmdStr);
     
     #$cmdStr = "git push github master; ";
@@ -260,6 +268,13 @@ sub status_repos {
   }
 }
 
+sub getComment {
+  if (isEmptyStr($gComments)) {
+    return getDate() . " commit";
+  } else {
+    return $gComments;
+  }
+}
 
 sub print_usage {
   print"\n";

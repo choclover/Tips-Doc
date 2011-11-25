@@ -80,6 +80,8 @@
   @ 查看签名
   <JDK>/bin/jarsigner -verify -certs -verbose a.apk
   
+  @ 加入平台签名
+  LOCAL_CERTIFICATE := platform
   
 ◎ 显示/修改目录权限
 mount -o remount,rw -t yaffs2 /dev/block/mtdblock0 /system
@@ -108,8 +110,9 @@ tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0
 
 ◎ Tools
 
-1. SuperOneClick
-2. 
+1. SuperOneClick -- 将真机进行root
+2. dex-translator-0.0.9.3 / dex2jar
+
 ====================================================
 ◎ 常见错误解决方法
 1. failed to copy 'xxx.apk' to '/system/app/xxx.apk': Out of memory
@@ -122,14 +125,15 @@ tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0
 	-- Edit your bashrc, remove #export CDPATH
 
 3. Installation error: INSTALL_PARSE_FAILED_NO_CERTIFICATES
-	-- APK文件没有签名，甚至连Eclipse debug签名也没有。
+	-- APK文件没有签名，甚至连Eclipse debug签名也没有。不能使用导出的APK, 要使用bin目录下生成的APK。
  
 4. build/core/base_rules.mk:128: *** dalvik/libcore: MODULE.TARGET.JAVA_LIBRARIES.core already defined by libcore.   Stop.
 	--For Froyo, 检查<Src Root>/libcore是否为空，不为空则将其删除或者清空。避免该目录与<Src Root>/dalvik/libcore目录冲突。
 	
-.
-It is possible to gain INSTALL_PAKAGES permissions in two ways: signing the app with firmware's key or putting the app in the firmware.
-.
+5. /data/app下安装的第三方应用没有权限进行安装和卸载其他APK
+It is possible to gain INSTALL_PAKAGES permissions in two ways: signing the app with firmware's key or putting the app in the firmware(/system/app).
+
+6. 模拟器的HOME键失效: Do not delete SdkSetup.apk in /system/app/.
 
 .
 
