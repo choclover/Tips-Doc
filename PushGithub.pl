@@ -32,10 +32,11 @@ my $gComments = "";
 my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 
 my %projReposMap_common = (
+  "SpalAdmin"              => "git\@bitbucket.org:choclover/studentpaladmin.git",
   "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
   #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
-  #"SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
+  "SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
   );
   
 my %projReposMap_win = (
@@ -45,8 +46,6 @@ my %projReposMap_win = (
   "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   #3
   "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
-  #4
-  
 );
 
 my %projReposMap_lnx = (
@@ -210,19 +209,29 @@ sub pull_repos {
   	my $gitUrl = $$refProjReposMap{$dire};
   	my $path = "$gRootDir/$dire";  P("\n$path\n");
 
-    my $cdDir = "cd $path; ";
+    my $cdDir = "";
     my $cmdStr = "";
     
-    #$cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ." commit'; ";
-    #runSysCmd($cmdStr);
-    
-    #$cmdStr = "git pull $repoSym master; ";
-    $cmdStr = $cdDir . "git pull $gitUrl master; ";
-
-    my $cnt = 0;
-    while (runSysCmd($cmdStr) != 0  && $cnt<10) {
-      sleep(3);
-      $cnt++;
+    if (not -e $path) {
+      $cdDir = "cd $path; ";
+      $cmdStr = $cdDir . "git clone $gitUrl $dire;  ";
+      runSysCmd($cmdStr);
+      
+    } else {
+      $cdDir = "cd $path; ";
+      $cmdStr = "";
+      
+      #$cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ." commit'; ";
+      #runSysCmd($cmdStr);
+      
+      #$cmdStr = "git pull $repoSym master; ";
+      $cmdStr = $cdDir . "git pull $gitUrl master; ";
+  
+      my $cnt = 0;
+      while (runSysCmd($cmdStr) != 0  && $cnt<10) {
+        sleep(3);
+        $cnt++;
+      }
     }
   }
 }
