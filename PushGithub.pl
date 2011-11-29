@@ -213,7 +213,7 @@ sub pull_repos {
     my $cmdStr = "";
     
     if (not -e $path) {
-      $cdDir = "cd $path; ";
+      $cdDir = "cd $gRootDir; ";
       $cmdStr = $cdDir . "git clone $gitUrl $dire;  ";
       runSysCmd($cmdStr);
       
