@@ -158,12 +158,12 @@ sub main {
   my %projReposMap;
   if (isWindowsArch()) {
     D("This is Windows arch!");
-    $gRootDir = "E:/Coding/Android/";
+    $gRootDir = "/cygdrive/e/Coding/Android/";
     %projReposMap = %projReposMap_win;
 
   } elsif (isCygwinArch()) {
     D("This is Cygwin arch!");
-    $gRootDir = "E:/Coding/Android/";
+    $gRootDir = "/cygdrive/e/Coding/Android/";
     %projReposMap = %projReposMap_win;
 
   } else {
