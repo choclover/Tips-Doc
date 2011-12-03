@@ -112,7 +112,7 @@ tmpfs /mnt/sdcard/.android_secure tmpfs ro,size=0k,mode=000 0 0
 
 1. SuperOneClick -- 将真机进行root
 2. dex-translator-0.0.9.3 / dex2jar
-
+3. Carrier IQ
 ====================================================
 ◎ 常见错误解决方法
 1. failed to copy 'xxx.apk' to '/system/app/xxx.apk': Out of memory

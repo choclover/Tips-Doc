@@ -13,6 +13,8 @@
   Environment.getDataDirectory();
 
 ¡ò MDN / IMSI / IMEI
+String myMDN = TelephonyManager.getLine1Number();
+
 String myIMSI = android.os.SystemProperties.get(android.telephony.TelephonyProperties.PROPERTY_IMSI);
 // within my emulator it returns:   310995000000000
 
