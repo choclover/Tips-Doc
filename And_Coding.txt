@@ -1,12 +1,22 @@
 
 ◎ SQLite3
 # cd /mnt/sdcard/studentpal/db
+# cd /data/data/com.studentpaladmin
+
 # sqlite3 studentpal.db
 # .help / .table <table name> / .dump
-# .header on / .schema <table name> 
+
+# 查看表结构
+# .header on (设置显示表头)
+# select * from sqlite_master where type="table";
+# select * from sqlite_master where type="table" and name="<table name>";
+
+# .schema <table name>
 # .exit
 
-# select count(*) from access_categories;  
+# select count(*) from access_categories;
+# select * from managed_device;
+
 # drop table access_rules;
 
 ◎ Get Directories
@@ -29,7 +39,7 @@ String myIMEI = android.os.SystemProperties.get(android.telephony.TelephonyPrope
 
 ◎ 将Activity中的<category android:name="android.intent.category.LAUNCHER" />去掉，该application就不会在launcher顶层显示了。
    但这样也无法用Eclipse来debug了。
-   
+
 ◎ Application的后台卸载
 private void setIntentAndFinish(boolean finish, boolean appChanged) {
   if(localLOGV) Log.i(TAG, "appChanged="+appChanged);
