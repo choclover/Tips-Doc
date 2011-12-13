@@ -9,13 +9,18 @@
 # 查看表结构
 # .header on (设置显示表头)
 # select * from sqlite_master where type="table";
-# select * from sqlite_master where type="table" and name="<table name>";
+# select * from sqlite_master where type="table" and name="managed_device";
+Pattern: select * from sqlite_master where type="table" and name="<table name>";
 
 # .schema <table name>
 # .exit
 
 # select count(*) from access_categories;
 # select * from managed_device;
+
+# Statements
+select * from managed_device;
+select installedAppsListVer from managed_device;
 
 # drop table access_rules;
 
