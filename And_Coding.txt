@@ -3,8 +3,10 @@
 # cd /mnt/sdcard/studentpal/db
 # cd /data/data/com.studentpaladmin
 
-# sqlite3 studentpal.db
-# .help / .table <table name> / .dump
+# sqlite3 studentpal_admin.db
+# .help / 
+# .table <table name> 
+# .dump
 
 # 查看表结构
 # .header on (设置显示表头)
@@ -13,16 +15,20 @@
 Pattern: select * from sqlite_master where type="table" and name="<table name>";
 
 # .schema <table name>
-# .exit
+# .exit / .quit
 
 # select count(*) from access_categories;
 # select * from managed_device;
 
 # Statements
 select * from managed_device;
-select installedAppsListVer from managed_device;
+select installedAppsListVer, phone_no from managed_device;
 
 # drop table access_rules;
+
+◎ MySql
+mysql -uroot -proot studentpal_admin < ./studentpal_admin.sql --default-character-set=utf8
+mysqldump -uroot -proot studentpal_admin > ./studentpal_admin.sql --default-character-set=utf8
 
 ◎ Get Directories
   Environment.getDataDirectory();
