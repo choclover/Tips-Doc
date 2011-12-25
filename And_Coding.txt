@@ -26,6 +26,7 @@ select * from managed_device;
 select installedAppsListVer, phone_no from managed_device;
 
 # drop table access_rules;
+# drop table access_categories;
 
 ¡ò MySql
 mysql -uroot -proot studentpal_admin < ./studentpal_admin.sql --default-character-set=utf8

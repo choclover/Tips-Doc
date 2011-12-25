@@ -67,6 +67,21 @@
   # repo branches   or  # cd build/; git branch
   # cat .repo/manifests/default.xml
   
+¡ò MySQL
+  create or replace view VW_TYPE_CATEGORY
+  AS
+	  SELECT AC.*
+	  FROM type_category AS TC, access_category AS AC
+	  WHERE TC.category_id = C._id;
+  UNION
+  
+  create or replace view VW_TYPE_CATEGORY
+  AS
+  	SELECT AC._id, AC.name AS CateName, AC.deviceId, T.name as TypeName
+  	FROM application_types AS T, type_category AS TC, access_category AS AC
+  	WHERE T._id = TC.type_id AND TC.category_id = AC._id	 
+  	;
+  	
   ==================================================
   # build APK
   $ sudo fdisk -l; 
