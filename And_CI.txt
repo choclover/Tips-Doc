@@ -14,6 +14,7 @@
 ¡ò logcat
   adb logcat *:[v|d|i|w|e|f]  [> D:/Temp/1.txt]
   e.g. 
+  adb logcat *:i
   adb logcat PkgInstallerLauncher:v
   
   V ¡ª Verbose (lowest priority)
