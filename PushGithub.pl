@@ -38,10 +38,10 @@ my %projReposMap_common = (
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
   "SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
   );
-  
+
 my %projReposMap_win = (
   #1
-  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",        
+  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
   #2
   "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   #3
@@ -112,7 +112,7 @@ sub parse_args {
       }
     }
   }
-  if (defined $^O) {$osVersion =  $^O;} else {$osVersion = "win32"; }  
+  if (defined $^O) {$osVersion =  $^O;} else {$osVersion = "win32"; }
   P("osVersion is: $osVersion");
 }
 
@@ -171,9 +171,9 @@ sub main {
     $gRootDir = "/media/Coding/And/";
     %projReposMap = %projReposMap_lnx;
   }
-  
+
   %projReposMap = (%projReposMap, %projReposMap_common);
-  
+
   D("ProjRepoMap is:", sort keys %projReposMap);
 
   while (1) {
@@ -185,12 +185,12 @@ sub main {
     if ('1' eq $option) {
       pull_repos($gSymBitbuck, \%projReposMap);
     } elsif ('2' == $option) {
-      push_repos($gSymBitbuck, \%projReposMap);
+      push_repos($gSymBitbuck, \%projReposMap, $TRUE);
 
     } elsif ('3' eq $option) {
       status_repos(            \%projReposMap);
     } elsif ('4' == $option) {
-      push_repos($gSymGithub, \%projReposMap);
+      push_repos($gSymGithub, \%projReposMap, $FALSE);
 
     } elsif ('0' == $option) {
       P("Exiting...\n");
@@ -202,31 +202,31 @@ sub main {
 }
 
 sub pull_repos {
-  my ($repoSym, $refProjReposMap) = @_;  
+  my ($repoSym, $refProjReposMap) = @_;
   D("ProjReposMap is: ", %$refProjReposMap);
-  
+
   foreach my $dire (sort keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
   	my $path = "$gRootDir/$dire";  P("\n$path\n");
 
     my $cdDir = "";
     my $cmdStr = "";
-    
+
     if (not -e $path) {
       $cdDir = "cd $gRootDir; ";
       $cmdStr = $cdDir . "git clone $gitUrl $dire;  ";
       runSysCmd($cmdStr);
-      
+
     } else {
       $cdDir = "cd $path; ";
       $cmdStr = "";
-      
+
       #$cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ." commit'; ";
       #runSysCmd($cmdStr);
-      
+
       #$cmdStr = "git pull $repoSym master; ";
       $cmdStr = $cdDir . "git pull $gitUrl master; ";
-  
+
       my $cnt = 0;
       while (runSysCmd($cmdStr) != 0  && $cnt<10) {
         sleep(3);
@@ -237,21 +237,25 @@ sub pull_repos {
 }
 
 sub push_repos {
-  my ($repos, $refProjReposMap) = @_; 
+  my ($repos, $refProjReposMap, $bPushRemote) = @_;
   D("ProjReposMap is: ", %$refProjReposMap);
-  
+
   foreach my $dire (sort keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
   	my $path = "$gRootDir/$dire";  P("\n$path\n");
 
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
-    
+
     $cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ."'; ";
-    runSysCmd($cmdStr);
-    
+    if (0!=runSysCmd($cmdStr) || $FALSE==$bPushRemote) {
+      next;
+    }
+
     #$cmdStr = "git push github master; ";
-    $cmdStr = $cdDir . "git push $gitUrl master; ";
+    if ($bPushRemote) {
+      $cmdStr = $cdDir . "git push $gitUrl master; ";
+    }
 
     my $cnt = 0;
     while (runSysCmd($cmdStr) != 0 && $cnt<10) {
@@ -262,16 +266,16 @@ sub push_repos {
 }
 
 sub status_repos {
-  my ($refProjReposMap) = @_; 
+  my ($refProjReposMap) = @_;
   D("ProjReposMap is: ", %$refProjReposMap);
-  
+
   foreach my $dire (sort keys %$refProjReposMap) {
   	my $gitUrl = $$refProjReposMap{$dire};
   	my $path = "$gRootDir/$dire";  P("\n$path\n");
 
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
-    
+
     $cmdStr = $cdDir . "git status ";
     runSysCmd($cmdStr);
   }
@@ -291,6 +295,7 @@ sub print_usage {
   printf("* 1. Pull From Repos    *\n");
   printf("* 2. Push To   Repos    *\n");
   printf("* 3. Status of Repos    *\n");
+  printf("* 4. Commit To Repos    *\n");
   #printf("* 4. Push GitHub       *\n");
   printf("* 0. Exit               *\n");
   printf("*************************\n");
