@@ -12,7 +12,7 @@
 # 查看表结构
 # .header on (设置显示表头)
 # select * from sqlite_master where type="table";
-# select * from sqlite_master where type="table" and name="managed_device";
+# select * from sqlite_master where type="table" and name="managed_devices";
 Pattern: select * from sqlite_master where type="table" and name="<table name>";
 
 # .schema <table name>
@@ -28,6 +28,23 @@ select installedAppsListVer, phone_no from managed_device;
 # drop table access_rules;
 # drop table access_categories;
 
+# Tables
+access_categories     android_metadata      managed_devices     
+access_rules          managed_applications
+admin_device          managed_apptypes   
+
+final String create_managed_device_table_sql = new StringBuffer().append(
+          "CREATE TABLE IF NOT EXISTS ").append(TABLE_NAME_MANAGED_DEVICE).append(
+          "( _id INTEGER PRIMARY KEY AUTOINCREMENT ").append(
+          ", " +TAGNAME_PHONE_NUM+       " TEXT").append(
+          ", " +TAGNAME_PHONE_IMSI+      " TEXT").append(
+          ", " +COL_NAME_APPSLIST_VERSION+  " INTEGER DEFAULT 0").append(
+          ", " +COL_NAME_APPSLIST+          " TEXT DEFAULT NULL").append(
+          ", " +COL_NAME_CATESLIST_VERSION+ " INTEGER DEFAULT 0").append(
+          ", " +COL_NAME_IS_ACTIVE+         " INTEGER DEFAULT 0").append(
+          ");").toString();
+          
+==================================================
 ◎ MySql
 mysql -uroot -proot studentpal_admin < ./studentpal_admin.sql --default-character-set=utf8
 mysqldump -uroot -proot studentpal_admin > ./studentpal_admin.sql --default-character-set=utf8
