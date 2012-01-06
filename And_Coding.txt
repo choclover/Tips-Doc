@@ -13,6 +13,7 @@
 # .header on (设置显示表头)
 # select * from sqlite_master where type="table";
 # select * from sqlite_master where type="table" and name="managed_devices";
+# select * from sqlite_master where type="table" and name="access_categories";
 Pattern: select * from sqlite_master where type="table" and name="<table name>";
 
 # .schema <table name>
