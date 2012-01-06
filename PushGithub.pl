@@ -31,27 +31,30 @@ my $gComments = "";
 
 my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 
+my $domainName = "bitbucket.org";
+#my $domainName = "github.com";
+
 my %projReposMap_common = (
-  "SpalAdmin"              => "git\@bitbucket.org:choclover/studentpaladmin.git",
-  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
+  "SpalAdmin"              => "git\@$domainName:choclover/studentpaladmin.git",
+  "MyPkgInstaller"         => "git\@$domainName:choclover/mypkginstaller_froyo.git",
   #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
-  "SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
+  "SysPkgInstaller"        => "git\@$domainName:choclover/syspkginstaller_froyo",
   );
 
 my %projReposMap_win = (
   #1
-  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
+  "StudentPalClient"       => "git\@$domainName:choclover/studentpalclient.git",
   #2
-  "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+  "StudentPalClientDeamon" => "git\@$domainName:choclover/studentpalclientdaemon.git",
   #3
-  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  "SpalSvr"                => "git\@$domainName:choclover/studentpalsvr.git",
 );
 
 my %projReposMap_lnx = (
-  "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
-  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
-  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  "SpalClient"             => "git\@$domainName:choclover/studentpalclient.git",
+  "SpalClientDaemon"       => "git\@$domainName:choclover/studentpalclientdaemon.git",
+  "SpalSvr"                => "git\@$domainName:choclover/studentpalsvr.git",
 );
 
 if (0) {
@@ -216,7 +219,7 @@ sub main {
     } elsif ('3' eq $option) {
       status_repos(            \%projReposMap);
     } elsif ('4' == $option) {
-      push_repos($gSymGithub, \%projReposMap, $FALSE);
+      push_repos($gSymBitbuck, \%projReposMap, $FALSE);
 
     } elsif ('0' == $option) {
       P("Exiting...\n");
@@ -274,7 +277,8 @@ sub push_repos {
     my $cmdStr = "";
 
     $cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ."'; ";
-    if (0!=runSysCmd($cmdStr) || $FALSE==$bPushRemote) {
+    if ((0!=runSysCmd($cmdStr) && $FALSE==$bPushRemote)
+        || $FALSE==$bPushRemote) {
       next;
     }
 
