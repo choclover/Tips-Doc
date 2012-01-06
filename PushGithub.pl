@@ -31,8 +31,8 @@ my $gComments = "";
 
 my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 
-#my $domainName = "bitbucket.org";
-my $domainName = "github.com";
+my $domainName = "bitbucket.org";
+#my $domainName = "github.com";
 
 my %projReposMap_common = (
   "SpalAdmin"              => "git\@$domainName:choclover/studentpaladmin.git",
@@ -44,7 +44,7 @@ my %projReposMap_common = (
 
 my %projReposMap_win = (
   #1
-  "StudentPalClient"       => "git\@$domainName:choclover/StudentPalClient.git",
+  "StudentPalClient"       => "git\@$domainName:choclover/studentpalclient.git",
   #2
   "StudentPalClientDeamon" => "git\@$domainName:choclover/studentpalclientdaemon.git",
   #3
@@ -251,7 +251,8 @@ sub push_repos {
     my $cmdStr = "";
 
     $cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ."'; ";
-    if (0!=runSysCmd($cmdStr) || $FALSE==$bPushRemote) {
+    if ((0!=runSysCmd($cmdStr) && $FALSE==$bPushRemote)
+        || $FALSE==$bPushRemote) {
       next;
     }
 
