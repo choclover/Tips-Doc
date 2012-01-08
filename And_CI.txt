@@ -28,6 +28,10 @@
 ◎ emulator 常用命令    
   emulator -avd erc_noinstall -partition-size 100  
   emulator -help-keys
+
+◎ 命令行窗口中显示SQLite数据库中的中文字符
+  c:> chcp 65001
+  修改窗口属性的字体在命令行标题栏上点击右键，选择【属性】 -【字体】，将字体修改为【Lucida Console】。  
   
 =======================================================   
 ◎ Activity Creator
@@ -82,7 +86,12 @@
   	FROM application_types AS T, type_category AS TC, access_category AS AC
   	WHERE T._id = TC.type_id AND TC.category_id = AC._id	 
   	;
-  	
+  --------------------------
+  SELECT App.app_name, Type.app_typename
+  FROM managed_applications AS App
+  LEFT JOIN managed_apptypes AS Type
+  ON App.app_typeid=Type._id
+	
   ==================================================
   # build APK
   $ sudo fdisk -l; 
