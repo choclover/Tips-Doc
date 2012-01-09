@@ -47,6 +47,7 @@ final String create_managed_device_table_sql = new StringBuffer().append(
           
 ==================================================
 ¡ò MySql
+mysql -uroot -proot studentpal_admin --default-character-set=utf8
 mysql -uroot -proot studentpal_admin < ./studentpal_admin.sql --default-character-set=utf8
 mysqldump -uroot -proot studentpal_admin > ./studentpal_admin.sql --default-character-set=utf8
 
