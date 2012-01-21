@@ -2,6 +2,7 @@
 ¡ò SQLite3
 # cd /mnt/sdcard/studentpal/db
 # cd /data/data/com.studentpaladmin/databases
+  cd /data/data/com.studentpal/databases
   cd databases
   
 # sqlite3 studentpal_admin.db
