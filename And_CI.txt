@@ -32,7 +32,21 @@
 ◎ 命令行窗口中显示SQLite数据库中的中文字符
   c:> chcp 65001
   修改窗口属性的字体在命令行标题栏上点击右键，选择【属性】 -【字体】，将字体修改为【Lucida Console】。  
+
+◎ GPS & Google Map
+1. Send GPS 坐标
+> telnet localhost 5554
+> Android Console: type 'help' for a list of commands
+> geo fix 经度 纬度
+  e.g. geo fix 32.006 118.734
   
+2. Google Map API Key
+> keytool -list -alias androiddebugkey -keystore "D:\ProgramFiles\android-sdk-windows\.android\debug.keystore" -storepass android -keypass android
+> androiddebugkey, 2011-10-31, PrivateKeyEntry,
+  认证指纹 (MD5)： 1D:CD:7E:1B:BB:CC:F8:4B:7E:23:31:C1:F0:15:D3:1B
+
+> http://code.google.com/intl/pl/android/maps-api-signup.html
+输入 1D:CD:7E:1B:BB:CC:F8:4B:7E:23:31:C1:F0:15:D3:1B
 =======================================================   
 ◎ Activity Creator
   activitycreator [--out <folder>] [--ide intellij] your.package.name.ActivityName
