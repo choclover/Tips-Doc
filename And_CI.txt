@@ -174,7 +174,7 @@ It is possible to gain INSTALL_PAKAGES permissions in two ways: signing the app 
 
 6. Ä£ÄâÆ÷µÄHOME¼üÊ§Ð§: Do not delete SdkSetup.apk in /system/app/.
 
-.
+7. Geocoder NOT working -- Geocoder.getFromLocation() throws java.io.IOException: Service not Available
 
 .
 
