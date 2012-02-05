@@ -29,6 +29,11 @@
   emulator -avd erc_noinstall -partition-size 100  
   emulator -help-keys
 
+◎ 调试真机
+  首先，手机要先连电脑。这个根据不同的手机品牌有差异（驱动不同）。
+  其次，设置手机上USB调试。设置---应用程序---开发----usb调试，勾选。
+  Eclipse Debug Configurations -> Target -> Manual
+  
 ◎ 命令行窗口中显示SQLite数据库中的中文字符
   c:> chcp 65001
   修改窗口属性的字体在命令行标题栏上点击右键，选择【属性】 -【字体】，将字体修改为【Lucida Console】。  

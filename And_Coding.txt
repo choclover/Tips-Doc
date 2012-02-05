@@ -90,8 +90,50 @@ private void setIntentAndFinish(boolean finish, boolean appChanged) {
     return Settings.Secure.getInt(getContentResolver(),
            Settings.Secure.INSTALL_NON_MARKET_APPS, 0) > 0;
   }
+◎ 判断哪种GPS可用   
+  LocationManager locMan = (LocationManager)
+      this._launcher.getSystemService(Context.LOCATION_SERVICE);
+  if (locMan.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+  } else if (locMan.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+  }
+    
+◎ 判断GPS/WIFI/Network是否可用 
+public static boolean isGpsEnabled(Context context) {
+  LocationManager locationManager = ((LocationManager) context
+      .getSystemService(Context.LOCATION_SERVICE));
+  List<String> accessibleProviders = locationManager.getProviders(true);
+  return accessibleProviders != null && accessibleProviders.size() > 0;
+}
 
+public static boolean isWifiEnabled(Context context) {
+  ConnectivityManager mgrConn = (ConnectivityManager)
+      context.getSystemService(Context.CONNECTIVITY_SERVICE);
+  TelephonyManager mgrTel = (TelephonyManager)
+      context.getSystemService(Context.TELEPHONY_SERVICE);
+  return ((mgrConn.getActiveNetworkInfo() != null && mgrConn
+      .getActiveNetworkInfo().getState() == NetworkInfo.State.CONNECTED)
+      || mgrTel.getNetworkType() == TelephonyManager.NETWORK_TYPE_UMTS);
+}
 
+public static boolean isNetworkConnected(Context context) {
+  boolean result = false;
+  ConnectivityManager cm = (ConnectivityManager)
+      context.getSystemService(Context.CONNECTIVITY_SERVICE);
+  NetworkInfo network = cm.getActiveNetworkInfo();
+  if (network != null) {
+    result = network.isAvailable();
+  }
+  return result;
+}
+
+◎ TextView属性
+1) ellipsize属性,作用是当文字过长时,该控件该如何显示,解释如下:
+  1.android:ellipsize=”start”—–省略号显示在开头
+  2.android:ellipsize=”end”——省略号显示在结尾
+  3.android:ellipsize=”middle”—-省略号显示在中间
+  4.android:ellipsize=”marquee”–以跑马灯的方式显示(动画横向移动)
+  
+  
 ◎ 用Intent调用系统中经常被用到的组件
 1. Web浏览器
   Uri uri = Uri. parse ( "http://kuikui.javaeye.com" );
