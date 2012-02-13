@@ -90,6 +90,10 @@ private void setIntentAndFinish(boolean finish, boolean appChanged) {
     return Settings.Secure.getInt(getContentResolver(),
            Settings.Secure.INSTALL_NON_MARKET_APPS, 0) > 0;
   }
+  
+◎ GSM CELL 基站定位的数据包：
+{"location":{"latitude":32.0064186,"longitude":118.7369005,"address":{"country":"中国","country_code":"CN","region":"江苏省","city":"南京市","street":"梦都大街","street_number":"128号"},"accuracy":790.0},"access_token":"2:RDYPUF9-6nvlZYD5:-uDfZTQ0gkxT967Q"}
+
 ◎ 判断哪种GPS可用   
   LocationManager locMan = (LocationManager)
       this._launcher.getSystemService(Context.LOCATION_SERVICE);
