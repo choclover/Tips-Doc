@@ -52,6 +52,10 @@
 
 > http://code.google.com/intl/pl/android/maps-api-signup.html
  ‰»Î 1D:CD:7E:1B:BB:CC:F8:4B:7E:23:31:C1:F0:15:D3:1B
+
+3. Google Map URL£∫
+http://ditu.google.cn/maps?hl=zh-CN&ll=32.030199,118.774223&
+spn=0.050644,0.111494&t=m&brcurrent=h3,0x35b58b5559ba7c41:0xa81eefeb61c37d51,,0x35b58b4255794bc9:0x54f67b57d0a85240%3Bh5,0&z=14
 =======================================================   
 °Ú Activity Creator
   activitycreator [--out <folder>] [--ide intellij] your.package.name.ActivityName
