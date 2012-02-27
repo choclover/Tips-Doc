@@ -184,9 +184,10 @@ It is possible to gain INSTALL_PAKAGES permissions in two ways: signing the app 
 6. 模拟器的HOME键失效: Do not delete SdkSetup.apk in /system/app/.
 
 7. Geocoder NOT working -- Geocoder.getFromLocation() throws java.io.IOException: Service not Available
-
-.
-
+  可能是网络阻塞原因，多试几次。
+  
+8. 应用启动后运行若干Activity，点击HOME返回桌面，再启动该应用后，则启动到第一个LAUNCHER Activity，而不是返回桌面前的那个activity。
+  -- AndoroidManifest中的android:launchMode="standard"，或者不写。如果是singletask模式，会找到第一个LAUNCHER Activity所在的task，然后将该LAUNCHER activity上部的其他activity都finish掉。
 .
 
 .
