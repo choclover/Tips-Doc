@@ -1,0 +1,41 @@
+
+*******************
+外壳采光板
+*******************
+◎ 1.5-3V太阳能电池 2510弱光型非晶硅太阳能电池
+http://item.taobao.com/item.htm?id=8487611177&_u=81p8rfbde87
+短路电流2mA
+
+◎ 非晶硅太阳能电池
+http://item.taobao.com/item.htm?id=9374953961&_u=81p8rfb86c7&wwlight=cntaobaozjj%E6%9D%8E%E4%B8%B9%E5%8D%8E-{9374953961}
+尺寸:37.0*21.8*1.1 mm
+材质:玻璃 (比树脂封装的电池板寿命长十倍)
+电压:5.5V (200LUX弱光下)  7.5V左右(6000LUX强光下)
+电流:10uA (200LUX弱光下)  5mA(6000LUX强光下)
+
+◎ CR2032 battery
+http://en.wikipedia.org/wiki/CR2032_battery
+  	            Lithium-manganese dioxide 	Lithium-carbon monofluoride
+IEC name 	            CR2032 	              BR2032
+ANSI/NEDA name 	      5004LC 	              5004LB
+Typical capacity 	    225 mAh 	            190 mAh
+Nominal voltage 	    3.0 V 	              2.8 V
+
+◎ 型号AG为日本标准，SR为国际标准型号。
+
+◎
+LR -- 水银--1.5V
+SR -- 水银--1.55V
+CR -- 锂电--3V
+ZA -- 锌空--1.4V
+LIR-- 二次锂电--3.7V
+
+◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ 
+
+
+
+
+
+
+
+
