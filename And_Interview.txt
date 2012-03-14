@@ -1,0 +1,66 @@
+
+◎ Android四种启动模式
+<activity android:name="ActName" android:launchMode ="singleTask"></activity>
+
+1. standard
+* 默认模式，不需要配置launchMode。
+* 每都创建了该Activity的新实例。
+
+* singleTop
+* singleTask
+* singleInstance
+ 
+
+
+
+◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ 
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
