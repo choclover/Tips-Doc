@@ -1,19 +1,36 @@
 
+趋势科技行动安全防护for Android
+http://www.17inda.com/html/2/article-756.html
+
 ◎ Android四种启动模式
-<activity android:name="ActName" android:launchMode ="singleTask"></activity>
+http://blog.csdn.net/android_tutor/article/details/6310015
+http://marshal.easymorse.com/archives/2950
+  <activity android:name="ActName" android:launchMode ="singleTask"></activity>
 
 1. standard
 * 默认模式，不需要配置launchMode。
-* 每都创建了该Activity的新实例。
+* 每次startActivity都会创建该Activity的新实例。创建时类似入栈/压栈的操作，按BACK键时会类似出栈/退栈操作。
 
-* singleTop
-* singleTask
-* singleInstance
- 
+2. singleTop
+* 每次startActivity都会创建该Activity的新实例。但如果有一个该Activity的实例在栈顶，则不再创建，而是使用这个实例。
+* singleTop模式，可用来解决栈顶多个重复相同的Activity的问题。
 
+3. singleTask
+* 最多只创建该Activity的一个实例。
+* 创建该Activity的实例时，会首先检查栈中是否有该Activity的实例，如果有则把该实例上方的activity都pop掉，使得该实例位于栈顶。
+* 在一个task中共享一个Activity。
 
+4. singleInstance
+* 最多只创建该Activity的一个实例。 
+* 在多个task中共享一个Activity，则其状态在各个task中是共享的，而不是每个task中都是初始的状态（要求至少还有一个task未退出正在调用该activity）。
+* 从该Activity返回是返回到调用时的activity
 
-◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ 
+◎ TASK
+TASK可以认为是一个栈，可放入多个activity。
+
+◎ 解析Intent
+
+◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ 
 .
 
 .
