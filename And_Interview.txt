@@ -2,13 +2,15 @@
 趋势科技行动安全防护for Android
 http://www.17inda.com/html/2/article-756.html
 
+◎ 生命周期
+ 
 ◎ Android四种启动模式
 http://blog.csdn.net/android_tutor/article/details/6310015
 http://marshal.easymorse.com/archives/2950
   <activity android:name="ActName" android:launchMode ="singleTask"></activity>
 
 1. standard
-* 默认模式，不需要配置launchMode。
+* 默认模式，不需要在launchMode中配置。
 * 每次startActivity都会创建该Activity的新实例。创建时类似入栈/压栈的操作，按BACK键时会类似出栈/退栈操作。
 
 2. singleTop
@@ -28,8 +30,17 @@ http://marshal.easymorse.com/archives/2950
 ◎ TASK
 TASK可以认为是一个栈，可放入多个activity。
 
-◎ 解析Intent
-
+◎ 解析Intent：调用其他Application；使用了设计模式中的中介模式(Mediator Pattern)，即所有的外围组件，都只和系统的核心模块发生联系，通过它进行中转，组件之间不直接联系。
+1, 直接/显示Intent：指定了component属性的Intent(调用setComponent(ComponentName)或者setClass(Context, Class)来指定)
+2, 间接/隐式Intent：没有指定comonent属性的Intent。Intent解析机制主要是通过查找已注册在AndroidManifest.xml中的所有IntentFilter及其中定义的Intent，最终找到匹配的Intent。如果一个组件没有IntentFilter, 那么它只能接受显式intent. 如果有, 则能同时接受二者。
+  2.1  Action: 如ACTION_VIEW ，ACTION_PICK。目标组件的IntentFilter的action列表中就必须包含有这个action，否则不能匹配；除了系统预定义的Action，大部分都是application内部通用。
+  2.2  Data：content://xxxx，或tel://xxxx，http:, mailto:
+  2.3  Type：MIME 表示的，比如text/plain
+  2.4  Category：主Activity=CATEGORY_LAUNCHER+ACTION_Main
+  2.5  Extras：Bundle 类的对象，由一组可序列化的key/value对组成
+  2.6  Flags: FLAG_ACTIVITY_NEW_TASK
+  
+  
 ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ 
 .
 
