@@ -2,6 +2,10 @@
 趋势科技行动安全防护for Android
 http://www.17inda.com/html/2/article-756.html
 
+◎ 应用改进
+1, 快速作出哪怕粗糙的原型试用，小步快跑持续改进，使用中发现问题和体会需求，使用是硬道理
+
+
 ◎ 生命周期
  
 ◎ Android四种启动模式
@@ -30,18 +34,36 @@ http://marshal.easymorse.com/archives/2950
 ◎ TASK
 TASK可以认为是一个栈，可放入多个activity。
 
-◎ 解析Intent：调用其他Application；使用了设计模式中的中介模式(Mediator Pattern)，即所有的外围组件，都只和系统的核心模块发生联系，通过它进行中转，组件之间不直接联系。
+◎ BroadcastReceiver
+Context.registerReceiver(BroadcastReceiver, IntentFilter);
+
+◎ 解析Intent：调用其他Application；使用了设计模式中的中介模式(Mediator Pattern)，即所有的外围组件，都只和系统的核心模块发生联系，通过它进行中转，组件之间不直接联系，松散的耦合。
 1, 直接/显示Intent：指定了component属性的Intent(调用setComponent(ComponentName)或者setClass(Context, Class)来指定)
 2, 间接/隐式Intent：没有指定comonent属性的Intent。Intent解析机制主要是通过查找已注册在AndroidManifest.xml中的所有IntentFilter及其中定义的Intent，最终找到匹配的Intent。如果一个组件没有IntentFilter, 那么它只能接受显式intent. 如果有, 则能同时接受二者。
   2.1  Action: 如ACTION_VIEW ，ACTION_PICK。目标组件的IntentFilter的action列表中就必须包含有这个action，否则不能匹配；除了系统预定义的Action，大部分都是application内部通用。
   2.2  Data：content://xxxx，或tel://xxxx，http:, mailto:
   2.3  Type：MIME 表示的，比如text/plain
-  2.4  Category：主Activity=CATEGORY_LAUNCHER+ACTION_Main
+  2.4  Category：主Activity=CATEGORY_LAUNCHER+ACTION_Main；目标组件的IntentFilter的Category列表中就必须包含有这个Category，否则不能匹配；
   2.5  Extras：Bundle 类的对象，由一组可序列化的key/value对组成
   2.6  Flags: FLAG_ACTIVITY_NEW_TASK
   
   
-◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ 
+◎ 设计模式
+1, Factory和Abstract Factory：工厂模式是将“具体产品”变成抽象产品进行扩展，抽象工厂模式是对工厂也进行扩展，将具体工厂变成抽象工厂。
+2, 优良的继承关系图中，叶子节点是具体类，其他节点应该都是抽象类，也就是说具体类是不被继承的。将尽可能多的共同代码放到抽象类中。
+3, Bridge模式：将抽象部分与它的实现部分相分离，使它们都可以独立地变化。两部分之间通常使用聚合（Aggregation）进行连接。
+4, Singleton模式
+5, Observer: 定义对象间一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都得到通知自动更新。 
+6, Strategy: 定义一系列的算法，把他们一个个封装起来，并使他们可以互相替换，本模式使得算法可以独立于使用它们的客户。 
+7, Mediator: 所有的外围组件，都只和系统的核心模块发生联系，通过它进行中转；组件之间不直接联系，形成松散的耦合。
+8, Facade: 
+9, Proxy: 为访问者对象提供一种代理以控制对这个目标对象的访问。
+10, Adapter: 将一类的接口转换成客户希望的另外一个接口，Adapter模式使得原本由于接口不兼容而不能一起工作那些类可以一起工作。 
+11, Decrator: 典型如Java IO 系统API。
+
+
+
+◎ ◎ ◎ ◎ ◎ ◎ ◎ 
 .
 
 .
