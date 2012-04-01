@@ -1,9 +1,8 @@
 
-趋势科技行动安全防护for Android
-http://www.17inda.com/html/2/article-756.html
+ANR：Application Not Responding
 
 ◎ 应用改进－－快速作出哪怕粗糙的原型试用，小步快跑持续改进，使用中发现问题和体会需求，使用是硬道理
-1, 
+1, 趋势科技行动安全防护for Android －－ http://www.17inda.com/html/2/article-756.html
 2, 360更多面向个人市场；PC应该与企业办公软件的安全防护进行结合（如邮件客户端、文档处理软件等），主要面向企业市场。
 3, 界面比较清爽但值得改进，字体大小和美观度不足，历史记录有些语焉不详（按需是什么意思？），有些选择框的风格不一致
 4, 有些按键可以点击，有些不可以点击，用户体验不一致。
@@ -19,6 +18,11 @@ http://www.17inda.com/html/2/article-756.html
 2, BACK键: onPause()->onStop()->onDestory()
 3, HOME键: onPause()->onStop()，程序没有被销毁，APP所在栈的上方压入HOME APP  
 4, 重启APP: onRestart()->onStart()->onResume()
+
+* 屏切换竖屏Activity的生命周期
+1、不设置Activity的android:configChanges时，切屏会重新调用各个生命周期，切横屏时会执行一次，切竖屏时会执行两次
+2、设置Activity的android:configChanges="orientation"时，切屏还是会重新调用各个生命周期，切横、竖屏时只会执行一次
+3、设置Activity的android:configChanges="orientation|keyboardHidden"时，切屏不会重新调用各个生命周期，只会执行onConfigurationChanged方法
 
 ＝＝＝＝＝＝ 
 ◎ Android四种启动模式
@@ -48,7 +52,10 @@ http://marshal.easymorse.com/archives/2950
 TASK可以认为是一个栈，可放入多个activity。
 
 ◎ BroadcastReceiver
-Context.registerReceiver(BroadcastReceiver, IntentFilter);
+1, 静态注册：AndroidManifest.xml中用<receiver>标签生命注册，并在标签内用<intent- filter>标签设置过滤器。 
+2, 动态注册：Context.registerReceiver(BroadcastReceiver, IntentFilter);
+           Context.unregisterReceiver(BroadcastReceiver, IntentFilter);
+3, 在onStart()中注册，onStop()中unregisterReceiver 
 
 ◎ 解析Intent：调用其他Application；使用了设计模式中的中介模式(Mediator Pattern)，即所有的外围组件，都只和系统的核心模块发生联系，通过它进行中转，组件之间不直接联系，松散的耦合。
 1, 直接/显示Intent：指定了component属性的Intent(调用setComponent(ComponentName)或者setClass(Context, Class)来指定)
@@ -59,7 +66,11 @@ Context.registerReceiver(BroadcastReceiver, IntentFilter);
   2.4  Category：主Activity=CATEGORY_LAUNCHER+ACTION_Main；目标组件的IntentFilter的Category列表中就必须包含有这个Category，否则不能匹配；
   2.5  Extras：Bundle 类的对象，由一组可序列化的key/value对组成
   2.6  Flags: FLAG_ACTIVITY_NEW_TASK
-    
+
+3, Intent传递二进制数据
+  3.1 Serializable    
+  3.2 Parcelable
+  
 ◎ 设计模式
 1, Factory和Abstract Factory：工厂模式是将“具体产品”变成抽象产品进行扩展，抽象工厂模式是对工厂也进行扩展，将具体工厂变成抽象工厂。
 2, 优良的继承关系图中，叶子节点是具体类，其他节点应该都是抽象类，也就是说具体类是不被继承的。将尽可能多的共同代码放到抽象类中。
@@ -156,7 +167,14 @@ public  byte [] loadClassData(String name) {
   return  data;
 } 
 
-◎ ◎ ◎ ◎ ◎ 
+◎ 数据库 
+* right join和left join区别
+语法：FROM table1 LEFT/RIGHT/INNER JOIN table2 ON table1.field1 compopr table2.field2 
+left join(左联接)－－返回包括左表中的所有记录和右表中联结字段相等的记录，记录数与A表的记录数相同
+right join(右联接)－－返回包括右表中的所有记录和左表中联结字段相等的记录，记录数与B表的记录数相同
+inner join(等值连接)－－只返回两个表中联结字段相等的行
+
+◎ ◎ ◎ ◎ 
 .
 
 .
