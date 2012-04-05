@@ -8,6 +8,7 @@ gen/*
 .settings/*
 *.apk
 *.dia~
+Thumbs.db
 
 
 
