@@ -3,15 +3,16 @@
 1, ¹«Ë¾µÄÒÆ¶¯²úÆ·ÊÇ×¨×¢ÓÚ°²È«ÁìÓò£¬»¹ÊÇÒªÀ©Õ¹µ½ÆäËûÓ¦ÓÃÁìÓò£¬±ÈÈçÔÆ¼ÆËãºÍÔÆ´æ´¢µÈÁìÓò¡£
 2, 
 
-
 ¡ò ²¡¶¾¼ì²âµÄ·½·¨ 
 1, ÌØÕ÷´úÂë·¨ 
 2, Ğ£ÑéºÍ·¨
 3, ĞĞÎª¼à²â·¨
 4, Èí¼şÄ£Äâ·¨ 
 
-¡ò Ó¦ÓÃ¸Ä½ø£­£­¿ìËÙ×÷³öÄÄÅÂ´Ö²ÚµÄÔ­ĞÍÊÔÓÃ£¬Ğ¡²½¿ìÅÜ³ÖĞø¸Ä½ø£¬Ê¹ÓÃÖĞ·¢ÏÖÎÊÌâºÍÌå»áĞèÇó£¬Ê¹ÓÃÊÇÓ²µÀÀí
-1, Ç÷ÊÆ¿Æ¼¼ĞĞ¶¯°²È«·À»¤for Android£ºhttp://www.17inda.com/html/2/article-756.html
+ANR£ºApplication Not Responding
+
+¡ò Ç÷ÊÆ·À²¡¶¾²úÆ·Ó¦ÓÃ¸Ä½ø£­£­¿ìËÙ×÷³öÄÄÅÂ´Ö²ÚµÄÔ­ĞÍÊÔÓÃ£¬Ğ¡²½¿ìÅÜ³ÖĞø¸Ä½ø£¬Ê¹ÓÃÖĞ·¢ÏÖÎÊÌâºÍÌå»áĞèÇó£¬Ê¹ÓÃÊÇÓ²µÀÀí
+1, Ç÷ÊÆ¿Æ¼¼ĞĞ¶¯°²È«·À»¤for Android £­£­ http://www.17inda.com/html/2/article-756.html
 2, 360¸ü¶àÃæÏò¸öÈËÊĞ³¡£»PCÓ¦¸ÃÓëÆóÒµ°ì¹«Èí¼şµÄ°²È«·À»¤½øĞĞ½áºÏ£¨ÈçÓÊ¼ş¿Í»§¶Ë¡¢ÎÄµµ´¦ÀíÈí¼şµÈ£©£¬Ö÷ÒªÃæÏòÆóÒµÊĞ³¡¡£
 3, ½çÃæ±È½ÏÇåË¬µ«ÖµµÃ¸Ä½ø£¬×ÖÌå´óĞ¡ºÍÃÀ¹Û¶È²»×ã£¬ÀúÊ·¼ÇÂ¼ÓĞĞ©ÓïÑÉ²»Ïê£¨°´ĞèÊÇÊ²Ã´ÒâË¼£¿£©£¬ÓĞĞ©Ñ¡Ôñ¿òµÄ·ç¸ñ²»Ò»ÖÂ
 4, ÓĞĞ©°´¼ü¿ÉÒÔµã»÷£¬ÓĞĞ©²»¿ÉÒÔµã»÷£¬ÓÃ»§ÌåÑé²»Ò»ÖÂ¡£
@@ -27,6 +28,11 @@
 2, BACK¼ü: onPause()->onStop()->onDestory()
 3, HOME¼ü: onPause()->onStop()£¬³ÌĞòÃ»ÓĞ±»Ïú»Ù£¬APPËùÔÚÕ»µÄÉÏ·½Ñ¹ÈëHOME APP  
 4, ÖØÆôAPP: onRestart()->onStart()->onResume()
+
+* ÆÁÇĞ»»ÊúÆÁActivityµÄÉúÃüÖÜÆÚ
+1¡¢²»ÉèÖÃActivityµÄandroid:configChangesÊ±£¬ÇĞÆÁ»áÖØĞÂµ÷ÓÃ¸÷¸öÉúÃüÖÜÆÚ£¬ÇĞºáÆÁÊ±»áÖ´ĞĞÒ»´Î£¬ÇĞÊúÆÁÊ±»áÖ´ĞĞÁ½´Î
+2¡¢ÉèÖÃActivityµÄandroid:configChanges="orientation"Ê±£¬ÇĞÆÁ»¹ÊÇ»áÖØĞÂµ÷ÓÃ¸÷¸öÉúÃüÖÜÆÚ£¬ÇĞºá¡¢ÊúÆÁÊ±Ö»»áÖ´ĞĞÒ»´Î
+3¡¢ÉèÖÃActivityµÄandroid:configChanges="orientation|keyboardHidden"Ê±£¬ÇĞÆÁ²»»áÖØĞÂµ÷ÓÃ¸÷¸öÉúÃüÖÜÆÚ£¬Ö»»áÖ´ĞĞonConfigurationChanged·½·¨
 
 £½£½£½£½£½£½ 
 ¡ò AndroidËÄÖÖÆô¶¯Ä£Ê½
@@ -56,7 +62,10 @@ http://marshal.easymorse.com/archives/2950
 TASK¿ÉÒÔÈÏÎªÊÇÒ»¸öÕ»£¬¿É·ÅÈë¶à¸öactivity¡£
 
 ¡ò BroadcastReceiver
-Context.registerReceiver(BroadcastReceiver, IntentFilter);
+1, ¾²Ì¬×¢²á£ºAndroidManifest.xmlÖĞÓÃ<receiver>±êÇ©ÉúÃü×¢²á£¬²¢ÔÚ±êÇ©ÄÚÓÃ<intent- filter>±êÇ©ÉèÖÃ¹ıÂËÆ÷¡£ 
+2, ¶¯Ì¬×¢²á£ºContext.registerReceiver(BroadcastReceiver, IntentFilter);
+           Context.unregisterReceiver(BroadcastReceiver, IntentFilter);
+3, ÔÚonStart()ÖĞ×¢²á£¬onStop()ÖĞunregisterReceiver 
 
 ¡ò ½âÎöIntent£ºµ÷ÓÃÆäËûApplication£»Ê¹ÓÃÁËÉè¼ÆÄ£Ê½ÖĞµÄÖĞ½éÄ£Ê½(Mediator Pattern)£¬¼´ËùÓĞµÄÍâÎ§×é¼ş£¬¶¼Ö»ºÍÏµÍ³µÄºËĞÄÄ£¿é·¢ÉúÁªÏµ£¬Í¨¹ıËü½øĞĞÖĞ×ª£¬×é¼şÖ®¼ä²»Ö±½ÓÁªÏµ£¬ËÉÉ¢µÄñîºÏ¡£
 1, Ö±½Ó/ÏÔÊ¾Intent£ºÖ¸¶¨ÁËcomponentÊôĞÔµÄIntent(µ÷ÓÃsetComponent(ComponentName)»òÕßsetClass(Context, Class)À´Ö¸¶¨)
@@ -67,7 +76,11 @@ Context.registerReceiver(BroadcastReceiver, IntentFilter);
   2.4  Category£ºÖ÷Activity=CATEGORY_LAUNCHER+ACTION_Main£»Ä¿±ê×é¼şµÄIntentFilterµÄCategoryÁĞ±íÖĞ¾Í±ØĞë°üº¬ÓĞÕâ¸öCategory£¬·ñÔò²»ÄÜÆ¥Åä£»
   2.5  Extras£ºBundle ÀàµÄ¶ÔÏó£¬ÓÉÒ»×é¿ÉĞòÁĞ»¯µÄkey/value¶Ô×é³É
   2.6  Flags: FLAG_ACTIVITY_NEW_TASK
-    
+
+3, Intent´«µİ¶ş½øÖÆÊı¾İ
+  3.1 Serializable    
+  3.2 Parcelable
+  
 ¡ò Éè¼ÆÄ£Ê½
 1, FactoryºÍAbstract Factory£º¹¤³§Ä£Ê½ÊÇ½«¡°¾ßÌå²úÆ·¡±±ä³É³éÏó²úÆ·½øĞĞÀ©Õ¹£¬³éÏó¹¤³§Ä£Ê½ÊÇ¶Ô¹¤³§Ò²½øĞĞÀ©Õ¹£¬½«¾ßÌå¹¤³§±ä³É³éÏó¹¤³§¡£
 2, ÓÅÁ¼µÄ¼Ì³Ğ¹ØÏµÍ¼ÖĞ£¬Ò¶×Ó½ÚµãÊÇ¾ßÌåÀà£¬ÆäËû½ÚµãÓ¦¸Ã¶¼ÊÇ³éÏóÀà£¬Ò²¾ÍÊÇËµ¾ßÌåÀàÊÇ²»±»¼Ì³ĞµÄ¡£½«¾¡¿ÉÄÜ¶àµÄ¹²Í¬´úÂë·Åµ½³éÏóÀàÖĞ¡£
@@ -182,9 +195,14 @@ TCP/IPÍ¨Ñ¶Ğ­Òé²ÉÓÃÁË4²ãµÄ²ã¼¶½á¹¹£¬Ã¿Ò»²ã¶¼ºô½ĞËüµÄÏÂÒ»²ãËùÌá¹©µÄÍøÂçÀ´Íê³É×Ô¼ºµ
 
 ¡ò Ê÷×ª¶ş²æÊ÷£º×ó¶ù×Ó£¬ÓÒĞÖµÜ¡£½«¶ù×Ó½Úµã×÷Îª×ó½Úµã£¬ĞÖµÜ½Úµã×÷ÎªÓÒ½Úµã¡£
 
+¡ò Êı¾İ¿â 
+* right joinºÍleft joinÇø±ğ
+Óï·¨£ºFROM table1 LEFT/RIGHT/INNER JOIN table2 ON table1.field1 compopr table2.field2 
+left join(×óÁª½Ó)£­£­·µ»Ø°üÀ¨×ó±íÖĞµÄËùÓĞ¼ÇÂ¼ºÍÓÒ±íÖĞÁª½á×Ö¶ÎÏàµÈµÄ¼ÇÂ¼£¬¼ÇÂ¼ÊıÓëA±íµÄ¼ÇÂ¼ÊıÏàÍ¬
+right join(ÓÒÁª½Ó)£­£­·µ»Ø°üÀ¨ÓÒ±íÖĞµÄËùÓĞ¼ÇÂ¼ºÍ×ó±íÖĞÁª½á×Ö¶ÎÏàµÈµÄ¼ÇÂ¼£¬¼ÇÂ¼ÊıÓëB±íµÄ¼ÇÂ¼ÊıÏàÍ¬
+inner join(µÈÖµÁ¬½Ó)£­£­Ö»·µ»ØÁ½¸ö±íÖĞÁª½á×Ö¶ÎÏàµÈµÄĞĞ
 
-
-¡ò ¡ò 
+¡ò ¡ò ¡ò ¡ò 
 .
 
 .
