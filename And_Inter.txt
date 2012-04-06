@@ -59,7 +59,20 @@ http://marshal.easymorse.com/archives/2950
 * ´Ó¸ÃActivity·µ»ØÊÇ·µ»Øµ½µ÷ÓÃÕßµÄactivity
 
 ¡ò TASK
-TASK¿ÉÒÔÈÏÎªÊÇÒ»¸öÕ»£¬¿É·ÅÈë¶à¸öactivity¡£
+TASK¿ÉÒÔÀí½âÎªÊÇÒ»¸öÕ»£¬¿É·ÅÈë¶à¸öactivity¡£
+
+¡ò Bind Service
+1, Service·µ»ØIBinder£¬µ÷ÓÃÕßµÃµ½IBinder£¬½ø¶øµÃµ½service = IBinder.getService(); ÔÙÍ¨¹ıserviceµ÷ÓÃmethod();
+2, 
+
+
+ 
+¡ò Affinity
+1, ¶¨ÒåÔÚ²»Í¬Ó¦ÓÃ³ÌĞòÖĞµÄActivity¿ÉÒÔ¹²ÏíÍ¬Ò»¸öaffinity, ¶¨ÒåÔÚÍ¬Ò»¸öÓ¦ÓÃ³ÌĞòÖĞµÄActivityÉèÖÃ²»Í¬µÄaffinity¡£
+2, IntentÎ´ÉèÖÃFLAG_ACTIVITY_NEW_TASK£ºÒ»¸öActivityÍ¨¹ıµ÷ÓÃstartActivity()Æô¶¯, ²¢¼ÓÈëµ½µ÷ÓÃÕßËùÔÚµÄTaskÖĞ¡£
+3, IntentÉèÖÃÁËFLAG_ACTIVITY_NEW_TASK£ºÈç¹ûÒÑ¾­´æÔÚÒ»¸öTaskÓëĞÂActivityµÄaffinityÏàÍ¬£¬Õâ¸öActivity¾Í»á¼ÓÈëµ½ÄÇ¸öTaskÖĞ£¬²¢ÇÒ¸Ãtask±»µ÷¶Èµ½Ç°Ì¨¡£Èç¹û²»ÊÇ£¬ÔòÆô¶¯Ò»¸öĞÂµÄTask¡£
+4, allowTaskReparenting=true,µ±ÁíÒ»¸öÓĞ×ÅÏàÍ¬affinityµÄTask½øÈëµ½Ç°Ì¨µÄÊ±ºò£¬Activity¾ÍÄÜ´ÓÕıÔÚÆô¶¯µÄTaskÖĞ×ªÒÆµ½Õâ¸öTaskÖĞ¡£
+
 
 ¡ò BroadcastReceiver
 1, ¾²Ì¬×¢²á£ºAndroidManifest.xmlÖĞÓÃ<receiver>±êÇ©ÉúÃü×¢²á£¬²¢ÔÚ±êÇ©ÄÚÓÃ<intent- filter>±êÇ©ÉèÖÃ¹ıÂËÆ÷¡£ 
@@ -180,12 +193,12 @@ public  byte [] loadClassData(String name) {
 ¡ò TCP/IPÍ¨Ñ¶Ğ­Òé
 TCP/IPĞ­Òé²¢²»ÍêÈ«·ûºÏOSIµÄÆß²ã²Î¿¼Ä£ĞÍ£¬ÎïÀí²ã¡¢Êı¾İÁ´Â·²ã¡¢ÍøÂ·²ã¡¢´«Êä²ã¡¢»°Â·²ã¡¢±íÊ¾²ãºÍÓ¦ÓÃ²ã¡£
 TCP/IPÍ¨Ñ¶Ğ­Òé²ÉÓÃÁË4²ãµÄ²ã¼¶½á¹¹£¬Ã¿Ò»²ã¶¼ºô½ĞËüµÄÏÂÒ»²ãËùÌá¹©µÄÍøÂçÀ´Íê³É×Ô¼ºµÄĞèÇó¡£
-¡ñÓ¦ÓÃ²ã£ºSMTP£¬FTP£¬TelnetµÈ
-¡ñ´«Êä²ã£º´«Êä¿ØÖÆĞ­Òé£¨TCP£©¡¢ÓÃ»§Êı¾İ±¨Ğ­Òé£¨UDP£©µÈ
-¡ñ»¥Á¬ÍøÂç²ã£ºÍø¼ÊĞ­ÒéIP£¬µØÖ·½âÎöĞ­ÒéARP£¬Íø¼Ê¿ØÖÆÏûÏ¢Ğ­ÒéICMP(Internet Control Message Protocol)£¬»¥Áª×é¹ÜÀíĞ­ÒéIGMP(Internet Group Management Protocol)
-¡ñÍøÂç½Ó¿Ú²ã£ºÈçEthernet¡¢Serial LineµÈ
+1, Ó¦ÓÃ²ã£ºSMTP£¬FTP£¬TelnetµÈ
+2, ´«Êä²ã£º´«Êä¿ØÖÆĞ­Òé£¨TCP£©¡¢ÓÃ»§Êı¾İ±¨Ğ­Òé£¨UDP£©µÈ
+3, »¥Á¬ÍøÂç²ã£ºÍø¼ÊĞ­ÒéIP£¬µØÖ·½âÎöĞ­ÒéARP£¬Íø¼Ê¿ØÖÆÏûÏ¢Ğ­ÒéICMP(Internet Control Message Protocol)£¬»¥Áª×é¹ÜÀíĞ­ÒéIGMP(Internet Group Management Protocol)
+4, ÍøÂç½Ó¿Ú²ã£ºÈçEthernet¡¢Serial LineµÈ
 
-¡ò ÎªÊ²Ã´Àë¿ª¹«Ë¾£º
+¡ò ÎªÊ²Ã´leave£º
 1, Ä¦£º09¡¢10Äê×óÓÒ¹«Ë¾²¿ÃÅ´óµ÷Õû£¬ºÜ¿ÉÏ§±»µ÷Õûµ½ÆäËû²¿ÃÅ£¨iDEN²¿ÃÅ£©£¬Ò»¸öÇø±ğÓÚCÍøºÍGÍøµÄ¡¢¹æÄ£·Ç³£Ğ¡µÄÎŞÏßÍ¨ĞÅ²¿ÃÅ£¬·¢Õ¹Ç°¾°ºÜ²»ºÃ£¬¸ÃÍøÂçºÜ¿ÉÄÜ»á±»¹Ø±Õ¡£¶øÇÒ£¬Àë¿ªÁËÔ­À´µÄ²¿ÃÅÁìµ¼£¬Ãæ¶ÔÈ«ĞÂµÄÁìµ¼£¬Ò»ÇĞÔÚÁìµ¼ÄÇÀïµÄ»ıÀÛ¶¼ÒªÖØĞÂ¿ªÊ¼¡£  
    ÁíÍâ£¬MotoÖ»ÄÜÑ§µ½Ò»Ğ©ÔÚ¿Í»§¶ËµÄÖªÊ¶£¬ÄÑÒÔÑ§Ï°µ½·şÎñÆ÷¶ËµÄÖªÊ¶¡£ÕıºÃÓĞ¸öĞÂ¹«Ë¾µÄ»ú»á£¬ÊÇ×ö·şÎñÆ÷¶ËÈí¼şµÄ£¬¿ÉÒÔÑ§Ï°µ½Ò»Ğ©Õâ·½ÃæµÄÖªÊ¶¡£
    
@@ -202,7 +215,17 @@ left join(×óÁª½Ó)£­£­·µ»Ø°üÀ¨×ó±íÖĞµÄËùÓĞ¼ÇÂ¼ºÍÓÒ±íÖĞÁª½á×Ö¶ÎÏàµÈµÄ¼ÇÂ¼£¬¼ÇÂ¼ÊıÓ
 right join(ÓÒÁª½Ó)£­£­·µ»Ø°üÀ¨ÓÒ±íÖĞµÄËùÓĞ¼ÇÂ¼ºÍ×ó±íÖĞÁª½á×Ö¶ÎÏàµÈµÄ¼ÇÂ¼£¬¼ÇÂ¼ÊıÓëB±íµÄ¼ÇÂ¼ÊıÏàÍ¬
 inner join(µÈÖµÁ¬½Ó)£­£­Ö»·µ»ØÁ½¸ö±íÖĞÁª½á×Ö¶ÎÏàµÈµÄĞĞ
 
-¡ò ¡ò ¡ò ¡ò 
+¡ò JAVA tools:
+1, apt: Annotation Processing Tool, ×÷ÓÃÊÇÔÚ±àÒëÔ´ÎÄ¼ş(*.java)Ö®Ç°£¬Í¨¹ıÒ»¸ö×Ô¶¨ÒåµÄ×¢½â´¦ÀíÆ÷(AnnotationProcessor)½âÊÍ²¢´¦ÀíÔ´ÎÄ¼şÖĞµÄ×¢½â£¬ÓÉ×¢½â´¦ÀíÆ÷Éú³ÉÒ»Ğ©ĞÂµÄÔ´ÎÄ¼ş£¬×Ö½ÚÂëÎÄ¼ş(*.class)£¬»òÆäËûµÄÎÄ±¾ÎÄ¼ş£¬APTÒ²»á¶ÔĞÂÉú³ÉÔ´ÎÄ¼ş½øĞĞ±àÒë£¬Ö±µ½Ã»ÓĞĞÂµÄÎÄ¼şÉú³É¡£
+2, javah: ÎªjavaÔ´´úÂëÖĞµÄnative·½·¨Éú³ÉÍ·ÎÄ¼ş¡£
+3, javap£º Java classÎÄ¼ş·´±àÒë¡¢·Ö½âÆ÷¡£
+4, keytool£º Éú³ÉkeystoreºÍÖ¤Êécertificates¡£
+5, jarsigner£º ÎªjarÎÄ¼ş½øĞĞÇ©Ãû
+6, wsgen, wsimport, schemagen, xjc£º Java Web Services Tools
+7, rmic, rmiregistry, rmid, serialver£º Remote Method Invocation (RMI) Tools
+
+
+¡ò ¡ò ¡ò 
 .
 
 .

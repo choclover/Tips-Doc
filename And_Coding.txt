@@ -27,6 +27,7 @@ Pattern: select * from sqlite_master where type="table" and name="<table name>";
 select * from managed_device;
 select installedAppsListVer, phone_no from managed_device;
 
+# 支持事务／Transaction
 # drop table access_rules;
 # drop table access_categories;
 
