@@ -193,10 +193,10 @@ public  byte [] loadClassData(String name) {
 ◎ TCP/IP通讯协议
 TCP/IP协议并不完全符合OSI的七层参考模型，物理层、数据链路层、网路层、传输层、话路层、表示层和应用层。
 TCP/IP通讯协议采用了4层的层级结构，每一层都呼叫它的下一层所提供的网络来完成自己的需求。
-1, 应用层：SMTP，FTP，Telnet等
-2, 传输层：传输控制协议（TCP）、用户数据报协议（UDP）等
-3, 互连网络层：网际协议IP，地址解析协议ARP，网际控制消息协议ICMP(Internet Control Message Protocol)，互联组管理协议IGMP(Internet Group Management Protocol)
-4, 网络接口层：如Ethernet、Serial Line等
+1, 应用层/Application Layer：SMTP，FTP，Telnet等
+2, 传输层/Transport Layer：传输控制协议（TCP）、用户数据报协议（UDP）等
+3, 互连网络层/Inter-network Layer：网际协议IP，地址解析协议ARP，网际控制消息协议ICMP(Internet Control Message Protocol)，互联组管理协议IGMP(Internet Group Management Protocol)
+4, 网络接口层/Host-to-Net Layer：如Ethernet、Serial Line等
 
 ◎ 为什么leave：
 1, 摩：09、10年左右公司部门大调整，很可惜被调整到其他部门（iDEN部门），一个区别于C网和G网的、规模非常小的无线通信部门，发展前景很不好，该网络很可能会被关闭。而且，离开了原来的部门领导，面对全新的领导，一切在领导那里的积累都要重新开始。  
