@@ -62,6 +62,7 @@ http://marshal.easymorse.com/archives/2950
 TASK可以理解为是一个栈，可放入多个activity。
 
 ◎ Bind Service
+
 1, Service返回IBinder，调用者得到IBinder，进而得到service = IBinder.getService(); 再通过service调用method();
 2, 
 
