@@ -1,1 +1,1769 @@
-/home/users/she/Proj_CI.txt
+
+
+wget --post-file=QueryNE.xml --output-document=output_ossi.xml "http://10.60.24.189/mi/xmlInterfaceRequest.do?user=admin&pwd=camiant"
+
+wget --post-file=QueryNE.xml --output-document=output_6.3.xml "http://10.15.24.174/mi/xmlInterfaceRequest.do?user=admin&pwd=camiant"
+
+wget --post-file=QueryNE.xml --output-document=output_learned.xml "http://10.60.24.122/mi/xmlInterfaceRequest.do?user=admin&pwd=camiant"
+
+wget --post-file=QueryNE.xml --output-document=output_5.3.xml "http://10.15.24.132/mi/xmlInterfaceRequest.do?user=admin&pwd=camiant"
+
+wget --post-file=AddNE.xml --output-document=AddNeToGroup.xml "http://10.60.24.122/mi/xmlInterfaceRequest.do?user=admin&pwd=camiant"
+
+wget --post-file=QueryOmStats_DiameterAF.xml --output-document=output_omstats.xml "http://10.60.24.189/mi/xmlInterfaceRequest.do?user=admin&pwd=camiant"
+
+cfg BOD.RunStatsTest=true
+cfg BOD.RunDiameterTest=true
+cfg BOD.DIAMETERBOD.PrimaryPsIdentity=mpe
+cfg BOD.DIAMETERBOD.PrimaryPsRealm=camiant.com
+cfg BOD.PCMMBOD.maxBodPsTimeOut=1
+cfg DIAMETER.ExtendableBufferMaxSize=16777216
+
+cfg DIAMETER.ExtendableBufferMaxSize=33554432
+cfg DIAMETER.ExtendableBufferStartSize=33554432
+
+cfg DIAMETER.Cleanup.DeletedSessionsCleanupInterval=86400
+
+reconfig
+
+ha.cleanup QP
+
+rangoon-bod ~]#  10.60.24.122
+
+tail -f rc.log |grep KA
+http://10.60.24.205/bod/createSession.do?SERVICENAME=mediaUploadService&SUBIP=10.0.8.1&SUBMASK=23&SUBPORT=1425&DESTIP=10.60.2.3&DESTMASK=23&DESTPORT=80&UPBW=0&UPBWMAX=0&DUR=2&VOLLIMIT=3
+http://10.60.24.205/bod/deleteSession.do?SSID=6
+
+pkill ntpd
+scp root@10.60.24.180:/root/HK_NBod_she/build/jars/nbod.jar /opt/camiant/bod/jars/
+scp root@10.60.24.180:/root/HK_NBod_she/build/jars/msc.jar /opt/camiant/bod/jars/
+scp root@10.60.24.180:/root/HK_NBod_she/build/jars/camiant*.jar /opt/camiant/platform/jars/
+scp root@10.60.24.180:/root/HK_NBod_she/build/camiant/src/cfg/stats/stats-def-common.jar /opt/camiant/cfg
+scp root@10.60.24.180:/root/HK_NBod_she/build/jars/ba.war /opt/camiant/tomcat/webapps/
+
+scp root@10.60.24.180:/root/HK_NBod_she/build/jars/msc.jar /opt/camiant/rc/jars/
+scp root@10.60.24.180:/root/HK_NBod_she/build/jars/ba.war /opt/camiant/tomcat/webapps/
+scp root@10.60.24.180:/root/HK_NBod_she/build/jars/mi.war /opt/camiant/tomcat/webapps/
+
+scp /root/HK_NBod_she/src/bod/java/bod/bl/data/pcmmservices.xml root@10.60.24.205:/opt/camiant/bod/
+
+cd /var/TKLC/upgrade/
+export ANT_OPTS="-mx1024m -XX:MaxPermSize=512m
+
+Primary Identity: hss.ims.blueslice.com
+Port/OAM IP:      3868 / 10.15.26.195
+Realm:            ims.blueslice.com
+Unique Name:      SH2
+
+alias classver='java -cp /media/Tools/JavaParser JavaParser '
+
+VM on DL360-7(10.60.24.247) 
+    HostName          Blade IP       OAM VIP        SignalA IP
+hongkong-she-cmp     10.60.24.189   10.60.24.190
+she-mpe              10.60.24.191                  10.60.24.192
+hongkong-she-bod     10.60.24.205                  10.60.24.206 
+
+VM on cClass-4(10.60.27.244) 
+she-mpe2             10.60.27.107                  10.60.27.108
+she-mpe3             10.60.27.109                  10.60.27.110
+
+http://cnnan-twiki.cn.tekelec.com/twiki/bin/view/Main/Local
+cClass-8  10.60.30.34   27.34    28.34/28.46    29.34        PV   lent to Sharp
+cClass-13  10.60.30.39   27.39   28.39/28.51   29.39     PV   lent to Sharp
+
+Used by Simom
+hongkong-ryang-cmp   10.60.24.197   10.60.24.198    
+hongkong-ryang-mpe   10.60.24.199                 10.60.24.200 
+hongkong-ryang-bod   10.60.24.209                 10.60.24.210 
+
+hongkong-ryang-mpe   10.60.24.199                 10.60.24.200 
+tshen-bod           10.60.24.95                   10.60.24.96
+tshen-mpe           10.60.24.93                   10.60.24.94 
+sguo-cmp            10.60.24.19                   10.60.24.194     
+
+==============
+http://cnnan-twiki.cn.tekelec.com/twiki/bin/view/Main/Local
+Enclouse  E103
+Bay        iLO             Sig A          OAM           Sig B     Vm IP   Owner 
+Bay 9    10.60.30.84   10.60.27.51   10.60.28.71/72   10.60.29.51            CMP
+Bay 10   10.60.30.85   10.60.27.52   10.60.28.73/74   10.60.29.52            MPE
+
+Bay 11 	10.60.30.86 	10.60.27.53 	10.60.28.75/76 	10.60.29.53 	  	PV To Tom
+Bay 12 	10.60.30.87 	10.60.27.54 	10.60.28.77/78 	10.60.29.54 	  	PV To Tom(HW broken)
+Bay 13 	10.60.30.88 	10.60.27.55 	10.60.28.79/80 	10.60.29.55 	  	PV To Tom
+Bay 14 	10.60.30.89 	10.60.27.56 	10.60.28.81/82 	10.60.29.56 	  	PV To Tom
+Bay 15 	10.60.30.90 	10.60.27.57 	10.60.28.83/84 	10.60.29.57 	  	PV To Tom
+Bay 16 	10.60.30.91 	10.60.27.58 	10.60.28.85/86 	10.60.29.58 	  	PV To Tom 
+--------------------------------
+Bay     iLO          Sig A         OAM               Sig B           Vm IP                                   Owner
+Bay 10  10.60.30.69  10.60.27.226  10.60.28.105/106  10.60.29.68     From :10.60.26.100 To :10.60.26.109     Java 
+
+Bay    iLO           SigA          SigB             OAM              Owner     Comments 
+11     10.60.30.215  10.60.27.215  10.60.29.215     10.60.28.215     Tom
+
+---------------------------
+cd /var/TKLC/upgrade/
+dover-she         10.60.28.141       Simon
+hongkong-she      10.60.24.180      Simon
+./install-7-7.sh -prod mpe+cmp -stream DOVER_dev -local rpms
+./install-7-7.sh -prod mpe+cmp -local ~/rpms
+
+scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*cmp*.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*mpe*.iso /var/TKLC/upgrade/
+
+scp root@10.60.24.244:/root/isos/nbod/latest/*cmp*.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/root/isos/nbod/latest/*mpe*.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/root/isos/nbod/latest/*bod*.iso /var/TKLC/upgrade/
+
+scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*bod*.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*cmp*.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*mpe*.iso /var/TKLC/upgrade/
+
+scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*bod*.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*cmp*.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*mpe*.iso /var/TKLC/upgrade/
+
+scp root@10.60.24.191:/var/TKLC/upgrade/*mpe*.iso /var/TKLC/upgrade/
+
+scp root@10.60.24.244:/var/nfs/isos/hongkong/Mar28/*mpe*.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/hongkong/NOV29/*bod*.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/hongkong/NOV29/*cmp*.iso /var/TKLC/upgrade/
+
+fib%yel5
+su - platcfg 
+
+cp /root/DOVER_dev_she/build/jars/mi.war /opt/camiant/tomcat/webapps/mi.war
+
+/root/DOVER_spr_she/src/pkglists
+grep -R TPD-netbackup *
+
+/opt/camiant/bin/run_qp_procmgr.sh
+
+/opt/camiant/bin/run_qp_procmgr.sh
+# suppress RPM information if we happen to generate a savest
+#export PLAT_PATTERN="-v rpms"; /usr/TKLC/plat/sbin/savelogs_plat -- comment this line
+
+cd ~/HK_cable_tpd_she/src/
+setupBuildEnv --config=superset [--clean]
+cd commmon
+buildRPMS --nosend  [--srpm=camiant-mi  ]
+buildDistro
+
+cd ~/HK_cable_tpd_she/src/common
+build
+=============
+ssh -X root@10.60.28.141; then if you run "/opt/eclipse/indigo/eclipse &". The GUI will be X11 forward to you desktop
+ssh -D 127.0.0.1:7070 root@10.15.29.83
+
+==============
+http://10.15.2.253/bundles/RANGOON_dev/MPE-6.3.0.0-371.bdl
+/media/Bundles/BOD-6.3.0.0-302.bdl
+BOD-6.3.0.0-297.bdl
+
+
+  Code Package                              JAR file
+common/java/camiant/ams/*       /opt/camiant/platform/jars/camiant-webapps.jar
+common/java/camiant/ncops/*     /opt/camiant/platform/jars/camiant-tools.jar
+msc/java/msc/*                  /opt/camiant/rc/jars/msc.jar
+mi/mis                          /opt/camiant/mi/WEB-INF/lib/mi-mis.jar
+
+==============================================================================
+==============================================================================
+
+◎ CORE_QP / TPD
+Deploy Server: Password--NextGen
+10.240.16.201      -- MRA
+10.240.16.203, 205 -- MPE
+10.240.16.207      -- MI
+
+Nanjing VM Ware:
+10.60.24.83  -- TPD
+10.60.2.196  -- build server
+10.60.24.80 /.67/policies -- CentOS 64 bit
+
+Marlborough DL360 Server
+10.15.20.20
+10.15.20.21
+
+10.15.20.22
+  10.15.20.46:  simon-tpd-build
+  10.15.20.45:  simon-mpe-1-1
+
+  10.15.20.200: homer-mpe-1-1
+  10.15.20.107: homer-mpe-1-2
+
+  10.15.20.198: homer-cmp-2-1
+  10.15.20.104: homer-cmp-2-2
+
+  10.15.20.244: tli-cmp-1-1
+
+sudo cp ~/log.properties /etc/camiant/log.properties
+
+LogBack Config:
+/etc/camiant/logconfig/logback-rc.xml
+/etc/camiant/logconfig/logback-bod.xml
+
+edit the /etc/camiant/logconfig/logback-bod.xml and add the following line:
+  <logger name="camiant.services.qp" level="ERROR" additivity="true"/>
+  <logger name="camiant.stats.objects.KpiIntervalStats" level="ERROR" additivity="true"/>
+  <logger name="camiant.schedule.Scheduler"  level="ERROR" additivity="true"/>
+  <logger name="camiant.schedule.TaskRunner" level="ERROR" additivity="true"/>
+  <logger name="camiant.stats.manager.GeneralStatsManage" level="ERROR" additivity="true"/>
+  <logger name="camiant.services.prro.PrroComcol"  level="ERROR" additivity="true"/>
+  <logger name="camiant.services.prro.PrroManager" level="ERROR" additivity="true"/>
+  <logger name="camiant.camiant.util.*" level="ERROR" additivity="true"/>
+  
+  <logger name="msc.rc.stats.KpiStatsManagerProxy" level="ERROR" additivity="true"/>
+  <logger name="msc.rc.framework.AbstractProcess" level="ERROR" additivity="true"/>
+  <logger name="msc.rc.framework.AppControlHandler" level="ERROR" additivity="true"/>
+  <logger name="msc.rc.StatsLogManager" level="ERROR" additivity="true"/>
+ 
+  <logger name="msc.rc.framework.*" level="ERROR" additivity="true"/>
+  <logger name="msc.rc.*" level="ERROR" additivity="true"/>
+  
+
+@ Code:
+src/msc/java/msc/rc/pcmm/DiameterPcmmTranslator.java  
+  
+===========================================
+/usr/bin/setupBuildEnv
+
+export LD_LIBRARY_PATH=/opt/camiant/lib:$LD_LIBRARY_PATH
+echo LD_LIBRARY_PATH is: $LD_LIBRARY_PATH
+
+
+OAM VIP = 10.15.27.208
+SIG-A VIP = 10.15.25.208
+SIG-B VIP = 10.15.29.208
+Real OAM IP's are 10.15.26.107/108 for the two MPE blades.
+cat /etc/camiant/runningTopology.txt
+
+pm.setstate A
+
+
+iqt -W NodeInfo
+ha.stat
+alarm.put
+getPolicyRev -f
+
+top.myrole
+ping localhost
+resolveip <hostname>
+
+According to /etc/camiant/replication.cfg
+self.token=C0000_000
+self.ip=10.60.2.209
+other.token=C0000_001
+other.ip=10.60.3.102
+
+echo "update key=00000_000.mysqlIsReady value=true"| nc -u localhost 9663 -w 1
+echo "update key=C0000_000.mysqlIsReady value=true"| nc -u localhost 9663 -w 1
+
+echo "update key=she01.mysqlIsReady value=true"| nc -u localhost 9663 -w 1
+echo "update key=A3880_021.mysqlIsReady value=true"| nc -u localhost 9663 -w 1
+
+/etc/snmp/snmpd.conf
+Comcol.SnmpCfg Table
+
+gopkg qp_procmgr
+
+◎ TPD Machine
+ Simon He
+ madev05  10.15.4.18
+ she-tpd-build01
+ 10.15.5.88
+
+  TPD ISO:
+  10.60.24.244:/data/TKLCRepository/iso/TPD.install-5.1.0_73.3.0-CentOS5.8-x86_64.iso
+  
+  
+◎ Install Adobe Reader on Linux
+sudo -i
+rpm -ivh http://linuxdownload.adobe.com/adobe-release/adobe-release-i386-1.0-1.noarch.rpm
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-adobe-linux
+yum install nspluginwrapper.i686 AdobeReader_enu
+
+◎ Install TPD ISO on iLO
+1) Download TPD ISO
+  http://drake.corporate.camiant.local/TKLCrepository/iso/
+  TPD.install-4.2.3_70.84.0-CentOS5.5-x86_64.iso
+
+1.1) Download YORK_Dev application/product ISO
+  http://drake.corporate.camiant.local/buildresults/TPD/YORK_dev/iso/latest/
+
+2) iLO IP Address:
+  Password: L!nk1nPark
+  http://10.15.30.233/ ~~ .238
+
+3) Install CMP/MPE/MRA
+  Virtual Media -> Virtual Drives -> CD/DVD -> Select TPD-install*.ISO
+  
+  Install Command -- 
+  G6 boot: TPDnoraid diskconfig=HPHW,force console=tty0 
+  G8 boot: TPDnoraid diskconfig=HPG6,force console=tty0 
+  
+-----------------------------------------  
+◎ PMAC : https://10.60.27.165/
+  username / password: pmacadmin / tekware
+  Main Menu -> Software -> Software Inventory
+  Select Enc:104 Bay:8F
+  Install OS -> Select CentOs 4.0.1
+  
+  Main Menu -> Task Monitoring
+  
+  Copy product ISO from 10.60.24.244 to 192.168.1.xx, using 10.60.28.31 as jumper server.
+  @. Get 192.168.1.xx IP from PMAC.
+  @. ssh root@10.60.28.31 / NextGen
+  @. scp root@10.60.24.244:/var/nfs/isos/hongkong/Oct29/*cmp*.iso root@192.168.1.246:/var/TKLC/upgrade/
+  @. ssh 192.168.1.246
+  
+  Install product ISO using >su platcfg.
+  reboot
+  > su platcfg
+  Run Camiant Configuration -> Perform Initial Configuration.
+    HostName: hk-cmp-mgpi-perf
+    OAM Real IP Address: 10.60.28.xx/24
+
+    OAM Default Route:    10.60.28.1
+    NTP Server:           10.60.27.191
+    DNS Server A:         10.60.2.15
+    DNS Server B:
+    DNS Search:
+    Device:               bond0
+    OAM VLAN Id:          280
+    SIG A VLAN Id:        270
+    SIG B VLAN Id:        290
+  
+◎ Install TPD RPMs on VMWare
+/mnt/chameleon/public/scripts/install.sh -prod mpe+cmp/cmp/mpe/mra
+
+/install-7-7.sh -prod mra -stream DOVER_dev -local rpms
+
+VIP selection range: 10.15.21.111 ~ 125
+
+
+Grub password for TPD: 4admAxs
+
+mysqladmin -u root password 'root'
+mysqladmin -u public password 'yes'
+mysql -uroot -proot < ../build/mis/src/java/mi/mis/create_db.sql
+mysql -uroot -proot < ../build/mis/src/java/mi/mis/addusers.sql
+
+
+select * from networkelementgroup a where not exists (select 1 from networkelementgroup_networkelement b where a.uid=b.groupuid ) ;
+
+select c.uid, c.name from networkelementgroup c left join
+networkelementgroup_networkelement b on c.uid=b.groupuid  where c.uid not in
+(select b.controluid from networkelement d left join
+networkelementgroup_networkelement b on d.uid=b.itemuid where
+b.controluid<>'5'  ) ;
+
+insert into networkelementgroup (uid, name, description, rootgroup, allgroup) values (5, 'ALL', NULL, 0, 1);
+insert into qosprofilegroup (uid, name, description, rootgroup, allgroup) values (7, 'ALL', NULL, 0, 1);
+
+DB.jar
+/workspace/CORE_QP/src/common/platform/db-4.7.25.NC/build_unix_release/db.jar
+
+/opt/camiant/lib/qpFunctions
+阻止MySql重启
+
+** Topology **
+
+ClusterInfo
+NodeInfo    /  select * from NodeInfo: 查看Topology 信息
+HaCfg
+HaHbCfg
+HaVipDef
+
+1. No need to set the SIG A/B address for CMP cluster.
+2.
+
+** WhiteBoard **
+1. echo "get regex=.*"| nc -u localhost 9663 -w 1
+
+2. nc -u localhost 9663 -w 1
+
+   /opt/camiant/qp_procmgr/bin/run_whiteboard.sh
+   get regex=.*
+
+LD_LIBRARY_PATH=/opt/camiant/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+echo "LD_LIBRARY_PATH is: $LD_LIBRARY_PATH"
+
+◎ HONGKONG_dev
+http://cnnan-twiki.cn.tekelec.com/twiki/bin/view/Main/HongkongDevRelease#8.3.0_1.1.0
+
+◎ RANGOON_dev
+* action / jsp mapping:
+/workspace/RANGOON_dev/src/bod/java/bod/interfaces/gui/web-inf/struts-config.xml
+
+* JSP files:
+/workspace/PANAMA_dev/src/common/java/camiant/webapps/pages/
+/workspace/RANGOON_dev/src/common/java/camiant/webapps/pages/
+
+* PCMM Error Code / Sub Error Code:
+  src/msc/java/msc/rc/ErrorCodes.java
+  src/common/java/camiant/ncops/pcmm/PcmmConstants:
+
+  ErrorCodes.ERRSUBCODE_COPSSENDEXC = 211
+  ERRCODE_PCMM_NOERROR = 0
+  ERRCODE_MISSINGOBJECT = 6 -- PCMM I0x version mismatch
+
+* SharedResourceID
+  gateset -set profile=snapservice2 -set amid=123 -set subscriberid=192.168.200.26 [-set sharedresid=4275878552]
+  CMTS> set sharedresid=4275878552
+  CMTS> set sharedresid=0  --  remove the SharedResId from Gate message
+  
+ MAX: 2^32-1=4294967295
+
+* GateHistory
+  /var/camiant/gatehistory/gatehistory
+
+* How to run a single jUnit Test in 8.0
+ant single_test -Dtest_name=msc.polic.compiler.PolicyCompilerTest
+
+ant single_test_bod -Dtest.name=dbhelpers.BodSessionCleanupTaskTest
+ant single_test -Dtest.name=bod.bl.dbhelpers.SessionCleanupControlMsgHandlerTest
+ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTest
+
+==============================================================================
+◎ PANAMA_dev
+
+1. Build Process:
+  cd /workspace
+  rm -rf build/ release/
+  cd /workspace/RANGOON_dev/src             (cd /workspace/RANGOON_dev/src)
+  ../../mibuild.sh
+  [after build is over]
+  [after make rpm is over]  cd /opt/rpms/检查生成的rpm包
+
+  sudo /workspace/install_rpms.bash RANGOON  /  PANAMA
+  [cd /etc/init.d; sudo ln -s mysqld mysql]
+  cp /workspace/RANGOON_dev/src/common/prebuilt/jars/comcol.jar /opt/camiant/platform/jars/
+
+
+  cd /workspace/PANAMA_dev/src/mi/java
+  ant jar   -- 为Eclipse减少编译错误
+  java -jar createEclipse2.jar  RANGOON_dev/  -> 生成PANAMA_dev_java目录
+  java -jar createEclipse.jar  PANAMA_dev/  -> 生成PANAMA_dev_java目录
+
+  ** when Java file is modified **
+  1. /workspace/stopmi.sh
+  2. cd /workspace/PANAMA_dev/src/mi/java
+     ant deploy-mis / all
+     (make kit)
+  3. cd /opt/camiant/webapps/;  sudo rm -rf mi/
+  4. Create /opt/camiant/webapps/mi.exists, the content is :
+     Manager
+     mi
+
+     Create /opt/camiant/webapps/bod.exists, the content is:
+     Bandwidth on Demand
+     bod
+
+  5. /workspace/startmi.sh
+
+
+
+  Local Server:    http://localhost/mi  /  http://<local IP>/mi
+  Test Server：
+    * MI:
+      http://10.0.7.151/mi/
+      http://10.0.2.56/mi/
+    * MPE:
+      10.0.5.221 / .219  -- Jenny
+      10.0.7.117
+      10.0.2.176 / 10.0.2.178
+      10.0.2.56 -- zhenzhen
+      10.0.2.155 -- shawn
+      10.0.2.165 -- Jenny
+
+    * MA:
+      10.0.8.82  -- zhenzhen
+      10.0.8.65  -- sharp
+
+
+  初始密码：admin / policies
+  修改密码：admin / camiant
+
+  MPE Server: 通过10.0.2.56/mi/作为浏览界面
+  MPE IP:    10.0.7.117
+  ssh -l root 10.0.7.117
+  username / passwd: root / policies
+
+  /opt/camiant/rc/bin/rcmgr
+  RcMgr> cfg <key> <value>
+  RcMgr> uncfg <key>
+
+  Patterns: cfg <exact name of the parameter, including the prefixes>=<desired value>
+  Usage: ~/RcMgr_cfg.txt
+
+  RcMgr> show cfg PCMM.EM.     --显示PCMM.EM部分的配置信息
+  RcMgr> show cfg PCMM.MGPI*
+  RcMgr> show cfg <wildcard pattern> -v
+  RcMgr> cfg DIAMETER.WatchdogInterval=0  -- disable DWR /watch dog request
+
+  RcMgr> show diam sessions -verbose
+
+  RcMgr> show cablemodem / delete cablemodem
+  RcMgr> show cpe / delete cpe
+  
+  RcMgr> reconfig
+  
+  ** Create Cable Modem **
+  RcMgr> create account -set AccountId=000001
+  --> Saved Acct:000001
+  1 object(s) saved.
+  
+  RcMgr> create cablemodem -set MacAddress=10:01:00:00:00:01 -set IpAddress=192.0.0.1 -set AccountId=000001
+  --> Saved CM:10:01:00:00:00:01
+  1 object(s) saved.
+  RcMgr> create cpe -set IpAddress=192.0.0.2 -set CmMac=10:01:00:00:00:01
+  --> Saved Cpe:192.0.0.2
+  1 object(s) saved.
+  RcMgr> create cpe -set IpAddress=192.0.0.3 -set CmMac=10:01:00:00:00:01 
+  --> Saved Cpe:192.0.0.3
+  1 object(s) saved.
+  RcMgr> create cpe -set IpAddress=192.0.0.4 -set CmMac=10:01:00:00:00:01
+  --> Saved Cpe:192.0.0.4
+  1 object(s) saved.
+
+  -------------------------------------
+  BodMgr> show counter "*BOD *"
+  BodMgr> cfg BOD.PCMMBOD.maxBodPsTimeOut=1 
+  BodMgr> cfg BOD.RunStatsTest=true
+  
+  RcMgr> sh counter mgpi*
+  RcMgr> sh pcmm sess -v
+
+  src/mi/prebuilt/image/opt/camiant/mi/bin/migrate_to_8_0_0.sql
+
+  ---------------
+  Account Push To MPE:
+  > use camiant;
+  > select * from account;
+  > update account set changeflag='2';  //0:up-to-date, 2:Update Pending
+  ---------------
+  wget --post-file=.//AddAccount.xml --output-document=/tmp/AddAccount_result.xml "http://10.60.24.55/mi/xmlInterfaceRequest.do?user=admin&pwd=camiant"
+
+  /opt/camiant/platform/bin/namcli
+  NewAM> connect 10.60.24.191 / 100.10.24.15
+  NewAM> pdpconfig -set amid1=123
+  NewAM> gateset -set profile=ugs -set amid=123 -set subscriberid=10.60.28.110   -timeout 10000
+  NewAM> gateset -set profile=ugs -set amid=123 -set subscriberid=10.60.24.110
+  NewAM> gateset -set profile=ugs -set amid=123 -set subscriberid=10.60.4.110
+  NewAM> gateset -set profile=ugs -set amid=123 -set subscriberid=100.10.24.110
+  NewAM> gatedelete -set amid=123 -set subscriberid=10.60.24.110 -set gateid=<Gate ID>
+  NewAM> synchrequest -set amid=123 -set subscriberId=10.60.24.110 -set SynchType=1 -set ReportType=1
+
+         gateset -set profile=ugs -set amid=123 -set subscriberid=100.10.24.110 -gateid=
+
+  NewAM> [command] -prompt
+  1) gateset -set profile=ugs -set amid=123 -set subscriberid=12.0.0.1
+  2) gateset -set profile=ugs -set amid=123 -set subscriberid=::0A0F:0101 -set ClassifierCount=2 -set Classifier1.Classifier=ipv6 -set Classifier2.Classifier=ipv7 -set gatespec=upstream
+
+  3) gateset -set profile=ugs -set amid=1 -set subscriberid=::0A0F:0102 -set Classifier=ipv6 -set gatespec=upstream -set uidobj=cooke
+
+  save class ipv7 -set ClassifierType=IPv6 -set action=0 -set Priority=64 -set classifierid=2
+
+
+  <需要打开3868端口，并且开启Debug -> Diameter AF Mode>
+  /opt/camiant/rc/bin/diamcli
+  /opt/camiant/platform/bin/diamcli
+
+  * Connect / Disconnect *
+  Note: Connect from the other machine other than the MRA/MPE itself.
+
+  Diameter> disconnect
+  
+  Diameter>MPE-235-236
+  -- MPE --
+  connect -remoteidentity=MPE235 -identity=MPE235 -address 10.15.27.235 -set app1.name=gx -realm=camiant.com
+
+  connect mpe9-21-241.camiant -address=10.15.21.241  -realm=camiant -identity=appli_chen.tekelec.com -set app1.name=rx -set DisplayReceivedRequests=true
+  
+  connect MPE42-174.tekelec.com -address=10.240.40.174 -realm=tekelec.com -identity=appli_chen.tekelec.com -set app1.name=rx -set DisplayReceivedRequests=true 
+
+  connect mpe -address=10.60.24.205 -realm=tekelec.com -identity=mpe -set app1.name=rx -set DisplayReceivedRequests=true
+
+  connect MPE194 -address=10.60.25.195 -set app1.name=rx -realm=camiant.com
+  
+  -- MRA -- Need to add mpe into MRA -> MPE Pool.
+  connect -remoteidentity=MRA237 -identity=ggsn2.camiant.com -address 10.15.27.238 -set app1.name=gx -realm=camiant.com
+
+  connect -remoteidentity=jzhang-mpe -identity=ggsn.camiant.com (Diameter Identity of GGSN Network Element) -address 10.15.27.xx (OAM IP of MRA / IP of Primary MRA) -set app1.name=gx -realm=camiant.com
+
+  connect mpe -set app1.name=rx -realm=camiant.com  -address=10.60.24.34
+  connect mpe -set app1.name=rx -realm=camiant.com  -address=10.60.24.191 
+  connect mra -set app1.name=rx -realm=camiant.com  -address=10.60.2.196 
+
+  connect mpe    -address=10.15.24.44  -set app1.name=rx -realm=camiant.com
+  connect mpe    -address=10.60.24.157 -set app1.name=rx -realm=camiant.com
+  connect mpe_root  -address=10.60.24.191 -set app1.name=rx -realm=camiant.com
+  connect mpe_slave -address=10.60.27.107 -set app1.name=rx -realm=camiant.com
+
+  connect tier1.tekelec.com -address=192.168.0.24 -set app1.name=rx -realm=tekelec.com
+  connect tier2.tekelec.com -address=192.168.0.19 -set app1.name=rx -realm=tekelec.com
+
+  connect testId76 -address=10.15.24.76 -set app1.name=rx -identity=app -realm=test.example.com
+  aar rx -desthost=testId76 -destrealm=test.example.com -set media1.flow1.downflowdesc="permit out 17 from 10.0.5.15 to 10.0.5.10 8936" -set media1.flow1.upflowdesc="permit in 17 from 10.0.5.10 to 10.0.5.15 8936" -set media1.status=2  -set media1.type=0  -set media1.upmax=60000 -set media1.downmax=60000 -subip=10.0.1.1
+
+  ** Create Session **
+  1) Double direction
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.upmax=70000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024"  -set media1.downmax=80000 -set media1.flow1.downflowdesc="permit out 17 from 192.168.0.8 to 192.168.200.2 6022" -subip=10.60.24.110
+
+  -set media2.flow1.upflowdesc="permit in 18 from 192.168.100.2 to 192.168.100.26 6024" -set media2.downmax=80000
+  -set action1=2
+  
+  2) Single Direction
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.upmax=80000   -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -subip=10.60.24.110
+  
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.upmax=90000   -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -subip=10.60.24.110  
+
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.upmax=90000   -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -subip=192.0.0.11
+  
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.upmax=80000   -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -subip=10.0.0.3
+  
+  gatereport -set reason=5 -set action1=2 -set gateid=26061590
+  
+  aar rx -set media1.type=0 -set media1.afappid="voip" -set media1.upmax=80000   -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -set media1.status=4 -subip=10.60.24.110 -sessionid=client.test.example.com;1358296186;15
+  
+  ** DownStream
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.downmax=80000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.downflowdesc="permit out 18 from 192.168.0.8 to 192.168.200.2 6022" -subip=10.60.24.1 -set action1=2
+  
+  aar rx -nodesthost=true -set media1.type=0 -set media1.status=2 -set media1.afappid="voip"  -set media1.downmax=80000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.0.1.12 to 10.0.1.12 6024" -set media1.flow1.downflowdesc="permit out 17 from 10.0.1.12 to 10.0.1.12"  -set media1.upmax=10000 -set action1=2 -subip=10.60.24.110
+  
+  3)
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.downmax=80000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -set media1.flow1.downflowdesc="permit out 17 from 192.168.0.8 to 192.168.200.2 6022" -subip=10.60.24.1 -set media1.upmax=80000
+
+  4) 
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.downmax=80000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.185.244.11/1 to 10.185.244.22/2 10001" -set media1.flow1.downflowdesc="permit out 17 from 10.185.244.22/2 to 10.185.244.11/1 10001" -subip=10.0.80.111 -set media1.upmax=80000
+
+   media1.flow1.upflowdesc="permit in 17 from 10.185.244.11/1 to 10.185.244.22/2 10001"
+   media1.flow1.downflowdesc="permit out 17 from 10.185.244.22/2 to 10.185.244.11/1 10001"
+
+  5)
+  ccr gx -request=initial -framedip=10.0.0.1 -ratt=utran -ipcantype=0 -user164=15084880019 -operation=1 -bearerid=101 -set tft1.precedence=7 -set tft1.filter="permit out 17 from 10.0.0.1 to assigned" -set tft1.class=0x10 -set tft1.class=0x10 -set qos.class=8 -set qos.upmax=12800 -set qos.downmax=51200 -calledstationid=Telstra6
+
+  6)
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.flow1.downflowdesc="permit out 17 from 192.168.0.8 to 192.168.200.2 6022" -subip=10.60.24.1 -set media1.upmax=80000
+
+  ----------------------
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.flow1.downflowdesc="permit out 17 from 192.168.0.8 to 192.168.200.2 6022" -subip=12.0.0.1 -set media1.upmax=80000
+
+
+  aar rx -set media1.type=3 -set media1.status=2 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -subip=12.0.0.1 -set media1.upmax=80000
+
+  ================================================
+  ** Modify **
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -set media1.upmax=70000
+  -sessionid=client.test.example.com;1325042785;6
+
+  sample:
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -set media1.upmax=60000 -sessionid=client.test.example.com;1325042785;5
+
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 118 from 192.168.200.2 to 192.168.200.26 6024" -set media1.upmax=80000 -sessionid=client.test.example.com;1325042785;4
+
+  ** To create command ** :
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -set media1.upmax=80000 -subip=10.0.80.1
+
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -set media1.downmax=8000 -set media1.flow1.downflowdesc="permit out 17 from 192.168.8 to 192.168.200.2 6022" -set media1.upmax=80000 -sessionid=client.test.example.com;1283140698;3
+
+  ** Use IPv6 SubIP **:
+  aar rx -framedipv6prefix=FC00::0A0F:4724  -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=3333 -set media1.flow1.upflowdesc="permit in 20 from FC00::0A0F:4702 to FC00::0A0F:4726"
+
+  aar rx -framedipv6prefix=FC00::0A0F:4724  -set media1.type=0 -set media1.afappid="voip" -set media1.upmax=60000 -set media1.downmax=60000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 20 from FC00::0A0F:4702 to FC00::0A0F:4726" -set media1.flow1.downflowdesc="permit out 20 from FC00::0A0F:4701 to FC00::0A0F:4716" -set media1.status=3
+  
+  ** Modify **
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip"  -set media1.downmax=23000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.0.8.123 to 10.0.8.32 6024" -set media1.flow1.downflowdesc="permit out 17 from 10.0.8.1 to 10.0.8.2 6022"  -set action1=2 -set action2=4 -set action3=5 -set subid1.type=2 -set subid1.data="_sip:user@domain" -set media1.respri=0 -set media1.upmax=3000 -set media1.downcodecdata="downlink\nanswer\nm=audio 6884 RTP/AVP 121\na=rtpmap:121 G7222/1000\na=ptime:20\n" -set media1.upmax=30000  -set media1.downmax=10000 -subip=10.0.80.1
+
+  -set media1.upcodecdata="uplink\noffer\nm=audio 6884 RTP/AVP 122\na=rtpmap:122 G7222/24000\na=ptime:20\n"
+
+
+  ** Delete **
+  -- GX --
+  ccr gx -request=terminate -sessionid=<Session ID>
+  << Pattern >>
+  ccr gx -request=<request type> -sessionid=<session id>
+
+  -- RX --
+  str rx -sessionid=client.test.example.com;1282114736;62
+
+  -- classifier --
+  MGPI 可以生成多个classifier
+  upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024"
+
+  ** Multiple classifier & Double Direction **
+  aar rx -subip=10.0.1.226 -set media1.type=0 -set media1.status=2 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.downmax=80000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.10 123 to 11.11.11.11 6024" -set media1.flow1.downflowdesc="permit out 17 from 11.11.11.11 6024 to 10.10.10.10 123" -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.10 124 to 11.11.11.11 6025" -set media1.flow2.downflowdesc="permit out 17 from 11.11.11.11 6025 to 10.10.10.10 124"
+
+  aar rx -subip=10.0.1.226 -set media1.type=0 -set media1.status=2 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.downmax=80000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.20 123 to 11.11.11.21 6024" -set media1.flow1.downflowdesc="permit out 17 from 11.11.11.21 6024 to 10.10.10.20 123" -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.20 124 to 11.11.11.21 6025" -set media1.flow2.downflowdesc="permit out 17 from 11.11.11.21 6025 to 10.10.10.20 124"
+  
+  aar rx -subip=10.0.1.226 -sessionid=client.test.example.com;1346899527;4 -set media1.type=0 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.downmax=80000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.status=2 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.20 123 to 11.11.11.21 6024" -set media1.flow1.downflowdesc="permit out 17 from 11.11.11.21 6024 to 10.10.10.20 123" -set media1.flow2.status=4 -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.20 124 to 11.11.11.21 6025" -set media1.flow2.downflowdesc="permit out 17 from 11.11.11.21 6025 to 10.10.10.20 124"
+  
+  -------------------------------------------------------
+  ** Multiple classifier & Single Direction **
+  
+  aar rx -subip=10.60.24.110 -set media1.type=0 -set media1.status=2 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.10 123 to 11.11.11.11 6024" -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.10 124 to 11.11.11.11 6025" 
+
+  aar rx -subip=10.0.1.226 -set media1.type=0 -set media1.status=2 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.20 123 to 11.11.11.21 6024" -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.20 124 to 11.11.11.21 6025" 
+
+  =============================================
+  /media/workspace/HK_NBod_she/src/common/java/camiant/diameter/apps/nasreq/af/objects/FlowStatus.java
+  public enum FlowStatus {ENABLED_UPLINK(0),ENABLED_DOWNLINK(1),ENABLED(2),DISABLED(3),REMOVED(4),UNKNOWN(0xFFFFFFFF); }
+  
+  ** REMOVED **
+  aar rx -subip=10.60.24.110 -set media1.type=0 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333     -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.10 123 to 11.11.11.11 6024" -set media1.flow1.status=2     -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.10 124 to 11.11.11.11 6025" -set media1.flow2.status=4       -sessionid=client.test.example.com;1358296186;1
+  
+  aar rx -subip=10.0.1.226 -set media1.type=0 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333     -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.20 123 to 11.11.11.21 6024" -set media1.flow1.status=2     -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.20 124 to 11.11.11.21 6025" -set media1.flow2.status=4       -sessionid=client.test.example.com;1347331596;9
+
+  aar rx -subip=10.0.1.226 -set media1.type=0 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333     -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.10 123 to 11.11.11.11 6024" -set media1.flow1.status=4     -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.10 124 to 11.11.11.11 6025" -set media1.flow2.status=4       -sessionid=client.test.example.com;1346920284;5
+
+  **here!**
+  aar rx -subip=10.0.1.226 -set media1.type=0 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333     -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.20 123 to 11.11.11.21 6024" -set media1.flow1.status=4 -sessionid=client.test.example.com;1347352344;1
+
+  aar rx -subip=10.0.1.226 -set media1.type=0 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333 -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.20 124 to 11.11.11.21 6025" -set media1.flow2.status=4 -sessionid=client.test.example.com;1347434434;3
+  
+  aar rx -subip=10.0.1.226 -set media1.type=0 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333     -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.20 123 to 11.11.11.21 6024" -set media1.flow1.status=4     -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.20 124 to 11.11.11.21 6025" -set media1.flow2.status=4       -sessionid=client.test.example.com;1347434434;5
+  
+  --Extended Classifier -- 
+  RcMgr> DIAMETERPCMM.ExtClassifier=true
+  
+  ================================================
+  scp /root/perf_*.txt she@10.60.24.24:/home/users/she/perf/
+  10.15.27.101 2011 -- 10.15.24.106
+  10.15.27.101 2012 -- 10.15.24.107
+  10.15.27.101 2015 -- 10.15.24.110
+  10.15.27.101 2016 -- 10.15.24.111
+
+  ** Longivity Test **
+  > Namcli
+  test rate 10.60.4.58 -set AmCount=3 -set AbortOnError=false -set Am1.GateSet=upstream -set interval=3000 -set cycles=100 -set gates=1000 -set Skipinfos=no -set skipdeletes=no -set Am1.SubscriberIdRange=10.60.4.2-254 -set Am2.SubscriberIdRange=10.60.4.1-254 -set Am3.SubscriberIdRange=10.60.4.2-200 -set Am1.GateSet=downstream -set Am3.GateSet=upstream:downstream
+
+  ** Performance Test **
+  > Diamcli
+  connect mpe_root -address=10.60.24.191 -set app1.name=rx -realm=camiant.com
+  connect MPE194 -address=10.60.25.195 -set app1.name=rx -realm=camiant.com
+  
+  test perf rx -hostname=10.60.24.191 -realm=camiant.com -remoteidentity=mpe_root  -identity=mpe_root -numclients=1 -transactions=5000 -cycles=30 -addressrange=10.0.80.1/24 -disconnect=true -verbose=on -modifies=1 -duration=0 -output=/root/perf/perf.txt -timeout=5000 -terminate=true
+
+  test perf rx -hostname=10.15.24.107 -realm=camiant.com -remoteidentity=mpe  -identity=mpe_root -numclients=1 -transactions=1000 -cycles=30 -addressrange=10.15.24.1/24 -disconnect=true -verbose=off -modifies=1 -duration=0 -output=/root/perf_nomgpi_107.txt -timeout=5000 -terminate=false
+
+  test perf rx -hostname=10.15.24.111 -realm=camiant.com -remoteidentity=mpe  -identity=mpe -numclients=1 -transactions=1000 -cycles=30 -addressrange=10.15.24.1/24 -disconnect=true -verbose=off -modifies=1 -duration=0 -output=/root/perf_nomgpi_111.txt -timeout=5000 -terminate=false
+
+  test perf rx -hostname=10.0.8.84 -realm=dps.example.com -remoteidentity=test.example.com  -identity=diamcli -numclients=2 -transactions=10000 -cycles=28 -addressrange=10.0.7.1/24  -verbose=off -delay=10000 -set latency=true -set gxx=0.0
+
+   << Pattern >>
+  test perf rx -hostname=<MPE's IP> -realm=<MPE's Diameter Realm> -remoteidentity=<MPE's Diameter Identity> -identity=<NE's Identity> -numclients=1 -transactions=10 -cycles=0 -addressrange=10.60.24.0/24(要与CMTS的subnets一致) -disconnect=true -terminate=false/true -verbose=off -modifies=1 -duration=120 -output=/tmp/1.txt -timeout=5000
+
+
+  ================================================
+
+2. Import Projects: 重启WEB SERVER
+  Eclipse 导入PANAMA_dev_java下的所有工程，Debug Configuration -> Remote Java Application -> PANAMA_dev_mi
+  sudo touch /opt/camiant/tomcat/bin/debug  /opt/camiant/rc/bin/debug   /opt/camiant/dc/bin/debug
+
+  Debug:
+  1) 在应用的启动脚本文件.sh所在目录下创建debug文件
+  2) 在应用的启动脚本文件.sh中加调试信息，端口address按需修改
+  grep 8001 *
+  
+# debug support in the jvm.
+if [ -f $PRGDIR/debug_suspended ]; then
+    jvmargs
+    JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=y -enableassertions"
+    export JAVA_OPTS
+    echo Running with debugger suspended
+elif [ -f $PRGDIR/debug ]; then
+    JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n -enableassertions"
+    export JAVA_OPTS
+    echo Running with debugger enabled
+fi
+
+    exec java $JAVA_OPTS -mx64m -cp "${CP}" ${CONSOLE} camiant.apps.cli.nam.AmCLI $args
+
+====================================
+  ＊ debug_mi/bod: 必须要在/opt/camiant/tomcat/bin下建立debug名字的文件，才能进行debug mi/mia/bod(need restart mi)。
+    Address: http://10.60.2.149/mi
+    Connection Properties: Host/Port: localhost / 8000.
+
+  ＊ debug_mra:
+    Connection Properties: Host/Port: localhost / 8002.
+
+  ＊ debug_dc: 必须要在/opt/camiant/dc/bin/下建立debug名字的文件，才能进行debug dc(need restart dc service)。
+    端口号查看：/opt/camiant/dc/bin/run_dc.sh
+    Connection Properties: Host/Port: localhost / 8002.
+    Address: http://10.60.2.149/dc
+
+    sudo service dc restart -- data collector unavailable
+
+  ＊ 必须要在/opt/camiant/rc/bin/下建立debug名字的文件，才能进行debug rc
+    端口号查看：/opt/camiant/rc/bin/run_policyserver.sh
+    Connection Properties: Host/Port: localhost / 8001.
+    Address: http://10.60.2.149/rc
+  
+  ＊ 必须要在/opt/camiant/rc/bin/下建立debug名字的文件，才能进行debug mra
+    端口号查看：/opt/camiant/rc/bin/run_mra.sh
+    Connection Properties: Host/Port: localhost / 8002.
+    Address: http://10.60.2.141/mra
+
+  ＊ 必须要在touch /opt/camiant/bod/bin/debug, 才能进行debug nbod
+    端口号查看：/opt/camiant/rc/bin/run_mra.sh
+    Connection Properties: Host/Port: localhost / 8002.
+    Address: http://10.60.2.141/mra
+    
+  ＊ 必须要在/opt/camiant/dc/bin/下建立debug名字的文件，才能进行debug dc/ossi
+    端口号查看：/opt/camiant/dc/bin/run_dc.sh
+    Connection Properties: Host/Port: localhost / 8002.dfdf
+    Address: 
+      
+  ＊ debug RcMgr
+  Project:       RANGOON_dev_msc
+  Main class:    msc.rcmgr.CfgCLI
+  VM arguments:  -Dos.name=windows
+
+  * debug CmtsCLI
+  Project:       RANGOON_dev_common
+  Main class:    camiant.apps.cli.cmts.CmtsCLI
+  VM arguments:
+
+  * debug AmCLI
+  Project:       RANGOON_dev_common
+  Main class:    camiant.apps.cli.nam.AmCLI
+  VM arguments:
+
+  * debug RC/PolicyServer on 7.5
+  Project: CORE_QP_msc
+  Main class: msc.rc.ResourceController
+
+  * debug MI-Agent on MPE
+  Project:  Common, MI
+  On MPE: touch /opt/camiant/tomcat/bin/debug
+  Port: 8000 (tomcat)
+  
+  -- VM Arguments --
+  -Djava.library.path=/opt/camiant/lib -server -Xms512m -Xmx1g -Xmn128m -XX:+UseTLAB -XX:+UseConcMarkSweepGC -Djava.util.logging.config.file=/opt/camiant/rc/jars/logging.properties  -enableassertions -XX:+PrintClassHistogram -cp :/opt/camiant/rc/bin/../jars/jaxrpc-api.jar:/opt/camiant/rc/bin/../jars/jaxrpc-spi.jar:/opt/camiant/rc/bin/../jars/jaxrpc-impl.jar:/opt/camiant/rc/bin/../jars/activation.jar:/opt/camiant/rc/bin/../jars/mail.jar:/opt/camiant/rc/bin/../jars/saaj-api.jar:/opt/camiant/rc/bin/../jars/saaj-impl.jar:/opt/camiant/rc/bin/../jars/FastInfoset.jar:/opt/camiant/rc/bin/../jars/jsr173_api.jar:/opt/camiant/rc/bin/../jars/sjsxp.jar:/opt/camiant/rc/bin/../jars/db.jar:/opt/camiant/jars/comcol.jar:/opt/camiant/jars/camiant-tools.jar:/opt/camiant/jars/camiant-ws.jar:/opt/camiant/jars/camiant-platform.jar:/opt/camiant/jars/camiant-gateHistory.jar:/opt/camiant/rc/bin/../jars/alert-client.jar:/opt/camiant/rc/bin/../jars/smsr.jar:/opt/camiant/rc/bin/../jars/asm-3.1.jar:/opt/camiant/rc/bin/../jars/jersey-client-1.1.2-ea.jar:/opt/camiant/rc/bin/../jars/jersey-core-1.1.2-ea.jar:/opt/camiant/rc/bin/../jars/jersey-server-1.0.3.1.jar:/opt/camiant/rc/bin/../jars/jsr311-api-1.1.jar:/opt/camiant/rc/bin/../jars/mi-internal-client.jar:/opt/camiant/rc/bin/../jars/msc.jar:/opt/camiant/jars/oncrpc.jar:/opt/camiant/rc/bin/../jars/jaxb-api.jar:/opt/camiant/rc/bin/../jars/jaxb-impl.jar:/opt/camiant/rc/bin/../jars/JDHCP.jar:/opt/camiant/rc/bin/../jars/sceapi.jar:/opt/camiant/rc/bin/../jars/asn1rt.jar:/opt/camiant/rc/bin/../jars/jce-jdk13-133.jar:/opt/camiant/rc/bin/../jars/jdmkrt.jar:/opt/camiant/rc/bin/../jars/jsmpp-2.0b3.jar:/opt/camiant/rc/bin/../jars/slf4j-api-1.4.3.jar:/opt/camiant/rc/bin/../jars/slf4j-jdk14-1.4.3.jar:/opt/camiant/rc/bin/../jars/log4j-1.2.14.jar:/opt/camiant/jars/httpclient-4.0.jar:/opt/camiant/jars/commons-logging-1.1.1.jar:/opt/camiant/jars/httpcore-4.0.1.jar:/opt/camiant/jars/httpcore-nio-4.0.1.jar:/opt/camiant/jars/servlet-api-2.5.jar:/opt/camiant/jars/jetty-util-7.0.2.v20100331.jar:/opt/camiant/jars/jetty-servlet-7.0.2.v20100331.jar:/opt/camiant/jars/jetty-server-7.0.2.v20100331.jar:/opt/camiant/jars/jetty-http-7.0.2.v20100331.jar:/opt/camiant/jars/jetty-io-7.0.2.v20100331.jar:/opt/camiant/jars/jetty-continuation-7.0.2.v20100331.jar:/opt/camiant/jars/jetty-security-7.0.2.v20100331.jar:/opt/camiant/jars/jetty-j2sehttpspi-7.0.2.v20100331.jar:/opt/camiant/jars/xstream-1.3.1.jar  msc.rc.ResourceController
+
+  -- Program Arguments --
+  --PCMMPEP.ServerPort=3918 --RC.ThreadWatchInterval=0
+
+  * debug MRA on 7.5
+  Project: CORE_QP_mra
+  Main class: mra.MRAController
+
+  -- VM Arguments --
+  -Djava.library.path=/opt/camiant/lib -server -Xms512m -Xmx1g -Xmn128m -XX:+UseTLAB -XX:+UseConcMarkSweepGC -cp :/opt/camiant/rc/jars/jaxrpc-api.jar:/opt/camiant/rc/jars/jaxrpc-spi.jar:/opt/camiant/rc/jars/jaxrpc-impl.jar:/opt/camiant/rc/jars/mail.jar:/opt/camiant/rc/jars/saaj-api.jar:/opt/camiant/rc/jars/saaj-impl.jar:/opt/camiant/rc/jars/FastInfoset.jar:/opt/camiant/rc/jars/alert-client.jar:/opt/camiant/rc/jars/camiant-tools.jar:/opt/camiant/rc/jars/camiant-platform.jar:/opt/camiant/jars/commons-logging-1.1.1.jar:/opt/camiant/rc/jars/db.jar:/opt/camiant/jars/comcol.jar:/opt/camiant/rc/jars/msc.jar:/opt/camiant/mra/bin/../jars/mra.jar:/opt/camiant/jars/xstream-1.3.1.jar mra.MRAController
+
+  -- Program Arguments --
+
+
+  ＊ MI Login:
+  /workspace/PANAMA_dev/src/mi/java/mi/mis/actions/LoginAction.java.
+  executeLogic()
+
+3. Deploy JSP / Java:
+  1) sudo cp /workspace/RANGOON_dev/src/mi/java/mi/mis/pages/rcLeafCreate.jsp /opt/camiant/tomcat/webapps/mi/pages/
+     sudo cp /workspace/RANGOON_dev/src/bod/java/bod/interfaces/gui/pages/*.jsp  /opt/camiant/tomcat/webapps/mi/pages/
+     cp -f /workspace/RANGOON_dev/src/bod/java/bod/interfaces/gui/pages/*.jsp /workspace/RANGOON_dev/build/bod/src/java/bod/interfaces/gui/pages/
+
+     -- not deploy, just for debug
+
+  2) 编译并部署Java代码：
+     cd /workspace/PANAMA_dev/src/mi/java
+
+     ant -p        (show help and build options)
+     ant deploy-mis / all
+     ant deploybodserver
+     ant deployrc
+    
+     cd /workspace/HONGKONG_dev/src/common/java
+     ant stats-definitions
+
+  3) Ant 编译时，class文件生成目录：     /workspace/PANAMA_dev/build
+     Eclipse编译时, class文件生成目录：  /workspace/PANAMA_dev_java
+
+  4) JAR output folder: /workspace/PANAMA_dev/build/jars/
+
+
+4. 避免service失败的时候电脑重启：
+  touch a file under /var/camiant/
+  touch /var/camiant/.neverreboot
+
+5. Twiki
+  Training slides: http://192.168.200.169/twiki/bin/view/Main/ProtocolSpec
+  RANGOON Project: http://192.168.200.169/twiki/bin/view/Main/RANGOONTeam
+  Servers Allocation: http://nantwiki/twiki/bin/view/Main/Local
+                      http://nantwiki/twiki/bin/view/Main/Server#Jump
+
+6. SUI:
+  登录名/用户名：  services / camiant
+  On MPE server: su service
+
+7. COMCOL
+  RPM: http://cmweb1.nc.tekelec.com/cgi-bin/rpmarchive.pl#5.14
+
+  User:      idbuser
+  password:  idbpwd
+
+  Dir: /opt/TKLCcomcol/cm5.14/prod/bin
+
+  /var/camiant/db/comcol/run/mysql/mysql.conf
+  source /etc/profile.d/TKLCcomcol.sh
+  or /opt/TKLCcomcol/camiant/prod/etc/TKLCcomcol.sh
+
+  su / relogin
+  prod.clobber
+  prod.start
+  prod.state
+  “service comcol start” and avoid “prod.start”.
+
+  sudo Imysqld.start / stop
+  Imysql.client
+  Imysql.client -uidbuser -pidbpwd camiantBoD  <  BoD_db.txt
+  
+  check comcol shared memory usage:
+  ifrag -a  /  ipcs -um
+
+8. CMTS Simulator:
+  cd /opt/camiant/platform/bin/
+  # /opt/camiant/bin/jcmts -c -p 3919
+    /opt/camiant/bin/jcmts -c -p 3918 -e 33554432
+    
+  Cmts> /opt/camiant/platform/bin/ncmts
+  Cmts> start pcmm <port> / default:3918
+  Cmts> stop service 3919
+  Cmts> Show connections / show conn
+  Cmts> Show service
+  Cmts> Show gates -limit=0
+  Cmts> Errorcondition -code=<codeID> -subcode= <subcodeID> -num=<NumCount>
+        example: errorcondition -code=15 -num=1
+        example: errorcondition -code=21 -num=2
+        errorcondition -code=20 -num=1
+
+  Cmts> show error         
+        No UpStream Error Message Conditions found.
+        Error Message Conditions down stream:
+        AnyGateRequest:
+        code= 15
+        subcode= 0
+        Number of matching messages left to send= 8
+        
+  Cmts> responsedelay -delaytime=2000          
+  Cmts> responsedelay -upnum=20 -updelaytime=2000
+        responsedelay -downnum=20 -downdelaytime=2000
+        
+  Specify the amount of time in milliseconds to delay the response.
+
+  Cmts> Gatereport
+  eg. gatereport -set gateid=82400957
+      gatereport -set gateid=77510775 -set reason=5
+      
+      
+  Cmts> set versions=4.0,3.0,2.0 －－ 设置CMTS 支持的PCMM的版本
+  Cmts> reconfig
+
+  Cmts> start pcmm 3919 -prompt -- 提示性输入
+  Cmts> start pcmm 3919 -set versions=3.0
+
+  Cmts> clear
+  Cmts> show services
+
+  * Real-CMTS -- 10.0.3.2
+  telnet 10.0.3.2
+  password:  sotdotb!
+
+
+9. Log / EventLog / TraceLog
+  cd /var/camiant/log
+  tail -f rc.log.0
+  tail -f rc.log |grep -v WhiteBoard |grep -v len=1 |grep -v "^ " |grep -v DiameterSessionCleanupScheduler
+
+  Log Level: /opt/camiant/<component name>/*.properties
+             Log.Level=info warning finer
+
+  Eventlog.Level -- log.properties
+  
+  Imysql.client ->  use camiant; select * from qptrace; delete from qptrace;
+
+  e.g.
+    /opt/camiant/rc/jars/msc/cfg/camiant.properties
+    /opt/camiant/dc/dc.properties
+    /opt/camiant/bod/bod_server.properties
+    /opt/camiant/bodapi/bod_server.properties
+    /opt/camiant/mia/mi_agent.properties
+    /opt/camiant/ma-distributor/mas_ws.properties
+    /opt/camiant/mi/mi_server.properties
+
+  在界面上修改：
+  Policy Server -> Debug TAB -> Modify -> System / MI-Agent Log Level
+  BOD -> Event Log -> Event Log Configuration
+
+  TraceLogLevel:
+  src/common/java/camiant/services/incident/enums/TraceLogSeverity.java
+    OFF / 255
+    ALWAYS / 235
+    EMERGENCY / 225
+    ALERT / 200
+    CRITICAL / 175
+    ERROR / 150
+    WARNING / 125
+    NOTICE / 100
+    INFO / 50
+    DEBUG / 25
+    ALL / 0
+    
+10. 中转服务器 / Terminal Server: http://10.60.2.169/twiki/bin/view/Main/RemoteHardware
+  telnet 10.0.8.10  2009
+  telnet 10.0.2.104 2008
+
+  TS的管理GUI: http://10.15.27.85
+  UserName / Pwd: root / dbps
+  Click Management -> Connections , disconnect the Active Network Connections.
+
+11. MI/CMP配置Applications tab:(eg. BOD)
+* Connection IP Address(es)     100.11.12.13 (任意值)
+* Application Manager IDs       123 / (需与BOD端配置的AppManger ID一致)
+
+* Network element CMTS Subnets Configuration
+
+Subnets Configured Manually (IP / MASK)
+  192.168.200.0 / 24
+  <IPv6 Addr> / 64, sample: FC00:: / 64
+
+  10.60.2.0 / 24
+  10.0.2.0 / 24
+  10.0.7.0 / 24
+  10.0.8.0 / 24
+  10.0.5.0 / 24
+  10.0.80.0 / 24
+
+
+＊ MI Policy Server Configuration -> Policy Server Tab -> Diameter
+Diameter Port   3868
+Diameter Realm   camiant.com
+Diameter Identity   mpe  /  mpe-r
+
+** For Slave **
+Diameter Port   3868
+Diameter Realm   camiant.com
+Diameter Identity   mpe-s
+
+
+12. BOD Service Configuration
+System Settings TAB:
+Policy Server IP Address     10.0.2.155(需要是MPE IP而不是MI IP)
+PCMM Application Manager Id   123(需与MI端配置的AppManger ID一致)
+
+Network Element(CMTS):       on CMTS server, start pcmm 3919
+
+Service Name     simonbod
+Duration (minutes)   0
+AM Identifier Override
+T3 Timer (minutes)   0
+Gate Info Interval   1 hour(s) 0 min(s)
+Classifier Type   Standard
+Downstream Profile
+Scheduling Type   PCMM Down Stream I04
+Traffic Priority   5
+Max Sustained Traffic Rate (bps)   DOWNBWMAX
+Max Traffic Burst   3044
+Min Reserved Traffic Rate (bps)   DOWNBW
+Assumed Min Packet Size (bytes)   1500
+Max Downstream Latency   0
+Downstream Peak Traffic Rate   0
+Required Attribute Mask   0
+Forbidden Attribute Mask   0
+Downstream Resequencing   0
+Classifier
+Protocol ID   0
+DSCP Tos Field   0
+DSCP Tos Mask   0
+Source IP   DESTIP
+Source Port   DESTPORT
+Destination IP   SUBIP
+Destination Port   0
+Priority   64
+==================================================
+                                        State:  Active
+Service Name   simonbod
+Duration (minutes)   0
+AM Identifier Override
+T3 Timer (minutes)   0
+Gate Info Interval   1 hour(s) 0 min(s)
+Classifier Type   Standard
+Upstream Profile
+Scheduling Type   PCMM Best Effort I04
+Traffic Priority   5
+Request Transmission Policy   0
+Max Sustained Traffic Rate (bps)   UPBWMAX
+Max Traffic Burst   3044
+Min Reserved Traffic Rate (bps)   UPBW
+Assumed Min Packet Size (bytes)   1500
+Maximum Concatenated Burst   0
+Required Attribute Mask   111
+Forbidden Attribute Mask   222
+Classifier
+Protocol ID   0
+DSCP Tos Field   0
+DSCP Tos Mask   0
+Source IP   0.0.0.0
+Source Port   0
+Destination IP   0.0.0.0
+Destination Port   0
+Priority   64
+Downstream Profile
+Scheduling Type   PCMM Down Stream I04
+Traffic Priority   5
+Max Sustained Traffic Rate (bps)   DOWNBWMAX
+Max Traffic Burst   3044
+Min Reserved Traffic Rate (bps)   DOWNBW
+Assumed Min Packet Size (bytes)   1500
+Max Downstream Latency   0
+Downstream Peak Traffic Rate   0
+Required Attribute Mask   0
+Forbidden Attribute Mask   0
+Downstream Resequencing   1
+
+Classifier
+Protocol ID   0
+DSCP Tos Field   0
+DSCP Tos Mask   0
+Source IP   0.0.0.0
+Source Port   0
+Destination IP   0.0.0.0
+Destination Port   SUBPORT
+Priority   64
+
+* Create New BOD session parameter:
+http://10.60.4.83:8080/bod/createSession.do?SERVICENAME=testbeService&SUBIP=10.60.24.26&SUBNAME=test&DESTIP=10.60.2.45&UPBW=1600&UPBWMAX=1600&DUR=10&DOWNBW=1600&DOWNBWMAX=1600&SUBPORT=0&DESTPORT=0&UPRAMASK=1&UPFAMASK=2&UPAARMASK=3&DOWNRAMASK=4&DOWNFAMASK=5&DOWNAARMASK=6&DOWNPTR=7&
+
+http://10.60.4.64/bod/addTrafficClassifier.do?SERVICENAME=snapservice2&SUBIP=10.60.2.26&SUBNAME=test&DESTIP=10.60.2.45&UPBW=1600&UPBWMAX=1600&DUR=10&DOWNBW=1600&DOWNBWMAX=1600&SUBPORT=0&DESTPORT=0&UPRAMASK=1&UPFAMASK=2&UPAARMASK=3&DOWNRAMASK=4&DOWNFAMASK=5&DOWNAARMASK=6&DOWNPTR=7&
+
+http://10.60.5.164/bod/createSession.do?SERVICENAME=snapservice2&SUBIP=10.0.8.125&SUBNAME=test&DESTIP=10.0.8.205&UPBW=1600&DUR=1&DOWNBW=1600&DOWNBWMAX=1600&SUBPORT=0&DESTPORT=0
+
+http://10.0.2.176/bod/createSession.do?SERVICENAME=service_downstream&SUBIP=10.0.8.127&SUBNAME=test&DESTIP=10.0.8.207&UPBW=1600&DUR=1&DOWNBW=1600&DOWNBWMAX=1600&SUBPORT=0&DESTPORT=0
+http://10.0.2.176/bod/createSession.do?SERVICENAME=turboService&SUBIP=10.0.8.127&SUBNAME=test&DESTIP=10.0.8.207&UPBW=1600&DUR=1&DOWNBW=1600&DOWNBWMAX=1600&SUBPORT=0&DESTPORT=0
+http://10.0.8.83/bod/createSession.do?SERVICENAME=turboService&GROUPNAME=UpstreamTest&SUBIP=10.0.8.45&SUBNAME=test&DESTIP=10.128.1.20&UPBW=1600&DUR=5&DOWNBW=1600
+
+http://10.60.2.149/bod/createSession.do?SERVICENAME=turboService&SUBIP=192.168.200.26&SUBNAME=test&DESTIP=192.168.200.45&UPBW=1600&UPBWMAX=1600&DUR=1&DOWNBW=1600&DOWNBWMAX=1600&SUBPORT=0&DESTPORT=0
+http://10.60.2.149/bod/createSession.do?SERVICENAME=simonbod&SUBIP=192.168.200.26&SUBNAME=test&DESTIP=192.168.200.45&UPBW=1600&UPBWMAX=1600&DUR=1&DOWNBW=1600&DOWNBWMAX=1600&SUBPORT=0&DESTPORT=0
+
+@@ New BoD HTTP interface
+  AAR:
+http://10.60.24.177/bod/createSession.do?SERVICENAME=sample1&SUBIP=10.0.8.9
+
+  STR:
+http://10.60.24.177/bod/deleteSession.do?SSID=sample1|10.0.8.11
+
+
+*. If you want to use addTrafficClassifier.do to add a classifier to the gates which are initialized by createSession.do, SSID is required in the initial request(createSession).
+
+If you don’t specify SSID , Caller Supplied ID will be null, and addTrafficClassifier.do appends classifier in the light of  Caller Supplied ID.
+
+SSID/ sessionId syntax:
+{servicename}|{subip}
+
+-- http://10.15.25.211/bod/createSession.do?SERVICENAME=36431&SUBIP=10.0.1.1&DESTIP=192.168.101.1&DISABLERETRYONERROR=true&SUBPORT=1&DESTPORT=1&SSID=36431|10.0.1.1
+
+13. MA server:
+war包： /opt/camiant/ma-distributor/webapps/
+Log:   /var/camiant/log/mas.log.0
+Config: /var/camiant/ma-distributor/mas_ws.properties
+
+
+14. 重新部署mis时，如果只是删除了build目录，需要先执行如下命令：
+  mkdir -p /workspace/PANAMA_dev/build/mis/classes/mi/mis/wsinternal
+
+15. buildbod.sh
+#!/bin/bash
+#set $PRODUCT_NAME='RANGOON'
+/workspace/stopmi.sh
+cd /opt/camiant/webapps/
+sudo rm -rf bod bod.war
+cd /workspace/RANGOON_dev/src/bod/java/
+# ant clean
+ant deploybodserver
+cd /workspace/RANGOON_dev/build/jars/
+cp -f /workspace/RANGOON_dev/build/jars/camiant-tools.jar /opt/camiant/platform/jars/
+cp -f /workspace/RANGOON_dev/build/jars/camiant-platform.jar /opt/camiant/platform/jars/
+echo "copy /opt/camiant/platform/jars/camiant-tools.jar done..."
+cp -f /workspace/RANGOON_dev/build/mis/miwork/WEB-INF/lib/msc.jar /opt/camiant/rc/jars/
+echo "copy /opt/camiant/rc/jars/msc.jar done..."
+cp -f /workspace/RANGOON_dev/build/mis/miwork/WEB-INF/lib/msc.jar /opt/camiant/webapps/mi/WEB-INF/lib/
+echo "copy /opt/camiant/webapps/mi/WEB-INF/lib/msc.jar done..."
+/workspace/startmi.sh
+
+16. Berkeley DB / BDB
+DB file: /var/camiant/db/home/*.dbd
+DB cmd:  /opt/camiant/platform/bin/db_dump -p *.dbd |grep -i xxx
+
+/opt/camiant/properties/QBUS-policy-server-4.0.EL5.prop
+databaseconfig.x.provider=COMCOL
+注释掉所有的comcol行, 令其使用BDB而不是comcol.
+
+17. Build OutOfMemory Error:
+@ export ANT_OPTS=$ANT_OPTS" -XX:MaxPermSize=128M"
+
+@ /workspace/RANGOON_dev/src/buildlib/java-include.mak
+all:
+#  (export ANT_OPTS="-mx512m"; export JAVA_OPTS="-XX:MaxPermGen=512m"; $(ANT) stageall)
+#  (export ANT_OPTS="-mx512m"; $(ANT) stageall)
+#  (export ANT_OPTS="-mx256m"; $(ANT) stageall javadoc)
+  (export ANT_OPTS="-mx1024m -XX:MaxPermSize=5120m"; $(ANT) stageall javadoc)
+
+@ bod.bl.pcmm.PCMMBodConnection.sendDecision();
+  /workspace/RANGOON_dev/src/bod/java/bod/interfaces/gui/pages/pcmmServiceBody.jsp
+
+18. Event / Alarm
+  FD: FD007308
+
+19. SVN
+  svn://10.60.3.169/svnrepos
+
+20. KeyStore:
+  /opt/camiant/tomcat/bin/run_tomcat.sh
+  echo "No keystore found -- creating"
+
+Run the following steps:
+1. Modify /opt/camiant/tomcat/conf/server.xml, change the secure connection port to 8443 to avoid conflict . In Rangoon, the port is set to 8443 for example.
+     <Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
+2. Modify file /opt/camiant/mi/mi_server.properties, change the “security.rc.secureport” attribute to the same as the port number above.
+security.rc.secureport=8443
+3. Remove 3 files: .keystore,  .cer,  cacerts.jks  from /opt/camiant/tomcat/conf.
+4. Restart the Tomcat service, the service should call /opt/camiant/tomcat/bin/run_tomcat.sh. This script will call “keytool” in JDK to  re-generate the 3 files above.
+5. In CMP -> Configuration -> Policy Server -> System tab, enable the “Secure Connection” option.
+
+Steps:
+1. Export CMP’s certificate to MPE
+1) cd /opt/camiant/tomcat/conf
+2) keytool  -export -alias cmp<IP> -storepass changeit -keystore .keystore -file .cer
+3) Copy .cer to MPE machine:  scp   .cer   root@<MPE IP>:/opt/camiant/tomcat/conf/external_cer
+4) keytool -import -v -trustcacerts -alias mpe<IP> -file external_cer -storepass changeit -keystore cacerts.jks    -- external_cer is copied from MPE machine.
+5) keytool -list -v -storepass changeit -keystore cacerts.jks     -- check all certificates existing on this CMP machine.
+
+2. Export MPE’s certificate to CMP
+1) cd /opt/camiant/tomcat/conf
+2) keytool  -export -alias mpe<IP> -storepass changeit -keystore .keystore -file .cer
+3) Copy .cer to CMP machine:  scp   .cer   root@<CMP IP>:/opt/camiant/tomcat/conf/external_cer
+4) keytool -import -v -trustcacerts -alias cmp<IP> -file external_cer -storepass changeit -keystore cacerts.jks     -- external_cer is copied from CMP machine.
+5) keytool -list -v -storepass changeit -keystore cacerts.jks    -- check all certificates existing on this MPE machine.
+
+3. Restart the Tomcat service on both CMP and MPE machines.
+4. In CMP -> Configuration -> Policy Server -> System tab, enable the “Secure Connection” option.
+
+
+21. Tomcat/lib:
+bsh-2.0b1.jar -> /opt/camiant/platform/jars/bsh-2.0b1.jar
+camiant-platform.jar -> /opt/camiant/platform/jars/camiant-platform.jar
+camiant-tools.jar -> /opt/camiant/platform/jars/camiant-tools.jar
+comcol.jar -> /opt/camiant/platform/jars/comcol.jar
+db.jar -> /opt/camiant/platform/jars/db.jar
+ireasoningsnmp.jar -> /opt/camiant/platform/jars/ireasoningsnmp.jar
+msc.jar -> /opt/camiant/rc/jars/msc.jar
+mysql-connector-java-bin.jar -> /opt/camiant/platform/jars/mysql-connector-java-bin.jar
+tools_1.6.jar -> /opt/camiant/rc/jars/tools_1.6.jar
+xstream-1.3.1.jar -> /opt/camiant/platform/jars/xstream-1.3.1.jar
+
+22. SNMP
+Do SNMP query from the CMTS equipment.
+And we will use them to provide the SNMP agent server so customers can query the stats data from the MPE server.
+
+23. dal.xml -> daltemp.xml -> dalplus.xml
+./common/java/camiant/db/gendalplus.bash
+
+24. Set up JAVA_HOME
+1) TPD
+Modify /etc/profile.d/TKLCqp.sh:
+elif [ -d "/usr/java/default" ]; then
+            export JAVA_HOME=/usr/java/default
+
+2) QBUS
+See /opt/camiant/rc/bin/set_env.sh:
+if [ -d "/usr/java/camiantsdk" ]; then
+            export JAVA_HOME=/usr/java/camiantsdk
+
+Run: ln -s  /usr/java/jdk1.6.0_31 /usr/java/camiantsdk
+
+
+25. KVM(Virt-Manager) & snapshot
+http://cnnan-twiki.cn.tekelec.com/twiki/bin/view/Main/VMsInAppTeam#Working%20with%20Snapshot
+
+s 10.60.27.244
+s 10.60.24.247 / .246 / .244
+fib5%yel
+virt-manager &  ->  show down
+cd /var/lib/libvirt/images
+Create / List / Recover image
+Restart VM
+
+python ~/kvmutil.py -c ~/hongkong-she.vm --- clone vm
+
+qemu-img info *.qcow2
+
+-- create vm --
+vim /root/kvm/fargo.dat
+cd ~/kvm
+./cloneKVM.py -c fargo.dat she-mpe2
+./cloneKVM.py -c fargo.dat she-mpe3
+
+** Create Snapshot ** 
+qemu-img snapshot -c she_cmp_ori she-cmp.qcow2
+qemu-img snapshot -c she_mpe_ori hongkong-she-mpe.qcow2
+qemu-img snapshot -c she_bod_ori she-bod.qcow2
+
+** List **
+qemu-img snapshot -l hongkong-she-cmp.qcow2
+qemu-img snapshot -l hongkong-she-mpe.qcow2
+qemu-img snapshot -l hongkong-she-bod.qcow2
+
+** Recover ** 
+qemu-img snapshot -a she_cmp_ori she-cmp.qcow2
+qemu-img snapshot -a tpbase she-mpe.qcow2
+qemu-img snapshot -a tpdbase she-bod.qcow2
+
+qemu-img snapshot -a tpdbase tshen-bod.qcow2
+
+--- Use this ---
+qemu-img snapshot -a tpdbase she-cmp.qcow2
+qemu-img snapshot -a tpdbase she-mpe.qcow2
+qemu-img snapshot -a tpdbase she-bod.qcow2
+
+qemu-img snapshot -a tpdbase she-mpe2.qcow2
+qemu-img snapshot -a tpdbase she-mpe3.qcow2
+
+qemu-img snapshot -a tpbase tshen-bod.qcow2
+
+26. WiFi
+SSID: TKLC_CNNAN_GUEST, TKLC_CNNAN_USER 
+Password: 4ourGue$t  
+
+27. Product Version:
+  TPD:  /workspace/PANAMA_dev/src/common/java/camiant/util/VersionUtils.java
+  QBUS: src/mi/version.properties
+        /opt/camiant/mi/version
+        /opt/camiant/rc/version
+        MySql: camiant::resourcecontroller; camiant::systemconfiguration
+        
+28. VNC
+  yum install vnc-server
+  vnclicense -add MN47H-N4DQS-7Y4S4-24783-GRT2A
+  vncserver
+  
+
+29. CableObjectFactory / DB / Cfg
+  初始值在msc/cfg/Database.xml, Pcmm.xml等中配置，修改后编译生成xxxxCfgContants.java, e.g. DBCfgConstants.java
+  cfg结果汇聚在/opt/camiant/msc/cfg/camiant.properties
+  CMP中这些数据在MySQL:camiant:resourcecontroller表中存储。  
+
+30. Alert:
+  http://" + hostName + ":8080/alert/alert
+  
+  
+===============================================================================
+◎ Project Name / Release page:
+  http://10.15.2.102/engineeringwiki/PolicyReleasesMain#preview
+  http://maweb02/engineeringwiki/PolicyReleasesMain
+  
+◎ Install New Bundle:
+  su - service
+  2,1,6 <b> || System installation -> Select default boot system -> Rescue ( serial console )
+  1,2, yes
+  <After Reboot>
+  111w, http://10.15.2.253/bundles/PANAMA_dev/MA-5.3.5.18.bdl
+  http://10.15.2.253/bundles/RANGOON_dev/MPE-6.3.0.0-282.bdl
+
+  3) start upgrade -> 1) MPE-6.4.1.0-74.bdl -> yes -> check "Show upgrade status" from time to time
+
+  ================ Bundles Location
+  http://10.15.2.21/bundles/PANAMA2_PATCH3_rc4/MPE-5.3.9.4.bdl
+  http://10.15.2.21/bundles/PANAMA2_PATCH3_rc4/Manager-5.3.9.4.bdl
+  http://drake/bundles/RANGOON_dev/Manager-6.3.0.0-296.bdl
+  http://10.15.2.21/bundles/PANAMA2_rc3/MPE-5.3.5.25.bdl
+  http://nantwiki/bundles/RANGOON_dev/
+
+  The “Camiant” user account must be used to “push” install upgrade bundles
+  Get bundle from Nanjing local server: http://10.60.2.169/bundles/
+
+  cd /tmp
+  wget http://10.60.2.169/bundles/RANGOON_dev/MPE-6.3.0.0-143.bdl
+
+  IP of Drake: 10.15.2.253
+
+◎ Config IP
+  5) Network maintenance -> 1) Network Configuration -> Configure IP -> Edit -> Application Interface (appIf1)
+  (add) 10.15.24.62/23
+  4) System Information -> 2) GATEWAY (10.15.24.1)
+
+◎ Enable SSH connection
+  5) Network maintenance -> 1) Network Configuration -> 4) Configure ssh
+
+◎ Restart Peer Machine
+  7) Redundancy maintenance -> 1) HA  Maintenance -> 3) Reboot remote node
+
+◎ Upgrade / Patch
+  Upgrade Log: cd /tmp/upgrade/log
+  Bundles' Info: cat /var/camiant/etc/bundles
+
+  Bundles' location on CLASTER & BLADE:
+  /data/camiant/bundles/MPE-6.3.0.0-143.bdl
+
+  Upgrade sequence should be: CMP, MA, MPE-R, MPE-S, BoD.
+
+◎ Rescue
+  Load /home/users/adeng/redhat_iso/IBM_xServer_3550-3.0.10-1.4port.iso
+  Automatically Install -> #reboot
+  Login / Password: root / camiant
+
+  Config IP: su service -> Network maintenance -> 172.16.85.10/24
+  4)System Infomation -> 2) GATEWAY -> 172.16.85.1
+
+  /home/users/adeng/work/camiant_rescue/64bit/camiant_rescue.iso
+    
+
+  service /sbin/iptables stop
+  # iptables -A OUTPUT -d 10.60.24.205 -j DROP
+  # iptables -D OUTPUT -d 10.60.24.205 -j DROP
+
+◎ Policy Data
+  RC side: /workspace/PANAMA_dev/src/msc/policyData/PolicyData.xml
+    # <entry id="OACT_1" mode="pcmm"> -- 修改某个policy选项是否可见
+
+  Policy Location:
+  /opt/camiant/rc/jars/policies*.jar
+
+◎ License Tracking
+  Tracking Report -> Policy Server Name: camiant:licensemsc
+  http://nantwiki/twiki/bin/view/Main/CableKnowledgeFromQA#License%20tracking%20report%20formula?
+
+  DB of Peak Sessions:
+  update licenseusage set maximumsessions='23' where uid='281475003510715';
+
+===============================================================================
+http://signal.tekelec.com/sites/CustSupp/CustomerPub/Shared%20Documents/910-6357-001_rev_a.pdf
+
+OSSI XML interface: It is divided into four areas: the Common Interface, the Topology Interface, the Subscriber
+Interface, and the Operational Measurements (OM) Interface.
+
+@ OssiXmlRequestResponse.xsd – defines the schema for request and response formats.
+@ OssiXmlCommon.xsd – defines the schema for global types and requests used in all interfaces.
+@ OssiXmlTopology.xsd – defines the schema for the topology interface.
+@ OssiXmlSubscriber.xsd – defines the schema for the subscriber interface.
+@ OssiXmlOm.xsd – defines the schema for the OM interface.
+
+http://nantwiki.cn.tekelec.com/twiki/pub/Main/Cable930/Stats_Flow.ppt
+
+##QueryNE.xml
+<?xml version="1.0" ?>
+<XmlInterfaceRequest>
+   <QueryNetworkElement>
+   </QueryNetworkElement>
+</XmlInterfaceRequest>
+
+##AddNE.xml
+<?xml version="1.0" ?>
+<XmlInterfaceRequest>
+   <QueryNetworkElement>
+   </QueryNetworkElement>
+</XmlInterfaceRequest>
+
+##QueryAccount.xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<XmlInterfaceRequest>
+    <QueryAccount>
+    </QueryAccount>
+</XmlInterfaceRequest>
+
+CMP Export temp files:
+/var/camiant/tmpexport/*.xml, *.zip
+
+===============================================================================
+◎ AccuRev: /mnt/chameleon/tools/accurev/current/bin/accurev
+  Config File: /data/accurev/current/bin/acclient.cnf
+  
+  WEB UI: http://usmar-accurev01:8080/accurev/
+  
+  #Server: hydra.corporate.camiant.local:5050 (USA)
+  #SERVERS = hydra.cn.tekelec.com:5050 (CN)
+  SERVERS = files.cn.tekelec.com:5050
+  SERVERS = usmar-accurev01.ma.tekelec.com:5050
+
+  scp -rp root@192.168.200.249:/workspace/PANAMA_dev/build/jars/mas.war /opt/camiant/ma-distributor/webapps/
+
+  Accurev Command:
+  accurev login <user name> <password>
+  accurev merge /./src/pkglists/superset.pkglist
+  accurev update
+  accurev promote -c "fix PR 207581" /./src/msc/java/msc/rc/pcmm/model/PcmmMgpiInfo.xml
+  accurev hist -s FARGO -k promote -u she -a
+  
+  acgui &
+  accurev stat -k / -m / -x / -o / -o -B (show deep overlap)
+  accurev pop -R .
+  accurev show wspaces
+  accurev rmws CORE_QP_she
+  
+  accurev chws -w YORK_dev2_x64_she -m simon-tpd-01 (change the hostname/machine name)
+  accurev chws -w DOVER_dev_she HK_dev_she  (old name / new name)
+
+  accurev chws -w DOVER_dev_she -m njlnx38.nanjing.camiant.local -l /workspace/DOVER_dev
+  accurev chws -w RANGOON_ori_she -m njlnx38.nanjing.camiant.local -l /workspace/RANGOON_GA
+    
+  accurev chws -w DOVER_dev_she -m hongkong-she -l /root/DOVER_dev_she
+
+  accurev chws -w DOVER_spr2_she -m dover-she -l /root/DOVER_dev_she
+  accurev chws -w DOVER_spr_she -m SIMONHE-7-7-dev -l /root/DOVER_spr_she
+
+  accurev chws -w DOVER_dev2 -m hongkong-she -l /root/DOVER_dev_she
+  accurev chws -w DOVER_dev -m hongkong-she -l /root/HK_dev_she
+
+  accurev chws -w HK_dev_she -m njlnx38.nanjing.camiant.local -b HONGKONG_dev_merge  FG_dev_she
+  accurev chws -w FG_dev_she -l /media/workspace/FG_dev_she
+  accurev mkws -w HK_build_test -b HONGKONG_dev_merge -l /workspace/HK_build_test
+  
+  accurev mkws -w DOVER_dev2 -b DOVER_dev -l /workspace/DOVER_dev_she2
+  accurev mkws -w RANGOON_dev_64 -b RANGOON_dev -l /workspace/RANGOON_dev_64
+  accurev mkws -w RANGOON_comcol_she -b RANGOON_dev_mysql2comcol -l ~/workspace/RANGOON_comcol_she
+
+  accurev mkws -w DOVER_dev -b DOVER_dev -l /workspace/DOVER_dev_she2
+  accurev mkws -w DOVER_spr -b DOVER_spr_cmp_dev [ -l ~/DOVER_spr_she ]
+  accurev mkws -w HK_cable_tpd -b HONGKONG_dev -l ~/HK_cable_tpd_she
+
+  accurev mkws -w RANGOON_lsid_dev -b RANGOON_GA_64bit_LSID_dev -l /workspace/RANGOON_lsid_dev
+
+  accurev mksnap -s hk_snapshot1_she -b  HONGKONG_nextBoD_dev -t 178778
+  accurev show  -s hk_snapshot1_she streams
+
+  
+
+  UserName / Password:   she / she
+
+◎ Drake: 10.15.2.253
+  Printer: 10.60.3.254
+
+◎ Twiki New Accounts:
+  Login root of 10.60.2.12, enter:
+  htpasswd /opt/twiki/data/.htpasswd username
+
+◎ Bugzilla: http://drake/bugzilla/
+  http://192.168.200.169/twiki/bin/view/Main/NanjingQATeam#Conventions
+
+◎ Docserver:
+  Username / Password: she / Good4Now
+
+◎ Code Collaborator
+  Server URL: http://nsdsolaris2.nc.tekelec.com:8080
+  Username: she
+  Password: H*0/6+4
+
+  Code Collaborator Client -> Add -> Local Source Code: /media/workspace/FARGO_dev
+  SCM: AccuRev
+  AccuRev Depot: src
+  AccuRev Executable: /media/Tools/accurev/current/bin/accurev
+  SCM: AccuRev
+  "Validate..."
+  
+◎ VM Ware:
+  VMWare vSphere Client:
+  IP: 10.15.20.20 ~ 22
+  10.60.24.83
+  root / fib*
+
+  Marlborough VMWare Template
+  \\10.15.2.46\vmstorage\tpd-dev-build-template\ova\tpd-dev-base-template3-2011-03-16.ova
+  \\mafiles01\vmstorage\tpd-dev-build-template\ova\build-template3-2011-03-29.ova
+
+  VMPlayer: /var/lib/vmware/Virtual Machines/XPPro/Virtual Machine.vmx
+
+  http://localhost:8222/
+  run /usr/bin/vmware-config.pl
+  http://localhost:8222/ui
+  使用/opt/firefox_3.5.9/firef的浏览器来安装VMWare的快捷方式
+
+  VMWare的快捷方式 Command:
+  /home/users/she/.mozilla/firefox/br2t2c30.default/extensions/VMwareVMRC@vmware.com/plugins/vmware-vmrc -h "localhost:8333" -M "16"
+  Username/Passwd:  root / fib*
+  登录WinXP时，使用<user name>/<user passwd>/CORPORATE Domain or administrator/<root passwd>/(this computer) Domain
+
+◎ Seagull:
+  DL120-10 (the bottom one) 	  	10.60.27.190
+  cd rangoon/script
+  ./runseagull.py  -f ../environment/localhost.cfg
+
+◎ WebService
+ResourceController:        http://10.60.44.55:8080/rc/camiant?WSDL
+PlatformService:           http://10.60.44.55:8080/platformws/PlatformWS
+BoDSessionMgtService:      http://10.60.44.55:8080/bod/sessionmgt?WSDL
+BodSessionMonitorService:  http://10.60.44.55:8080/bod/sessionmnt?WSDL
+
+/workspace/RANGOON_dev/src/bod/java/bod/interfaces/soap/jaxrpc-ri.xml
+/workspace/RANGOON_dev/src/bod/java/bod/interfaces/soap/BodSOAPIF.java
+/workspace/RANGOON_dev/src/bod/java/bod/interfaces/soap/BodSessionMonitorService.wsdl
+
+/workspace/PANAMA_dev/src/mi/java/mi/mia/rc/jaxrpc-ri.xml
+/workspace/PANAMA_dev/src/mi/java/mi/mia/rc/ResourceController.java
+/workspace/PANAMA_dev/src/mi/java/mi/mia/rc/ResourceControllerIF.java
+
+/workspace/PANAMA_dev/src/platformws/java/platformws/all/jaxrpc-ri.xml
+/workspace/PANAMA_dev/src/platformws/java/platformws/all/ResourceController.wsdl
+/workspace/PANAMA_dev/src/platformws/java/platformws/all/napa/platformws.wsdl
+/workspace/PANAMA_dev/src/platformws/java/platformws/all/napama/Mas.wsdl
+/workspace/PANAMA_dev/src/platformws/java/platformws/all/pisa/ResourceController.wsdl
+
+
+◎ Product Name
+YORK - 7.5 – Next wireless release (customers/content/dates TBD) – dev stream currently under UTILA_dev so it can pick up 7.0 features
+http://10.60.2.169/twiki/bin/view/Main/YorkQA
+
+RANGOON - 6.3
+QUITO - 6.4.1
+VIENNA  - 6.2
+VIENNA2 - 6.2.1 – Maintenance release for VZW – dev stream will be under VIENNA_dev
+XIAN - 6.5 – Next release for VZW on new hardware/TPD – dev stream will be under CORE_integration
+UTILA - 7.0 – Release for TIM Brazil – dev stream will be under CORE_integration
+PANAMA2 - 5.3/5.5
+
+◎ TekQuest
+Loing: she /
+TekQuest: Public Queries -> Queries -> POLICY
+Schema Repository: CQProd
+Database: NSDPR: NSD PR database
+
+◎ NAC
+/workspace/QUITO_dev_merges/build/msc/src/java/msc/cfg/NACCfgConstants.java
+/workspace/QUITO_dev_merges/src/msc/cfg/Nac.xml
+
+◎ Feature config
+/workspace/YORK_dev/src/mi/java/mi/mis/feature/MiFeatures.xml
+修改某个menuitem/feature 所在的产品mode, 以及是否在debug模式，然后重启tomcat
+
+◎ Policy Config
+RC /workspace/RANGOON_dev/src/msc/policyData/PolicyData.xml
+  msc.jar -- msc/policy/data/PolicyData.xml
+
+◎ Marlbourough
+\\manapp01\winshares\Public\MOC\Communicator\
+  1. Install root CA cert
+  2. Install communicator
+  3. Install patch
+\\manapp01\winshares\Public\tekelec_vpn\installXP-64
+
+@ Tekelec VPN Setup:
+   a. Refer to
+http://www.ed.ac.uk/schools-departments/information-services/services/computing/desktop-personal/vpn/vpn-cisco-client/vpn-cisco-ubuntu...  
+      Install "vpnc" (Cisco-compatible VPN client) and "network-manager-vpnc"
+(network management framework (VPNC plugin) in Synaptic Package Manager.
+      Or sudo apt-get install vpnc; sudo apt-get install network-manager-vpnc
+
+   b. Network Connections -> Edit Connections -> VPN tab -> Add VPN connection
+   c. Choose a VPN Connection Type, choose "Cisco Compatible VPN(vpnc) ->
+Create...
+   d. GateWay: 198.89.32.3(IP of Tekelec North Carolina UDP)
+      Group Name:     TKNC-2FP
+      User Password:  <Always Ask>
+      Group Password: TKNC-2FP@T3kelec <Saved>
+      Or goto http://www.unix-ag.uni-kl.de/~massar/bin/cisco-decode to decode
+the "enc_GroupPwd".
+      
+      All fields are stored in the "/Cisco Systems/VPN Client/Profiles/Tekelec
+North Carolina UDP.pcf"
+      
+   e. User Name: <VPN User Name>
+   f. Encryption method: Secure(default)
+   g. NAT traversal: Cisco UDP or NAT-T(default)
+   h. Apply ->
+      sudo restart network-manager
+      sudo /etc/init.d/networking restart
+      Or restart OS.
+ 
+   i. Click Network Connections -> VPN Connections -> choose the VPN you set
+up -> Input user password.
+   
+   j. If get error "The VPN connection 'xxxxx' failed because there were no
+valid VPN secrets. "
+      sudo restart network-manager; sudo /etc/init.d/networking restart
+      Or restart OS.
+
+
+@ PCRF configuration
+HostName:             cClass-2
+OAM Real IP Address:  10.60.28.28/24
+OAM Default Route:    10.60.28.1
+NTP Server:           10.60.27.191
+DNS Server A:         10.60.2.15
+DNS Server B:
+DNS Search:
+Device:               bond0
+OAM VLAN Id:          280
+SIG A VLAN Id:        270
+SIG B VLAN Id:        290
+
+@ Unlock Komodo
+rm /home/users/she/.komodoedit/7.1/XRE/.parentlock
+
+=========================================================================
+缩略语
+BoD       Bandwidth On Demand
+BoD AM    Bandwidth On Demand Application Manager
+ECN       Engineering Change (EC) Notice
+AF        Application Function
+PCMM      PacketCable Multimedia
+CMTS
+GGSN      Gateway GPRS Support Node (GPRS gateway)
+MI        Management Interface
+MPE       Multimedia Policy Engine
+PCRF      Policy and Charging Rules Function
+PCEF      Policy and Charging Enforcement Function (e.g. GGSN, PDSN)
+UE        User Equipment
+AF        Application Function
+RDR       Raw Data Record
+OSSI
+=========================================================================
+◎ Tips:
+
+1. SSH timeout:
+  If you are disturbed by ssh timeout while testing, you can do following to keep ssh sessions:
+  In your /etc/ssh/ssh_config, add:
+  ServerAliveInterval 60
+
+  ◎ ssh不用输入密码：
+  1. ssh-keygen -t rsa
+  2. chmod 755 ~/.ssh/id_rsa.pub
+  3. scp  ~/.ssh/id_rsa.pub  root@10.60.24.180:/root/.ssh/authorized_keys
+
+2. Service
+  service tomcat status
+  sudo service ha restart  (on MA server, no tomcat exists, so need restart HA service; need "Terminal Server" if HA service stopped.
+
+  sudo service upgradedirector status
+
+  ** create service **
+  sudo ln -s /opt/camiant/dc/init.d/dc  /etc/init.d/dc
+  sudo ln -s /opt/camiant/platform/init.d/platform /etc/init.d/platform
+  sudo ln -s /opt/camiant/dc/init.d/tomcat /opt/camiant/tomcat/init.d/tomcat
+  sudo ln -s /opt/camiant/dc/init.d/rsyslog /opt/camiant/platform/init.d/rsyslog
+
+
+3. Transaction Timeout:   10 seconds
+
+/./src/msc/java/msc/rc/MultiplexerTransaction.java
+public synchronized void handleResponseTimeout() {
+  shouldReplyToRequestor = false;
+  error = true;
+  taskDef = null;
+  initialRequest.reject();
+}
+
+=========================================================================
+◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎ ◎
+http://192.168.200.169/twiki/bin/view/Main/NanjingJavaTeam
+  Terminal : 10.0.2.104
+  ip address   port   installed software   used by
+  10.0.2.222   2012   Alta MPE 4.0.1.45   Homer
+  10.0.2.221   2011   Alta MPE 4.0.1.45   Homer
+  10.0.2.220   2010   Alta MA 4.0.1.42   Homer
+  10.0.2.219   2009   OZ_MR1_rc3 MI 6.0.1.0-17   Rain
+  10.0.2.218   2008   Alta MA   Aaron
+  10.0.2.217   2007   Alta Manager 4.0.1.44   Homer
+
+=======================================
+mihe8MGgc1n
+&35!YM0l
