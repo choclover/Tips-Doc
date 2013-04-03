@@ -815,7 +815,7 @@ fi
     端口号查看：/opt/camiant/dc/bin/run_dc.sh
     Connection Properties: Host/Port: localhost / 8002.dfdf
     Address: 
-      
+
   ＊ debug RcMgr
   Project:       RANGOON_dev_msc
   Main class:    msc.rcmgr.CfgCLI

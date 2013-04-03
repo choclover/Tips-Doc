@@ -1,1 +1,460 @@
-/home/users/she/CI.txt
+
+◎ ssh不用输入密码：
+1. ssh-keygen -t rsa
+2. chmod 755 ~/.ssh/id_rsa.pub
+3. scp  ~/.ssh/id_rsa.pub root@10.60.24.189:~/.ssh/authorized_keys
+
+&& Agent admitted failure to sign using the key &&
+解決方式 使用 ssh-add 指令將私钥加进来 （根据个人的密匙命名不同更改 id_rsa）
+# ssh-add   ~/.ssh/id_rsa  
+
+scp  ~/.ssh/id_rsa.pub root@10.60.24.191:~/.ssh/authorized_keys
+scp  ~/.ssh/id_rsa.pub root@10.60.24.189:~/.ssh/authorized_keys
+scp  ~/.ssh/id_rsa.pub root@10.60.24.205:~/.ssh/authorized_keys
+scp  ~/.ssh/id_rsa.pub she@10.60.5.164:~/.ssh/authorized_keys
+
+
+sudo chown she:Domain\ Users abroad_bak/
+
+sudo fdisk -l
+df
+mount -l
+sudo mount  /dev/sdb1 /mnt/newHD/
+
+◎ Screen Command:
+screen    : 建立screen
+screen -ls  screen 列表
+screen -d : Detach the screen
+screen -r <session id>: Re-attach the screen
+screen -r ; exit;
+
+◎ 查看Linux/RedHat 版本号：
+	cat /proc/version
+	cat /etc/redhat-release
+	cat /etc/issue
+  rpm -q redhat-release
+
+# lsb_release -a
+LSB Version: :core-3.1-ia32:core-3.1-noarch:graphics-3.1-ia32:graphics-3.1-noarch
+Distributor ID: CentOS
+Description: CentOS release 5.4 (Final)
+Release: 5.4
+Codename: Final
+
+这个命令适用于所有的linux，包括Redhat、SuSE、Debian等发行版。
+
+root@MyMail ~ # uname
+Linux
+root@MyMail ~ # uname -r
+2.6.18-164.el5
+
+以下二种方法适用于RedHat,CentOS
+
+root@MyMail ~ # cat /etc/redhat-release
+CentOS release 5.4 (Final)
+
+登录到linux执行rpm -q redhat-release
+
+#rpm -q redhat-release 
+#rpm -q centos-release
+centos-release-5-4.el5.centos.1	
+
+◎ RPM 命令	
+	rpm -ql xxx.rpm -- 查看已安装的rpm中有哪些文件和安装位置。
+	rpm -qa |grep tomcat
+	rpm -q vnc-sever  -- 查询vnc-server是否安装了
+	rpm -qpl *.rpm |grep addusers  -- 列出rpm文件中文件列表
+	rpm -qa | grep -i '^QBUS|^comcol' | sort
+	rpm -qf  /usr/bin/rpmbuild -- 查看某命令安装在哪个rpm包中
+  rpm -e *.rpm  :erase (uninstall) package
+	rpm -ql `rpm -qa  |grep -i camiant`
+	rpm -Uvh --nodeps xxx.rpm
+
+◎ 增加gedit的字符encoding格式：
+	yum install -y  gconf-editor
+	Alt-F2 运行 gconf-editor
+	展开左边的树节点，找到 /apps/gedit-2/preferences/encodings 节点并单击它。
+	双击右边的 auto_detected 键，打开“编辑键”对话框。
+	单击列表右边的“添加”按钮，输入“GB18030”，单击确定按钮。
+	列表的最底部新增加了一个“GB18030”。单击选中它，并单击右边的 “向上” 按钮直到 “GB18030” 位于列表的顶部为止。
+	单击确定按钮，关闭配置编辑器。
+
+◎ 用户执行sudo命令出错或者总是密码验证不通过：
+	用root帐户登录，执行:  visudo，增加如下行：
+	## Allow root to run any commands anywhere
+	root    	    ALL=(ALL)       ALL
+	<user name>     ALL=(ALL)       NOPASSWD: ALL
+
+	或者直接编辑/etc/sudoers进行修改。
+
+	超级用户root的terminal提示符是# 而普通用户则是$.
+	
+◎ 修改MAC地址
+  修改/etc/sysconfig/network-scripts/ifcfg-eth0
+	service network restart
+	
+BASH
+	export PS1='\n\w\n> ', make the Linux prompt to show like this:
+	  /usr/bin
+    >
+  export PS1='\n\u:\w\n\$ '
+    she:/workspace
+
+◎ JD-GUI / JD-Eclipse
+  http://java.decompiler.free.fr/jd-eclipse/update
+
+◎ GIT / Repo
+
+	git clone https://android.googlesource.com/platform/frameworks/base.git
+
+	** NO USE **
+	git clone git://android.git.kernel.org/ + project path.
+	git clone https://android.git.kernel.org/platform/frameworks/base.git
+
+◎ keytool
+	1. keytool -list -v -storepass changeit -keystore ./.keystore
+	   keytool -list -v -storepass changeit -keystore cacerts.jks
+	2. keytool -import -v -trustcacerts -alias tomcat2 -file external_cer -storepass changeit -keystore cacerts.jks <-noprompt>
+	3. keytool -export -alias tomcat -storepass changeit -keystore .keystore -file .cer
+	
+◎ CentOS中添加 EPEL Yum源
+  rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+
+◎ CPAN安装模块
+  perl -MCPAN -e shell
+  cpan> install DBI
+	cpan> install Data::UUID
+	
+  > yum install perl-DBD-MySQL.x86_64
+	> ln -s  /var/camiant/db/mysql/lib/mysql.sock /tmp/mysql.sock
+	
+@ install MP3 decoder
+yum install rhythmbox gstreamer-plugins-ugly gstreamer-plugins-bad gstreamer-ffmpeg
+
+@ Obfuscator
+* proguard
+
+java -jar proguard.jar -verbose -injars Test01.jar -outjars TEst01_out.jar -libraryjars $JAVA_HOME/jre/lib/rt.jar -dontshrink -dontoptimize
+
+java -jar proguard.jar -verbose @applications.pro
+java -jar proguard.jar -verbose @applications.pro > out.txt
+
+◎ Linux常用命令
+ls -alrt    -- 显示全部长格式文件名，按照时间升序排列
+ls | sed "s:^:`pwd`/:"  -- # 就是在每行记录的开头加上当前路径
+lspath -- find $PWD | grep ./msc/java/msc/rc/pcmm/MgpiManager.java -- # 在文件的开头加上当前路径
+
+ll |wc -l   -- 显示条目数目
+
+du -sh accurev -- 显示目录大小
+
+tail -n 10 -f rc.log.0
+
+bzip2 -d  gcc-4.1.0.tar.bz2
+tar -xvf gcc-4.1.0.tar
+tar -cvf xxx.tar dirName
+
+sudo tcpdump |grep 10.60.5.164
+
+uname -n
+cat /proc/sys/kernel/hostname
+
+修改/etc/sysconfig/network   修改这个文件，系统才有效
+
+hostname simon-mpe-1-1
+hostname -F /etc/hosts
+#hostname     //查看机器名
+#hostname -i  //查看本机器名对应的ip地址
+
+vim /etc/hosts -- 最后一行加上hostname
+
+vim /etc/sysconfig/network
+NETWORKING=yes
+NETWORKING_IPV6=yes
+HOSTNAME=QYANG-7-7-dev
+IPV6INIT=yes
+NISDOMAIN=corporate
+
+reboot
+
+find . -name '*properties*'   -- 引号是必须的
+find -name LocaleStrings.properties
+find -name ResourceControllerProxy*.class |xargs ls -lart
+  ＝ llart `find -name ResourceControllerProxy*.class'
+find -name camiant-tools.jar |xargs md5sum
+find -name camiant-tools.jar |xargs sha1sum
+find -name '*.java' |grep mgpi -i
+find -name "*.java" |-maxdepth 1
+find . -name *.* | grep -v .svn
+
+/etc/sysconfig/network-scripts/ifcfg-eth0
+/etc/init.d/network restart
+
+ssh 10.0.7.151 -l root / policies
+
+SSH FanQiang:
+ssh -D 127.0.0.1:7070 root@10.15.29.83
+
+jar -xvf camiant-tools.jar camiant/ncops/pcmm/PcmmConstants.class
+
+grep -lr <string-to-search>  ./
+grep -i '<class name>' *.jar
+grep rc.war *.rpm
+grep -r SUCCESS `find -name *.sh`
+grep -i total `find -name \*.xml`
+
+gunzip  php_manual_en.html.gz
+
+sudo service network restart
+sudo netstat -anp |grep 3918
+用netstat -ap可以看出端口依附在什么进程上面， sudo kill PID
+
+service httpd status
+
+scp root@10.60.2.69:/opt/rpms/RANGOON_dev/*
+scp -rp root@192.168.200.249:/workspace/PANAMA_dev/build/jars/mas.war /opt/camiant/ma-distributor/webapps/
+scp hem1.txt she@192.168.200.249:/media/
+scp <sour> <dest>
+
+time read  / Ctrl+D
+
+chkconfig --list
+
+sudo yum list |grep -i perl
+perl -e 'print join "\n",@INC'
+
+cd /etc/init.d/
+mysql
+
+more /var/TKLC/hardware/hw_id
+shutdown -h now / -r +10
+
+mount:
+** SERVER **
+vim /etc/exports ->  sudo exportfs -rv ->
+/home/ *(rw)
+/data/ *(rw)
+/workspace *(rw)
+
+showmout
+ -a ：这个参数是一般在NFS SERVER上使用，是用来显示已经mount上本机nfs目录的client机器。
+ -e ：显示指定的NFS SERVER上export出来的目录。
+
+** CLIENT **
+mkdir YORK_dev
+mount -t nfs -o rw 10.60.2.149:/workspace/YORK_dev/ ./YORK_dev
+
+ps -aux查看所有进程
+参数w表示加宽显示的命令行，参数w可以写多次，通常最多写3次，表示加宽3次，这足以显示很长的命令行了。例如：ps -auxwww
+
+top：显示系统内存、cpu使用情况，j垠Ae管hIJNC&并可自动刷新进程列表
+vmstat：显示当前的内存使用情况
+
+netstat：显示网络状况，使用参数p可以查看对应的进程号及程序名，
+通常使用参数a（显示所有连接情况）和n（不反查域名和服务名），例如：netstat -anp。
+查看服务器侦听情况，使用：netstat -an | grep LISTEN
+查看服务器已建立的连接，使用：netstat -an | grep ESTABLISHED
+
+启动服务： /etc/rc.d/init.d/
+
+◎ LVM 操作--
+pvscan / pvdisplay : 物理卷
+lvscan / lvdisplay : 逻辑卷
+
+  在增大或缩小LVM时要注意顺序，这样可以避免在对逻辑卷进行修复。增大时先增大LV，后增大文件系统，缩小时先缩小文件系统，后缩小LV大小。
+1. 增加Logic Volume
+lvextend -L 10G /dev/vgroot/plat_usr
+resize2fs /dev/vgroot/plat_usr  10G
+
+--
+resize2fs /dev/vgroot/plat_usr  10G
+lvreduce -L 10G /dev/vgroot/plat_usr
+
+lvextend -L 10G /dev/mapper/vgroot-plat_root
+resize2fs /dev/mapper/vgroot-plat_root 10G
+
+system-config-lvm
+
+2. 减小Logic Volume
+?? resize2fs /dev/vgroot/plat_usr  10G
+lvreduce -L 10G /dev/vgroot/plat_usr
+
+◎ vim 操作--
+:%s/build/make kit/g  -- 全文替换
+:s/RANGOON/$PRODUCT_NAME\\/  -- 本行替换
+& 重复替换
+
+全部删除：按esc后，然后dG
+全部复制：按esc后，然后ggyG
+全选高亮显示：按esc后，然后ggvG或者ggVG
+
+:w !sudo tee %  -- 保存只读文件
+
+u: 撤销上次操作
+J: 将下面一行拼接到当前行最后
+删除全部内容：ggdG / :%d
+复制全部内容：ggyG / :%y
+进入编辑状态：i
+退出编辑状态：Esc
+到第一行：gg
+到最後一行：G
+到某一行：xxG
+到行首：0
+到行末：$
+复制：yy
+贴上：p / P
+复原：u
+删整行：dd
+删除全部内容：dG
+显示行数：:set nu
+不显示行数：:set nonu
+搜寻：/
+忽略大小写：\c
+再次搜寻：n
+储存：:w
+离开：:q
+储存兼离开：:wq 或 shift+zz
+强制离开（不储存）：:q!
+
+◎ Eclipse:
+  安装JDEclipse插件
+
+  移除行尾空格： Replace regular expression "[\t ]+$" with ""
+
+◎ JAXB Mapping of XML Schema Built-in Data Types
+XML Schema Type       Java Data Type
+
+xsd:string            java.lang.String
+** xsd:integer           java.math.BigInteger **
+xsd:int               int
+xsd.long              long
+xsd:short             short
+xsd:decimal           java.math.BigDecimal
+xsd:float             float
+xsd:double            double
+xsd:boolean           boolean
+xsd:byte              byte
+xsd:QName             javax.xml.namespace.QName
+xsd:dateTime          javax.xml.datatype.XMLGregorianCalendar
+xsd:base64Binary      byte[]
+xsd:hexBinary         byte[]
+xsd:unsignedInt       long
+xsd:unsignedShort     int
+xsd:unsignedByte      short
+xsd:time              javax.xml.datatype.XMLGregorianCalendar
+xsd:date              javax.xml.datatype.XMLGregorianCalendar
+xsd:g                 javax.xml.datatype.XMLGregorianCalendar
+xsd:anySimpleType     java.lang.Object
+xsd:anySimpleType     java.lang.String
+xsd:duration          javax.xml.datatype.Duration
+xsd:NOTATION          javax.xml.namespace.QName
+
+xjc -d test -target 2.0 /workspace/PANAMA_dev/build/mis/src/java/mi/mis/export/export.xsd
+
+◎ MySQL
+/usr/bin/mysqladmin -u root -proot
+mysql -uroot -proot camiant / camiantBoD <./src/java/mi/mis/create_db.sql --default-character-set=utf8
+
+mysql -uroot -proot         <./src/java/mi/mis/addusers.sql --default-character-set=utf8
+
+create or replace view mytest_view as
+  select * from application_types
+  union
+  select * from application_types_sys
+
+mysqldump -uroot -proot camiantBoD > ~/BoD_db.txt
+mysqldump -uroot -proot camiant learnedsubnet > SqlLearnedSubnet.db
+
+mysqlimport -uidbuser -pidbpwd camiantBoD ~/BoD_db.txt
+
+Add Log
+#sudo vim /etc/my.cnf
+log=/var/log/mysql_query.log
+log-error=/var/log/mysqld.log
+
+/var/log/mysqld.log
+
+＊默认的数据库文件存放位置： /var/lib/mysql
+
+1. mysqladmin -u root password root
+2. SET PASSWORD FOR root=PASSWORD(’new password’);（对登录数据库后这种方式）
+3. UPDATE user SET password=PASSWORD(”new password”) WHERE user=’root’; 　（对登录数据库后这种方式）
+
+
+use camiant;
+show tables;
+show character set;
+source /workspace/RANGOON_dev/src/mi/prebuilt/image/opt/camiant/mi/bin/migrate_to_5_6_70.sql
+
+select * from learnedsubnet order by xxx;
+select * from learnedserviceclass;
+select * from account limit 20;
+select count(uid) from services;
+
+select A.mobile_no, A.imsi, A.installedAppsListVer from managed_device AS A  LEFT JOIN registered_users On A.manager_id=registered_users._id where registered_users.imsi='310260000000000' && A.isActive='1';
+
+select * from services into outfile '1.txt';
+sudo vim /data/mysql/lib/camiantBoD/1.txt
+
+desc <table name>;
+
+desc session;
+desc sessionauditrecord;
+
+update services SET service = REPLACE(service, "tureboService", "turbo-2");
+-- 先将数据写入一张临时表，然后读入需要操作的数据列，然后将值写入原来的表中。
+update systemconfiguration set mode=(select mode from
+((select * from systemconfiguration) as x));
+
+DELETE from account WHERE accountid LIKE 'Account_perf%';
+alter table account add column subscribergroupname varchar(255) default NULL AFTER networkelementname;
+alter table resourcecontroller add column  securityport integer AFTER securityenabled;
+
+/*创建数据库*/
+create database dbname
+/*删除数据库*/
+drop database dbname
+/*修改密码，自定义*/
+dbpw oldkey	newkey
+/*查询显示所有数据库*/
+show databases
+/*显示数据库中的所有表*/
+show tables
+/*显示表名为tablename的表结构*/
+desc tablename
+/*创建表*/
+create table tablename
+/*删除表*/
+drop table tablename
+/*插入记录*/
+insert into tablename values(,,)
+/*对指定列插入记录*/
+insert into tablename(,,) values(,,)
+/*更新记录*/
+update tabkename set column=.. where ...
+/*删除记录*/
+delete tablename where ...
+/*查询记录*/
+select * from tablename where ...
+/*查询指定列记录*/
+select col1,col2... from tablename where ...
+
+SQL batch operation:
+
+  Connection connection = new getConnection();
+  Statement statemenet = connection.createStatement();
+
+  for (Employee employee: employees) {
+    String query = "insert into employee (name, city) values('"
+                 + employee.getName() + "','" + employee.getCity + "')";
+    statemenet.addBatch(query);
+  }
+  statemenet.executeBatch();
+  statemenet.close();
+  connection.close();
+
+==================================
+
+◎
+
+◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎
