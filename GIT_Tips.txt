@@ -89,6 +89,15 @@ Global setup:
 ¡ò Create public key for Github/Bitbucket
   $ ll ~/.ssh/id_rsa.pub
   $ ssh-keygen -t rsa -C "your_email@youremail.com"
-  $ Add public key in ~/.ssh/id_rsa.pub to Account -> SSH Public Keys
-
+  $ ssh-add
+  # Enter passphrase for /home/you/.ssh/id_rsa: [tippy tap]
+  # Identity added: /home/you/.ssh/id_rsa (/home/you/.ssh/id_rsa)
+  
+  $ Copy content of the public key in ~/.ssh/id_rsa.pub to Account -> SSH Public Keys in GitHub -> Save
+  $ ssh -T git@github.com
+	Verify public key was added to GitHub successfully.
+  
+  Error: Agent admitted failure to sign
+	For most users, simply running ssh-add to load your keys into the SSH agent will fix this issue.
+	
   ¡ò¡ò¡ò¡ò¡ò¡ò¡ò¡ò¡ò¡ò
