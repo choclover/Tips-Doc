@@ -6,7 +6,7 @@ Global setup:
 
   cd /e/Coding/Perl/PriceNotify
   git init
-  git add Price_Notify.pl
+  git add Price_Notify.pl / git add -A
   git commit -m 'first commit' *  /  git commit -a -m 'first commit' 
   git status
 

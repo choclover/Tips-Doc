@@ -1,4 +1,10 @@
 
+
+
+◎ Rsync
+rsync -v /home/users/she/Hem_Doc/*.txt /media/Doc/
+
+
 ◎ ssh不用输入密码：
 1. ssh-keygen -t rsa
 2. chmod 755 ~/.ssh/id_rsa.pub
@@ -6,7 +12,7 @@
 
 && Agent admitted failure to sign using the key &&
 解決方式 使用 ssh-add 指令將私钥加进来 （根据个人的密匙命名不同更改 id_rsa）
-# ssh-add   ~/.ssh/id_rsa  
+# ssh-add   ~/.ssh/id_rsa
 
 scp  ~/.ssh/id_rsa.pub root@10.60.24.191:~/.ssh/authorized_keys
 scp  ~/.ssh/id_rsa.pub root@10.60.24.189:~/.ssh/authorized_keys
@@ -33,7 +39,7 @@ screen -r ; exit;
 	cat /etc/redhat-release
 	cat /etc/issue
   rpm -q redhat-release
-  
+
 # lsb_release -a
 LSB Version: :core-3.1-ia32:core-3.1-noarch:graphics-3.1-ia32:graphics-3.1-noarch
 Distributor ID: CentOS
@@ -55,11 +61,11 @@ CentOS release 5.4 (Final)
 
 登录到linux执行rpm -q redhat-release
 
-#rpm -q redhat-release 
+#rpm -q redhat-release
 #rpm -q centos-release
-centos-release-5-4.el5.centos.1	
+centos-release-5-4.el5.centos.1
 
-◎ RPM 命令	
+◎ RPM 命令
 	rpm -ql xxx.rpm -- 查看已安装的rpm中有哪些文件和安装位置。
 	rpm -qa |grep tomcat
 	rpm -q vnc-sever  -- 查询vnc-server是否安装了
@@ -88,11 +94,11 @@ centos-release-5-4.el5.centos.1
 	或者直接编辑/etc/sudoers进行修改。
 
 	超级用户root的terminal提示符是# 而普通用户则是$.
-	
+
 ◎ 修改MAC地址
   修改/etc/sysconfig/network-scripts/ifcfg-eth0
 	service network restart
-	
+
 BASH
 	export PS1='\n\w\n> ', make the Linux prompt to show like this:
 	  /usr/bin
@@ -116,7 +122,7 @@ BASH
 	   keytool -list -v -storepass changeit -keystore cacerts.jks
 	2. keytool -import -v -trustcacerts -alias tomcat2 -file external_cer -storepass changeit -keystore cacerts.jks <-noprompt>
 	3. keytool -export -alias tomcat -storepass changeit -keystore .keystore -file .cer
-	
+
 ◎ CentOS中添加 EPEL Yum源
   rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
 
@@ -124,10 +130,10 @@ BASH
   perl -MCPAN -e shell
   cpan> install DBI
 	cpan> install Data::UUID
-	
+
   > yum install perl-DBD-MySQL.x86_64
 	> ln -s  /var/camiant/db/mysql/lib/mysql.sock /tmp/mysql.sock
-	
+
 @ install MP3 decoder
 yum install rhythmbox gstreamer-plugins-ugly gstreamer-plugins-bad gstreamer-ffmpeg
 
@@ -147,6 +153,8 @@ lspath -- find $PWD | grep ./msc/java/msc/rc/pcmm/MgpiManager.java -- # 在文�
 ll |wc -l   -- 显示条目数目
 
 du -sh accurev -- 显示目录大小
+du -sh /var/*
+df -k
 
 tail -n 10 -f rc.log.0
 
@@ -364,6 +372,13 @@ create or replace view mytest_view as
 
 mysqldump -uroot -proot camiantBoD > ~/BoD_db.txt
 mysqldump -uroot -proot camiant learnedsubnet > SqlLearnedSubnet.db
+mysqldump -uroot -proot camiant learnedserviceclass --where="networkelementuid='281474983238790' " > SqlLearnedServiceClass.db
+
+
+INSERT INTO `learnedserviceclass` VALUES (281474983238790,281474977110965,'ds_hsd_nosid111',3,0,0,0,0,0,'2013-01-03 21:42:23',1,NULL,NULL);
+
+
+select * from learnedserviceclass A left join networkelement B on A.networkelementuid=B.uid where B.name='cmts_cmp111 ';
 
 mysqlimport -uidbuser -pidbpwd camiantBoD ~/BoD_db.txt
 
@@ -383,6 +398,7 @@ log-error=/var/log/mysqld.log
 
 use camiant;
 show tables;
+show tables like '%service%';
 show character set;
 source /workspace/RANGOON_dev/src/mi/prebuilt/image/opt/camiant/mi/bin/migrate_to_5_6_70.sql
 

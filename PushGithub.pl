@@ -35,10 +35,10 @@ my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 #my $domainName = "github.com";
 
 my %projReposMap_common = (
-  "SpalAdmin"              => "git\@bitbucket.org:choclover/studentpaladmin.git",
-  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",  
+  #"SpalAdmin"              => "git\@bitbucket.org:choclover/studentpaladmin.git",
+  #"MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",  
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
-  "SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
+  #"SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
   );
 
 my %projReposMap_win = (
