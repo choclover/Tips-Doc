@@ -1,0 +1,30 @@
+
+# .bashrc
+
+# User specific aliases and functions
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
+export PS1="\n\u@`ip -4 addr | grep "inet.*brd.*eth0" | grep -v 127.0.0. | awk '{ print $2 }'`(\h) \t\n\w\n\$ "
+#export PS1="\n\u:\w\n @`ip -4 addr | grep "inet.*brd.*eth0" | grep -v 127.0.0. | awk '{ print $2 }'`(\h) \n\$ "
+#export PS1='[\u@\h \w]\$ '
+
+if [ -d /opt/camiant/tomcat/bin/ ]; then 
+  touch /opt/camiant/tomcat/bin/debug
+fi
+
+if [ -d /opt/camiant/rc/bin/ ]; then
+  touch /opt/camiant/rc/bin/debug
+fi
+
+if [ -d /opt/camiant/dc/bin/ ]; then 
+  touch /opt/camiant/dc/bin/debug
+fi
+

@@ -161,9 +161,9 @@ scp root@10.60.24.244:/var/nfs/isos/hongkong/Mar28/*mpe*.iso /var/TKLC/upgrade/
 scp root@10.60.24.244:/var/nfs/isos/hongkong/NOV29/*bod*.iso /var/TKLC/upgrade/
 scp root@10.60.24.244:/var/nfs/isos/hongkong/NOV29/*cmp*.iso /var/TKLC/upgrade/
 
-scp root@10.60.24.244:/var/nfs/isos/QUINCY/Aug07/*mpe*64.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/QUINCY/Aug22/*mpe*64.iso /var/TKLC/upgrade/
 scp root@10.60.24.244:/var/nfs/isos/QUINCY/Jun_27/*cmp*64.iso /var/TKLC/upgrade/
-scp root@10.60.24.244:/var/nfs/isos/QUINCY/Jul02/*bod*64.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/QUINCY/Aug22/*bod*64.iso /var/TKLC/upgrade/
 
 
 fib%yel5
@@ -953,9 +953,9 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   connect MPE194 -address=10.60.25.195 -set app1.name=rx -realm=camiant.com
   connect mpe_serve1 -address=10.60.32.213 -set app1.name=rx -realm=camiant.com
   
-  test perf rx -realm=camiant.com -remoteidentity=mpe_root  -identity=test_perf -numclients=1 -addressrange=10.0.80.1/24 -disconnect=true -verbose=on -duration=0 -output=/root/perf/perf.txt -timeout=5000 -terminate=false -modifies=0 -transactions=1000  -cycles=1 -hostname=10.60.57.76
+  test perf rx -realm=camiant.com -remoteidentity=mpe_root  -identity=test_perf -numclients=1 -addressrange=10.0.80.1/24 -disconnect=true -verbose=on -duration=0 -output=/root/perf.txt -timeout=5000 -terminate=false -modifies=0 -transactions=1000  -cycles=1 -hostname=10.60.57.76
   
-  test perf rx -realm=camiant.com -remoteidentity=mpe_serve1  -identity=test_perf -numclients=1 -addressrange=10.0.80.1/24 -disconnect=true -verbose=on -duration=0 -output=/root/perf/perf.txt -timeout=5000 -terminate=false -modifies=0 -transactions=1000  -cycles=1 -hostname=10.60.32.213
+  test perf rx -realm=camiant.com -remoteidentity=mpe_serve1  -identity=test_perf -numclients=1 -addressrange=10.0.80.1/24 -disconnect=true -verbose=on -duration=0 -output=/root/perf.txt -timeout=5000 -terminate=false -modifies=0 -transactions=1000  -cycles=1 -hostname=10.60.32.213
 
   test perf rx -hostname=10.15.24.107 -realm=camiant.com -remoteidentity=mpe  -identity=mpe_root -numclients=1 -transactions=1000 -cycles=30 -addressrange=10.15.24.1/24 -disconnect=true -verbose=off -modifies=1 -duration=0 -output=/root/perf_nomgpi_107.txt -timeout=5000 -terminate=false
 
@@ -1577,7 +1577,7 @@ qemu-img snapshot -l hongkong-she-bod.qcow2
 
 ** Recover ** 
 qemu-img snapshot -a she_cmp_ori she-cmp.qcow2
-qemu-img snapshot -a tpbase she-mpe.qcow2
+qemu-img snapshot -a tpdbase she-mpe.qcow2
 qemu-img snapshot -a tpdbase she-mpe1.qcow2
 qemu-img snapshot -a tpdbase she-bod.qcow2
 
