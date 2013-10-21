@@ -4,6 +4,11 @@
 ◎ Rsync
 rsync -v /home/users/she/Hem_Doc/*.txt /media/Doc/
 
+◎ 命令行循环执行命令
+> while true;do ls; echo -e "---\n"; sleep 2;done 
+
+◎ epoch time 2 human readable
+> epoch2human 132332312
 
 ◎ ssh不用输入密码：
 1. ssh-keygen -t rsa
@@ -250,7 +255,7 @@ showmout
 
 ** CLIENT **
 mkdir YORK_dev
-mount -t nfs -o rw 10.60.2.149:/workspace/YORK_dev/ ./YORK_dev
+mount -t ntfs -o rw 10.60.2.149:/workspace/YORK_dev/ ./YORK_dev
 
 ps -aux查看所有进程
 参数w表示加宽显示的命令行，参数w可以写多次，通常最多写3次，表示加宽3次，这足以显示很长的命令行了。例如：ps -auxwww
@@ -264,6 +269,12 @@ netstat：显示网络状况，使用参数p可以查看对应的进程号及程
 查看服务器已建立的连接，使用：netstat -an | grep ESTABLISHED
 
 启动服务： /etc/rc.d/init.d/
+
+cat -A file1:  
+} else if (PROP_FILE_VERSION_STRING == type) {^M$     --- indicating this is Dos format
+cat -A file2: 
+} else if (PROP_FILE_VERSION_STRING == type) {$        --- indicating this is Unix format
+
 
 ◎ LVM 操作--
 pvscan / pvdisplay : 物理卷

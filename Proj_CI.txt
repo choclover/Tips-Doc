@@ -73,9 +73,9 @@ alias classver='java -cp /media/Tools/JavaParser JavaParser '
 
 VM on DL360-7(10.60.24.247) 
     HostName          Blade IP       OAM VIP        SignalA IP
-hongkong-she-cmp     10.60.24.189   10.60.24.190
-she-mpe              10.60.24.191                  10.60.24.192
-hongkong-she-bod     10.60.24.205                  10.60.24.206 
+xxx hongkong-she-cmp     10.60.24.189   10.60.24.190
+xxx she-mpe              10.60.24.191                  10.60.24.192
+xxx hongkong-she-bod     10.60.24.205                  10.60.24.206 
 ** VM on 10.60.28.105 ** 
 she-mpe2             10.60.57.75                  10.60.57.76
 she-mpe3             10.60.57.77                  10.60.57.78
@@ -298,7 +298,7 @@ ha.states  -- check standby state on MPE/BoD (c nodes)
 alarm.put
 getPolicyRev -f
 getPlatRev
-ivi/iqt LogicalPath -- 如果没有数据表明Direct Link/HA没有启用。
+ivi/iqt LogicalPath -- 如果没有数据表明Direct Link/HA没有启用; 但是VM上不应该启用direct link
 path.show -a C1687.195
 itable
 
@@ -695,7 +695,7 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   wget --post-file=.//AddAccount.xml --output-document=/tmp/AddAccount_result.xml "http://10.60.24.55/mi/xmlInterfaceRequest.do?user=admin&pwd=camiant"
 
   /opt/camiant/platform/bin/namcli
-  NewAM> connect 10.60.32.213 / 10.60.24.191 / 100.10.24.15 /
+  NewAM> connect 10.60.32.213 / 10.60.57.76 / 100.10.24.15 /
   NewAM> pdpconfig -set amid1=123
   NewAM> gateset -set profile=ugs -set amid=123 -set subscriberid=10.60.24.110   -timeout 10000
   NewAM> gateset -set profile=ugs -set amid=123 -set subscriberid=10.60.24.110
@@ -708,7 +708,7 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
 
          gateset -set profile=ugs -set amid=123 -set subscriberid=100.10.24.110 -gateid=
  
-  NewAM> gateinfo -set Amid=1 -set GateId=1234567 -set subscriberid=10.60.24.110 -timeout=2000
+  NewAM> gateinfo -set Amid=1 -set subscriberid=10.60.24.110 -timeout=2000 -set GateId=
         gateinfo -set Amid=1 -set GateId=1234567 -set subscriberid=::0A0F:0102 -timeout=2000
         
   NewAM> [command] -prompt
@@ -779,8 +779,8 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   connect mpe       -address=10.15.24.44  -set app1.name=rx -realm=camiant.com
   connect mpe       -address=10.60.24.157 -set app1.name=rx -realm=camiant.com
   
-  connect mpe_root  -address=10.60.57.76 -set app1.name=rx -realm=camiant.com
-  connect mpe_serve1 -address=10.60.32.213  -set app1.name=rx -realm=camiant.com
+  connect mpe_root   -set app1.name=rx -realm=camiant.com -address=10.60.57.76
+  connect mpe_serve1 -set app1.name=rx -realm=camiant.com -address=10.60.32.213
 
   connect tier1.tekelec.com -address=192.168.0.24 -set app1.name=rx -realm=tekelec.com
   connect tier2.tekelec.com -address=192.168.0.19 -set app1.name=rx -realm=tekelec.com
@@ -953,9 +953,12 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   connect MPE194 -address=10.60.25.195 -set app1.name=rx -realm=camiant.com
   connect mpe_serve1 -address=10.60.32.213 -set app1.name=rx -realm=camiant.com
   
-  test perf rx -realm=camiant.com -remoteidentity=mpe_root  -identity=test_perf -numclients=1 -addressrange=10.0.80.1/24 -disconnect=true -verbose=on -duration=0 -output=/root/perf.txt -timeout=5000 -terminate=false -modifies=0 -transactions=1000  -cycles=1 -hostname=10.60.57.76
+  -duration: 持续时间，仅当-cycle=0
   
-  test perf rx -realm=camiant.com -remoteidentity=mpe_serve1  -identity=test_perf -numclients=1 -addressrange=10.0.80.1/24 -disconnect=true -verbose=on -duration=0 -output=/root/perf.txt -timeout=5000 -terminate=false -modifies=0 -transactions=1000  -cycles=1 -hostname=10.60.32.213
+  test perf rx -realm=camiant.com -remoteidentity=mpe_root    -identity=test_perf -addressrange=10.0.80.1/30 -disconnect=true -verbose=off -duration=0 -output=/root/perf.txt -timeout=5000 -terminate=false -modifies=1 -transactions=10000  -cycles=1 -numclients=100 -hostname=10.60.57.76 
+  
+  test perf rx -realm=camiant.com -remoteidentity=mpe_serve1  -identity=test_perf -addressrange=10.0.80.1/30 -disconnect=true -verbose=on -duration=0 -output=/root/perf.txt -timeout=5000 -terminate=true -modifies=1 -transactions=100 -cycles=1 -numclients=1 -hostname=10.60.32.213
+  -delay=60000
 
   test perf rx -hostname=10.15.24.107 -realm=camiant.com -remoteidentity=mpe  -identity=mpe_root -numclients=1 -transactions=1000 -cycles=30 -addressrange=10.15.24.1/24 -disconnect=true -verbose=off -modifies=1 -duration=0 -output=/root/perf_nomgpi_107.txt -timeout=5000 -terminate=false
 
@@ -980,7 +983,7 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   
 # debug support in the jvm.
 if [ -f $PRGDIR/debug_suspended ]; then
-    jvmargs
+    #jvmargs
     JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=y -enableassertions"
     export JAVA_OPTS
     echo Running with debugger suspended
@@ -1143,7 +1146,7 @@ fi
   cd /opt/camiant/platform/bin/
   # /opt/camiant/bin/jcmts -c -p 3919
     /opt/camiant/bin/jcmts -c -p 3918 -e 33554432
-    /opt/camiant/bin/jcmts -c -p 3918 -e $((8*1024*1024))
+    /opt/camiant/bin/jcmts -c -p 3918 -e $((16*1024*1024))
 
     The steps for change rx and tx queue size of NIC.
     ethtool -g eth1
@@ -1168,7 +1171,7 @@ fi
   Cmts> stop service 3919
   Cmts> Show connections / show conn
   Cmts> Show service
-  Cmts> Show gates -limit=0
+  Cmts> Show gates -limit=0 -count
   Cmts> delete gates 
   Cmts> Errorcondition -code=<codeID> -subcode= <subcodeID> -num=<NumCount>
         example: errorcondition -code=15 -num=1
@@ -1522,6 +1525,28 @@ Port: 161
 iReasoning MIB Browser
 1. 10.60.62.41/ Daniel / 123456
 2. 10.60.25.142 / admin / 123456
+=========
+MIB OID
+
+1,  ipv4 subnet oid (1.3.6.1.2.1.4.24.4.1.1) 
+    ipCidrRouteDest
+2,  ipv6 subnet oid (1.3.6.1.2.1.4.24.7.1.7.2.16)
+3,  service class oid from ubr7246  (1.3.6.1.2.1.10.127.7.1.8)
+4,  service class oid from ubr10K (1.3.6.1.4.1.4491.2.1.21.1.8.1)
+5,  channel down oid (1.3.6.1.2.1.10.127.1.3.3.1.4)
+6,  channel up oid (1.3.6.1.2.1.10.127.1.3.3.1.5)
+7,  CM IPv4 oid(1.3.6.1.2.1.10.127.1.3.3.1.3)
+    CM IPv6 oid docsIfCmtsCmStatusInetAddress (1.3.6.1.2.1.10.127.1.3.3.1.21). 
+8,  CM MAC oid(1.3.6.1.2.1.10.127.1.3.3.1.2)
+9,  CPE ip oid (1.3.6.1.4.1.9.9.116.1.3.1.1.1) 
+10, CPE MAC oid (1.3.6.1.4.1.9.9.116.1.3.1.1.3)
+11, Another CPE ip oid(1.3.6.1.3.83.4.1.5.1.2)
+
+/opt/camiant/platform/bin/snmpwalk -m /opt/camiant/platform/share/snmp/mibs/IP-FORWARD-MIB.txt -c public -v 2c 10.15.27.46 1.3.6.1.2.1.4.24.4
+/opt/camiant/platform/bin/snmpwalk -m /opt/camiant/platform/share/snmp/mibs/IP-MIB.txt -c public -v 2c 10.15.27.46 1.3.6.1.2.1.2.2.1.2
+/opt/camiant/platform/bin/snmpwalk -m /opt/camiant/platform/share/snmp/mibs/IP-MIB.txt -c public -v 2c 10.15.27.46 1.3.6.1.2.1.4.24.7.1.7.2.16
+/opt/camiant/platform/bin/snmpwalk -m /opt/camiant/platform/share/snmp/mibs/RFC1213-MIB.txt -c public -v 2c 10.15.27.46 1.3.6.1.2.1.4.24.4.1.5
+=============
 
 23. dal.xml -> daltemp.xml -> dalplus.xml
 ./common/java/camiant/db/gendalplus.bash
@@ -1880,6 +1905,9 @@ CMP Export temp files:
   cd rangoon/script
   ./runseagull.py  -f ../environment/localhost.cfg
 
+  Install Seagull --
+  wget http://10.60.2.12/bundles/shell/depoly_seagull.sh  && sh depoly_seagull.sh
+  
   We can use seagull server to simulate the MPE-S, just return ACK to every Diameter request, like the jcmts.
   
 ◎ WebService
