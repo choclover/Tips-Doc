@@ -87,9 +87,9 @@ Global setup:
 	真实/不真实的删除所有untracked的文件和目录
 
 ◎ Git忽略已跟踪文件的改动
-   --.gitingore只能忽略未被track的文件，也就是新加入的文件
-    git update-index --assume-unchanged /path/to/file
-    git update-index --assume-unchanged .classpath
+   1. .gitingore只能忽略未被track的文件，也就是新加入的文件
+   2. git update-index --assume-unchanged /path/to/file
+      git update-index --assume-unchanged .classpath
     
 ◎ Create public key for Github/Bitbucket
   $ ll ~/.ssh/id_rsa.pub
