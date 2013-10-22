@@ -26,7 +26,7 @@ Global setup:
   modify / commit /
   git push <remote git id>
 
-◎ 从工作目录中删除文件  
+◎ 从工作目录磁盘上删除文件  
   git rm readme.txt
   从 Git 仓库／暂存区中移除
   git rm --cached readme.txt
@@ -64,6 +64,7 @@ Global setup:
   git revert HEAD^  撤销前前一次 commit
   git revert <commit id> （比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
 
+	git reset --hard  回复到最近一次的commit
 	git reset --hard  88e6ac65fccda4f703488b11e65dbedd11e29b3c  回复到某一次的commit
 	
 	
@@ -92,17 +93,41 @@ Global setup:
       git update-index --assume-unchanged .classpath
     
 ◎ Create public key for Github/Bitbucket
+  https://confluence.atlassian.com/pages/viewpage.action?pageId=270827678
+  
   $ ll ~/.ssh/id_rsa.pub
   $ ssh-keygen -t rsa -C "your_email@youremail.com"
+  
+  $ ssh-agent bash --login -i
   $ ssh-add
-  # Enter passphrase for /home/you/.ssh/id_rsa: [tippy tap]
-  # Identity added: /home/you/.ssh/id_rsa (/home/you/.ssh/id_rsa)
-  
+    # Enter passphrase for /home/you/.ssh/id_rsa: [tippy tap]
+    # Identity added: /home/you/.ssh/id_rsa (/home/you/.ssh/id_rsa)
+    
+    @. Could not open a connection to your authentication agent.
+    解决方法： ssh-agent bash --login -i
+    
   $ Copy content of the public key in ~/.ssh/id_rsa.pub to Account -> SSH Public Keys in GitHub -> Save
-  $ ssh -T git@github.com
-	Verify public key was added to GitHub successfully.
+    @ Windows XP: C:\Documents and Settings\<User Name>\.ssh
+    @ Cygwin:  D:\ProgramFiles\cygwin\home\<User Name>\.ssh
+    @ Linux:   ~/.ssh/
+    
+  $ ssh -T git@github.com / ssh -T git@bitbucket.com
+	  Verify public key was added to GitHub successfully.
   
-  Error: Agent admitted failure to sign
-	For most users, simply running ssh-add to load your keys into the SSH agent will fix this issue.
+    Hi choclover! You've successfully authenticated, but GitHub does not provide shell access.
+    ----------------------
+    logged in as choclover.
+    You can use git or hg to connect to Bitbucket. Shell access is disabled.
+
+◎ Q&A
+  1. Error: Agent admitted failure to sign
+	  For most users, simply running "ssh-add" to load your keys into the SSH agent will fix this issue.
 	
-  ◎◎◎◎◎◎◎◎◎◎
+	2. $ git clone https://xxxx.git
+    Cloning into tool...
+    Password for 'bitbucket.org':
+	  fatal: Authentication failed
+	  
+	  Workaround: Use SSH.
+	  
+◎◎◎◎◎◎◎◎◎
