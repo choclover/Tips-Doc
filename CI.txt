@@ -16,6 +16,7 @@ rsync -v /home/users/she/Hem_Doc/*.txt /media/Doc/
 3. scp  ~/.ssh/id_rsa.pub root@10.60.24.189:~/.ssh/authorized_keys
 
 && Agent admitted failure to sign using the key &&
+&& fatal: Not a git repository (or any of the parent directories)
 解決方式 使用 ssh-add 指令將私钥加进来 （根据个人的密匙命名不同更改 id_rsa）
 # ssh-add   ~/.ssh/id_rsa
 
