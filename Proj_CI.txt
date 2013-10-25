@@ -1,5 +1,6 @@
 
 
+
 DIAMETER.Cleanup.RXSessionValidityTime=10
 
 wget --post-file=QueryNE.xml --output-document=output_ossi.xml "http://10.60.24.189/mi/xmlInterfaceRequest.do?user=admin&pwd=camiant"
@@ -22,6 +23,8 @@ Rangoon VM -- Patch2 -- VM on DL360-5(10.60.24.245)
 \\10.60.2.13\public\Cable\Patches
 10.15.29.93:/opt/patch3
 
+placeFiles.pl -addfilter 1234:5678|abcd:effe
+
 =================
 cfg BOD.RunStatsTest=true
 cfg BOD.RunDiameterTest=true
@@ -33,6 +36,7 @@ cfg DIAMETER.ExtendableBufferMaxSize=16777216
 cfg DIAMETER.ExtendableBufferMaxSize=33554432
 cfg DIAMETER.ExtendableBufferStartSize=33554432
 
+cfg DIAMETER.Cleanup.DeletedSessionsCleanupInterval=86400
 cfg DIAMETER.Cleanup.DeletedSessionsCleanupInterval=86400
 
 reconfig
@@ -83,14 +87,18 @@ she-mpe3             10.60.57.77                  10.60.57.78
 Gateway: 10.60.56.1
 
 VM on BL460G8 -161(10.60.28.161 / NextGen)
+== subnet mask == /24
 Ming He	 CMP	BL460G8 -161	 she-cmp  10.60.32.211	 10.60.32.212
 Ming He	 MPE	BL460G8 -161	 she-mpe1 10.60.32.213	 10.60.32.214
 Ming He	 BOD	BL460G8 -161	 she-bod  10.60.32.217	 10.60.32.218
 Ming He	 MA     BL460G8 -161	 she-ma	  10.60.32.219	 10.60.32.220
-** VM on 10.60.28.105 ** 
+
+** VM on 10.60.28.105 **
+== subnet mask == /21    gateway: 10.60.56.1 
 Ming He  MPE 	BL460-G8-8       she-mpe2  tpd6 10.60.57.75 10.60.57.76
 Ming He  MPE 	BL460-G8-8       she-mpe3  tpd6 10.60.57.77 10.60.57.78
 
+cd /var/lib/libvirt/images/
 
 VM on cClass-4(10.60.27.244) -- Deleted 
 (deleted)she-mpe2             10.60.27.107                  10.60.27.108
@@ -102,7 +110,7 @@ cClass-13  10.60.30.39   27.39   28.39/28.51   29.39     PV   lent to Sharp
 
 http://nantwiki/twiki/bin/view/Main/VMsInAppTeam
 
-Used by Simom
+Used by Simon
 hongkong-ryang-cmp   10.60.24.197   10.60.24.198    
 hongkong-ryang-mpe   10.60.24.199                 10.60.24.200 
 hongkong-ryang-bod   10.60.24.209                 10.60.24.210 
@@ -161,9 +169,9 @@ scp root@10.60.24.244:/var/nfs/isos/hongkong/Mar28/*mpe*.iso /var/TKLC/upgrade/
 scp root@10.60.24.244:/var/nfs/isos/hongkong/NOV29/*bod*.iso /var/TKLC/upgrade/
 scp root@10.60.24.244:/var/nfs/isos/hongkong/NOV29/*cmp*.iso /var/TKLC/upgrade/
 
-scp root@10.60.24.244:/var/nfs/isos/QUINCY/Aug22/*mpe*64.iso /var/TKLC/upgrade/
-scp root@10.60.24.244:/var/nfs/isos/QUINCY/Jun_27/*cmp*64.iso /var/TKLC/upgrade/
-scp root@10.60.24.244:/var/nfs/isos/QUINCY/Aug22/*bod*64.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/QUINCY/Oct15/*mpe*64.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/QUINCY/Oct21/*cmp*64.iso /var/TKLC/upgrade/
+scp root@10.60.24.244:/var/nfs/isos/QUINCY/Oct15/*bod*64.iso /var/TKLC/upgrade/
 
 
 fib%yel5
@@ -216,6 +224,11 @@ Deploy Server: Password--NextGen
 10.240.16.201      -- MRA
 10.240.16.203, 205 -- MPE
 10.240.16.207      -- MI
+
+Version:
+==9.4==
+TPD: 6.0.2-80.34.0
+COMCOL: 6.1-p155.8319
 
 Nanjing VM Ware:
 10.60.24.83  -- TPD
@@ -331,7 +344,7 @@ gopkg qp_procmgr
 
   TPD ISO:
   10.60.24.244:/data/TKLCRepository/iso/TPD.install-5.1.0_73.3.0-CentOS5.8-x86_64.iso
-  
+http://10.60.24.244/tpd-iso/TPD.install-6.0.2_80.34.0-CentOS6.3-x86_64.iso   
   
 ◎ Install Adobe Reader on Linux
 sudo -i
@@ -399,14 +412,14 @@ yum install nspluginwrapper.i686 AdobeReader_enu
   @. scp root@10.60.24.244:/var/nfs/isos/hongkong/Oct29/*cmp*.iso root@192.168.1.246:/var/TKLC/upgrade/
   @. ssh 192.168.1.246
   
-  Install product ISO using >su platcfg.
+  Install product ISO using >su - platcfg.
   reboot
   > su platcfg
   Run Camiant Configuration -> Perform Initial Configuration.
     HostName: hk-cmp-mgpi-perf
-    OAM Real IP Address: 10.60.28.xx/24
+    OAM Real IP Address: 10.60.(28).xx/24
 
-    OAM Default Route:    10.60.28.1
+    OAM Default Route:    10.60.(28).1
     NTP Server:           10.60.27.191
     DNS Server A:         10.60.2.15
     DNS Server B:
@@ -969,7 +982,9 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
    << Pattern >>
   test perf rx -hostname=<MPE's IP> -realm=<MPE's Diameter Realm> -remoteidentity=<MPE's Diameter Identity> -identity=<NE's Identity> -numclients=1 -transactions=10 -cycles=0 -addressrange=10.60.24.0/24(要与CMTS的subnets一致) -disconnect=true -terminate=false/true -verbose=off -modifies=1 -duration=120 -output=/tmp/1.txt -timeout=5000
 
-
+  http://cnnan-twiki.cn.tekelec.com/twiki/bin/view/Main/PerformanceMeasurementsBasedOnJMeterLog
+http://cnnan-twiki.cn.tekelec.com/twiki/bin/view/Main/PerformanceVirtualGroup#Assign%20IP%20to%20the%20server%20temporil
+  
   ================================================
 
 2. Import Projects: 重启WEB SERVER
@@ -1143,10 +1158,10 @@ fi
   ifrag -a  /  ipcs -um
 
 8. CMTS Simulator:
-  cd /opt/camiant/platform/bin/
+  cd /opt/camiant//bin/
   # /opt/camiant/bin/jcmts -c -p 3919
-    /opt/camiant/bin/jcmts -c -p 3918 -e 33554432
-    /opt/camiant/bin/jcmts -c -p 3918 -e $((16*1024*1024))
+    /opt/camiant/bin/jcmts -c -p 3919 -e 33554432
+    /opt/camiant/bin/jcmts -c -p 3919 -e $((16*1024*1024))
 
     The steps for change rx and tx queue size of NIC.
     ethtool -g eth1
@@ -1522,6 +1537,9 @@ Do SNMP query from the CMTS equipment.
 And we will use them to provide the SNMP agent server so customers can query the stats data from the MPE server.
 Port: 161
 
+cd src/common/snmp
+ant -f  build-snmp.xml
+
 iReasoning MIB Browser
 1. 10.60.62.41/ Daniel / 123456
 2. 10.60.25.142 / admin / 123456
@@ -1546,6 +1564,18 @@ MIB OID
 /opt/camiant/platform/bin/snmpwalk -m /opt/camiant/platform/share/snmp/mibs/IP-MIB.txt -c public -v 2c 10.15.27.46 1.3.6.1.2.1.2.2.1.2
 /opt/camiant/platform/bin/snmpwalk -m /opt/camiant/platform/share/snmp/mibs/IP-MIB.txt -c public -v 2c 10.15.27.46 1.3.6.1.2.1.4.24.7.1.7.2.16
 /opt/camiant/platform/bin/snmpwalk -m /opt/camiant/platform/share/snmp/mibs/RFC1213-MIB.txt -c public -v 2c 10.15.27.46 1.3.6.1.2.1.4.24.4.1.5
+
+DC on CMP and MA use the standard SNMP MIB OID to discover the subnet information from CMTS for IPv4 and IPv6. that is,
+the following OID is used to carry IPv4 and IPv6 address, 
+1, ipv4 subnet OID (1.3.6.1.2.1.4.24.4.1.1) 
+2, ipv6 subnet OID (1.3.6.1.2.1.4.24.7.1.7.2.16)
+
+However, since PR228467, there has some problem for some specific IPs that cannot be supported until 6.3 patch 4.
+The IP pattern that will cause problem is: 
+The IPv4's first 3 bytes/segments or IPv6's first 15 bytes/segments value are all in [10 or 13 or {31 - 126}], will have problem.
+e.g. IPv4 (4 bytes) 10.13.31.111, 13.32.33.112 and IPv6 (16 bytes) 10.13.31.32.33.34.35.36.37.38.39.40.121.122.123.9 will have problem. 
+So pls avoid to use these IP address until patch 4.
+
 =============
 
 23. dal.xml -> daltemp.xml -> dalplus.xml
@@ -1663,6 +1693,7 @@ http://10.60.2.12/twiki/bin/view/Main/ByteMe
   tcpdump 'host 10.60.28.32 and (tcp port 80 or tcp port 8080 or tcp port 443)' -s 0 -w /var/package.pcap
   tcpdump 'host 10.60.24.201 and 10.60.24.201 ' -s 0 -w /var/package.pcap
 
+36. BoD Notify Port:
 ===============================================================================
 ◎ Project Name / Release page:
   http://10.15.2.102/engineeringwiki/PolicyReleasesMain#preview
@@ -1678,7 +1709,7 @@ http://10.60.2.12/twiki/bin/view/Main/ByteMe
 
   3) start upgrade -> 1) MPE-6.4.1.0-74.bdl -> yes -> check "Show upgrade status" from time to time
 
-  ================ Bundles Location
+  ================ Bundles Location  /  http://10.15.2.21
   http://10.15.2.21/bundles/PANAMA2_PATCH3_rc4/MPE-5.3.9.4.bdl
   http://10.15.2.21/bundles/PANAMA2_PATCH3_rc4/Manager-5.3.9.4.bdl
   http://drake/bundles/RANGOON_dev/Manager-6.3.0.0-296.bdl
@@ -1746,6 +1777,8 @@ http://10.60.2.12/twiki/bin/view/Main/ByteMe
   result[0] = siteInfo.getSig1Vip();
   result[1] = siteInfo.getSig1Vip();
   
+  Use signal network between clusters.
+  
 ◎ \\files\public\Material Collected\Whitepaper
 ===============================================================================
 http://signal.tekelec.com/sites/CustSupp/CustomerPub/Shared%20Documents/910-6357-001_rev_a.pdf
@@ -1794,6 +1827,14 @@ CMP Export temp files:
   
   WEB UI: http://usmar-accurev01:8080/accurev/
   
+  JRE not compatible:
+  vim /media/Tools/accurev/6.0/bin/acgui.lax / acdiffgui.lax
+  #   LAX.NL.CURRENT.VM
+  #   -----------------
+  #   the VM to use for the next launch
+  #lax.nl.current.vm=../jre/bin/java
+  lax.nl.current.vm=java
+
   #Server: hydra.corporate.camiant.local:5050 (USA)
   #SERVERS = hydra.cn.tekelec.com:5050 (CN)
   SERVERS = cnnan-accurev01.cn.tekelec.com:5050
@@ -1904,6 +1945,8 @@ CMP Export temp files:
   DL120-10 (the bottom one) 	  	10.60.27.190
   cd rangoon/script
   ./runseagull.py  -f ../environment/localhost.cfg
+
+  ./runseagull.py -f ../environment/client29.93.cfg number-calls@conf.traffic-param=720000000 call-rate@conf.traffic-param=2000 call-timeout-ms@conf.traffic-param=10000 wait-time@scen=60000
 
   Install Seagull --
   wget http://10.60.2.12/bundles/shell/depoly_seagull.sh  && sh depoly_seagull.sh

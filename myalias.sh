@@ -58,8 +58,8 @@ alias clearqp='ha.cleanup QP '
 alias newbash='vim ~/.bashrc '
 alias runbash='source ~/.bashrc '
 alias killps='kill -9 '
-alias komo='/media/Tools/Komodo-Edit-7/lib/mozilla/komodo '
-alias komo='/media/Tools/Komodo-Edit-8/bin/komodo '
+alias komo7='/media/Tools/Komodo-Edit-7/lib/mozilla/komodo '
+alias komo='/media/Tools/Komodo-Edit-8.5.1/bin/komodo '
 alias unlockkomo='rm /home/users/she/.komodoedit/8.0/running.lock; rm /home/users/she/.komodoedit/8.0/XRE/.parentlock '
 
 alias sqllogin='mysql -A -uroot -proot camiant -A '
@@ -130,6 +130,7 @@ alias nvmslave2='s -X 10.60.57.77 '
 #alias vmperf1='s -X 10.60.28.215 '
 #alias vmperfcmp1='s -X 10.60.28.105 '
 alias vmseagull='s -X 10.60.27.190 '
+alias vmrangoon='s -X 10.60.24.122 '
 
 alias virtcmp='s -X 10.60.24.247 '
 
