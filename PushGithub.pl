@@ -291,6 +291,9 @@ sub push_repos {
 	if ($FALSE == isEmptyStr($rootDir)) {
 	  $path = "$rootDir/$dire"; 
 	}
+	if (! -d $path) {
+	  next;
+	}
 	P("\n@@ cd $path\n");
 	
 	if (isEmptyStr($gitBranch)) {
