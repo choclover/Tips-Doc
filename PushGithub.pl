@@ -1,4 +1,4 @@
-#version: 2011-11-17
+#version: 2013-10-25
 
 #!/usr/local/bin/perl -w
 
@@ -35,22 +35,29 @@ my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 #my $domainName = "github.com";
 
 my %projReposMap_common = (
-  "SpalAdmin"              => "git\@bitbucket.org:choclover/studentpaladmin.git",
-  "MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",  
-  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
-  "SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
+  "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git|master|",
+  
+  #"SpalAdmin"              => "git\@bitbucket.org:choclover/studentpaladmin.git",
+  #"MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",  
+  #"SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
   );
 
 my %projReposMap_win = (
+  #4
+  "T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|e:/Coding/T2H/",
+  
   #1
   "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
   #2
   "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   #3
   "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  
 );
 
 my %projReposMap_lnx = (
+  "T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|/media/Coding/T2H/",
+  
   "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
   "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
@@ -58,9 +65,10 @@ my %projReposMap_lnx = (
 
 if (0) {
   %projReposMap_common = (
-    #Not exist "SpalAdmin"              => "git\@github.com:choclover/studentpaladmin.git",
-    "MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
-    "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
+    #"Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
+    
+	#Not exist "SpalAdmin"              => "git\@github.com:choclover/studentpaladmin.git",
+    #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
     #"SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
   );
 
@@ -127,7 +135,7 @@ sub parse_args {
   P(@_);
   for (my $i=0; $i<scalar(@_); $i++) {
     if ($_[$i] eq "-debug") {
-      $bDEBUG = $TRUE;   #D("bDEBUG is set to: $bDEBUG");
+      $bDEBUG = $TRUE;   P("** Running in DEBUG mode !**");
     } elsif ($_[$i] eq "-m") {
       if (defined $_[$i+1]) {
         $gComments = $_[$i+1];
@@ -181,7 +189,7 @@ sub main {
   my %projReposMap;
   if (isWindowsArch()) {
     D("This is Windows arch!");
-    $gRootDir = "/cygdrive/e/Coding/Android/";
+    $gRootDir = "e:/Coding/Android/";
     %projReposMap = %projReposMap_win;
 
   } elsif (isCygwinArch()) {
@@ -229,14 +237,25 @@ sub pull_repos {
   D("ProjReposMap is: ", %$refProjReposMap);
 
   foreach my $dire (sort keys %$refProjReposMap) {
-  	my $gitUrl = $$refProjReposMap{$dire};
-  	my $path = "$gRootDir/$dire";  P("\n@@ cd $path\n");
+  	my $reposInfo = $$refProjReposMap{$dire};
+	my ($gitUrl, $gitBranch, $rootDir) = split('|', $reposInfo);
+	
+  	my $path = "$gRootDir/$dire";  
+	if ($FALSE == isEmptyStr($rootDir)) {
+	  $path = "$rootDir/$dire"; 
+	}
+	P("\n@@ cd $path\n");
+	
+	if (! defined $gitBranch) {
+	  $gitBranch = "master";
+	}
+	
 
     my $cdDir = "";
     my $cmdStr = "";
 
     if (not -e $path) {
-      $cdDir = "cd $gRootDir; ";
+      $cdDir = "cd $path/..; ";
       $cmdStr = $cdDir . "git clone $gitUrl $dire;  ";
       runSysCmd($cmdStr);
 
@@ -247,8 +266,8 @@ sub pull_repos {
       #$cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ." commit'; ";
       #runSysCmd($cmdStr);
 
-      #$cmdStr = "git pull $repoSym master; ";
-      $cmdStr = $cdDir . "git pull $gitUrl master; ";
+      #$cmdStr = "git pull $repoSym $gitBranch; ";
+      $cmdStr = $cdDir . "git pull $gitUrl $gitBranch; ";
 
       my $cnt = 0;
       while (runSysCmd($cmdStr) != 0  && $cnt<10) {
@@ -264,9 +283,20 @@ sub push_repos {
   D("ProjReposMap is: ", %$refProjReposMap);
 
   foreach my $dire (sort keys %$refProjReposMap) {
-  	my $gitUrl = $$refProjReposMap{$dire};
-  	my $path = "$gRootDir/$dire";  P("\n@@ cd $path\n");
-
+	my $reposInfo = $$refProjReposMap{$dire};  D($reposInfo);
+	my ($gitUrl, $gitBranch, $rootDir) = split(/\|/, $reposInfo);
+	D("GitUrl: $gitUrl; GitBranch: $gitBranch; RootDir: $rootDir");
+	
+  	my $path = "$gRootDir/$dire";  
+	if ($FALSE == isEmptyStr($rootDir)) {
+	  $path = "$rootDir/$dire"; 
+	}
+	P("\n@@ cd $path\n");
+	
+	if (isEmptyStr($gitBranch)) {
+	  $gitBranch = "master";
+	}
+	 	
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
 
@@ -276,9 +306,9 @@ sub push_repos {
       next;
     }
 
-    #$cmdStr = "git push github master; ";
+    #$cmdStr = "git push github $gitBranch; ";
     if ($bPushRemote) {
-      $cmdStr = $cdDir . "git push $gitUrl master; ";
+      $cmdStr = $cdDir . "git push $gitUrl $gitBranch; ";
     }
 
     my $cnt = 0;
