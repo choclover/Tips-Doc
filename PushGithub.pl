@@ -44,7 +44,7 @@ my %projReposMap_common = (
 
 my %projReposMap_win = (
   #4
-  "T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|e:/Coding/T2H/",
+  "T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|E:/Coding/T2H/",
   
   #1
   "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
@@ -188,17 +188,17 @@ sub getDate {
 sub main {
   my %projReposMap;
   if (isWindowsArch()) {
-    D("This is Windows arch!");
+    P("This is Windows arch!");
     $gRootDir = "e:/Coding/Android/";
     %projReposMap = %projReposMap_win;
 
   } elsif (isCygwinArch()) {
-    D("This is Cygwin arch!");
-    $gRootDir = "/cygdrive/e/Coding/Android/";
+    P("This is Cygwin arch!");
+    $gRootDir = "/e/Coding/Android/";
     %projReposMap = %projReposMap_win;
 
   } else {
-    D("This is Linux arch!");
+    P("This is Linux arch!");
     $gRootDir = "/media/Coding/And/";
     %projReposMap = %projReposMap_lnx;
   }
@@ -292,6 +292,7 @@ sub push_repos {
 	  $path = "$rootDir/$dire"; 
 	}
 	if (! -d $path) {
+	  P("Path $path NOT existing! **");
 	  next;
 	}
 	P("\n@@ cd $path\n");
@@ -303,7 +304,7 @@ sub push_repos {
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
 
-    $cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ."'; ";
+    $cmdStr = $cdDir . "git add -A; git commit -a -m '" .getComment(). " on branch($gitBranch)'; ";
     if ((0!=runSysCmd($cmdStr) && $FALSE==$bPushRemote)
         || $FALSE==$bPushRemote) {
       next;

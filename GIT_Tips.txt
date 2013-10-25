@@ -6,128 +6,145 @@ Global setup:
 
   cd /e/Coding/Perl/PriceNotify
   git init
-  git add Price_Notify.pl / git add -A
-  git commit -m 'first commit' *  /  git commit -a -m 'first commit' 
+  git add Price_Notify.pl / git add -A  (all files)
+  git commit -m 'first commit' filename or *  /  git commit -a -m 'first commit'  (all files)
   git status
 
   git remote add github git@github.com:choclover/PriceNotify.git
   or
   git remote add origin git@github.com:choclover/PriceNotify.git
-  or 
-  git remote rm github / origin 
-  
+  or
+  git remote rm github / origin
+
   git push -u github master
   or
   git push -u origin master
 
   cd /e/Coding/Test/Test_Perl
   git clone git@github.com:choclover/PriceNotify.git
-  cd PriceNotify; 
+  cd PriceNotify;
   modify / commit /
   git push <remote git id>
 
-◎ 从工作目录磁盘上删除文件  
+◎ Branch
+  1. git branch: 列出当前目录的所有branch
+     git branch -r: 列出远程的所有branch
+     
+  2. git branch <branch name>: 创建branch name.
+     git push origin/bitbuck <branch name>
+     
+  3. git checkout <branch name>:    创建并切换到branch name
+     git checkout -b <branch name>: 创建并切换到branch name，如已经存在则报错
+  
+  
+◎ 从工作目录磁盘上删除文件
   git rm readme.txt
   从 Git 仓库／暂存区中移除
   git rm --cached readme.txt
-  
-  
+
+
   cd /e/Coding/Perl/PriceNotify
   git pull (git@github.com:choclover/PriceNotify.git)
   or
   git pull github / origin
-  
+
   git remote
   > github
-  
+
   git remote -v
   > github  git@github.com:choclover/PriceNotify.git (fetch)
   > origin  git@github.com:choclover/caosir.git (fetch)
-  
-  git remote rename github github_new
-  
-  git remote show github
-	> * remote github
-	>   Fetch URL: git@github.com:choclover/StudentPalClient.git
-	>   Push  URL: git@github.com:choclover/StudentPalClient.git
-	>   HEAD branch: master
-	>   Remote branch:
-	>     master tracked
-	>   Local branch configured for 'git pull':
-	>     master merges with remote master
-	>   Local ref configured for 'git push':
-	>     master pushes to master (up to date)
 
-  git status 
-  
+  git remote rename github github_new
+
+  git remote show github
+    > * remote github
+    >   Fetch URL: git@github.com:choclover/StudentPalClient.git
+    >   Push  URL: git@github.com:choclover/StudentPalClient.git
+    >   HEAD branch: master
+    >   Remote branch:
+    >     master tracked
+    >   Local branch configured for 'git pull':
+    >     master merges with remote master
+    >   Local ref configured for 'git push':
+    >     master pushes to master (up to date)
+
+  git status
+
   git revert HEAD   撤销前一次 commit
   git revert HEAD^  撤销前前一次 commit
   git revert <commit id> （比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
 
-	git reset --hard  回复到最近一次的commit
-	git reset --hard  88e6ac65fccda4f703488b11e65dbedd11e29b3c  回复到某一次的commit
-	
-	
+  git reset --hard  回复到最近一次的commit
+  git reset --hard  88e6ac65fccda4f703488b11e65dbedd11e29b3c  回复到某一次的commit
+
+
 ◎ 查看删除的文件  git ls-files -deleted
 ◎ 恢复删除的文件  git ls-files -d | xargs git checkout --
 
-◎ git add  
-	这是个多功能命令，根据目标文件的状态不同，此命令的效果也不同：可以用它开始跟踪新文件，或者把已跟踪的文件放到暂存区，还能用于合并时把有冲突的文件标记为已解决状态等）
-  
+◎ git add
+    这是个多功能命令，根据目标文件的状态不同，此命令的效果也不同：可以用它开始跟踪新文件，或者把已跟踪的文件放到暂存区，还能用于合并时把有冲突的文件标记为已解决状态等）
+
 ◎ git diff
-	比较的是工作目录中当前文件和暂存区域快照之间的差异，也就是修改之后还没有暂存起来的变化内容。  
-	git diff --cached / --staged
-	比较的是已经暂存起来的文件和上次提交时的快照之间的差异。
+    比较的是工作目录中当前文件和暂存区域快照之间的差异，也就是修改之后还没有暂存起来的变化内容。
+    git diff --cached / --staged
+    比较的是已经暂存起来的文件和上次提交时的快照之间的差异。
 
 ◎ git checkout -- <file name>
-	放弃对文件做出的修改，恢复改动前的状态
-	git checkout -f 
-	放弃所有对文件做出的修改
-	
-◎ git clean -f/-n -d 	
-	真实/不真实的删除所有untracked的文件和目录
+    放弃对文件做出的修改，恢复改动前的状态
+    git checkout -f
+    放弃所有对文件做出的修改
+
+◎ git clean -f/-n -d
+    真实/不真实的删除所有untracked的文件和目录
 
 ◎ Git忽略已跟踪文件的改动
    1. .gitingore只能忽略未被track的文件，也就是新加入的文件
    2. git update-index --assume-unchanged /path/to/file
       git update-index --assume-unchanged .classpath
-    
+
 ◎ Create public key for Github/Bitbucket
   https://confluence.atlassian.com/pages/viewpage.action?pageId=270827678
-  
+
   $ ll ~/.ssh/id_rsa.pub
   $ ssh-keygen -t rsa -C "your_email@youremail.com"
-  
+
   $ ssh-agent bash --login -i
   $ ssh-add
     # Enter passphrase for /home/you/.ssh/id_rsa: [tippy tap]
     # Identity added: /home/you/.ssh/id_rsa (/home/you/.ssh/id_rsa)
-    
+
     @. Could not open a connection to your authentication agent.
     解决方法： ssh-agent bash --login -i
-    
+
   $ Copy content of the public key in ~/.ssh/id_rsa.pub to Account -> SSH Public Keys in GitHub -> Save
     @ Windows XP: C:\Documents and Settings\<User Name>\.ssh
     @ Cygwin:  D:\ProgramFiles\cygwin\home\<User Name>\.ssh
     @ Linux:   ~/.ssh/
-    
+
   $ ssh -T git@github.com / ssh -T git@bitbucket.com
-	  Verify public key was added to GitHub successfully.
-  
+      Verify public key was added to GitHub successfully.
+
     Hi choclover! You've successfully authenticated, but GitHub does not provide shell access.
     ----------------------
     logged in as choclover.
     You can use git or hg to connect to Bitbucket. Shell access is disabled.
 
+  $ 总是要求输入密码，即使已经将本地的public key导入bitbuck
+    解决方法：删除https目标，建立git目标
+    git remote remove      https://choclover@bitbucket.org/xxxxx.git 
+    git remote add bitbuck git@bitbucket.org:xxxxx.git
+    
+    
 ◎ Q&A
   1. Error: Agent admitted failure to sign
-	  For most users, simply running "ssh-add" to load your keys into the SSH agent will fix this issue.
-	
-	2. $ git clone https://xxxx.git
+      For most users, simply running "ssh-add" to load your keys into the SSH agent will fix this issue.
+
+    2. $ git clone https://xxxx.git
     Cloning into tool...
     Password for 'bitbucket.org':
-	  fatal: Authentication failed
-	  
-	  Workaround: Use SSH.
-	  
+      fatal: Authentication failed
+
+      Workaround: Use SSH.
+
 ◎◎◎◎◎◎◎◎◎
