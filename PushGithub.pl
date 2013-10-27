@@ -88,11 +88,13 @@ if (0) {
 
 #*****************************AUXILIARY  FUNCTIONS****************************#
 sub DEBUG_INFO {
-  return if (!$bDEBUG);
-  if (defined(@_)) {
-    print "@_\n";
-  } else {
-    print "Not Defined!\n";
+  if ($bDEBUG || $bVerbose) 
+  {
+    if (defined(@_)) {
+      print "@_\n";
+    } else {
+      print "Not Defined!\n";
+    }
   }
 }
 sub D {DEBUG_INFO(@_);}
@@ -242,8 +244,9 @@ sub pull_repos {
 
   foreach my $dire (sort keys %$refProjReposMap) {
     my $reposInfo = $$refProjReposMap{$dire};
-    my ($gitUrl, $gitBranch, $rootDir) = split('|', $reposInfo);
-  
+    my ($gitUrl, $gitBranch, $rootDir) = split('\|', $reposInfo);
+    D($gitUrl, $gitBranch, $rootDir);
+    
     my $path = "$gRootDir/$dire";  
     if ($FALSE == isEmptyStr($rootDir)) {
       $path = "$rootDir/$dire"; 
@@ -290,7 +293,7 @@ sub push_repos {
     my ($gitUrl, $gitBranch, $rootDir) = split(/\|/, $reposInfo);
     D("GitUrl: $gitUrl; GitBranch: $gitBranch; RootDir: $rootDir");
     
-      my $path = "$gRootDir/$dire";  
+    my $path = "$gRootDir/$dire";  
     if ($FALSE == isEmptyStr($rootDir)) {
       $path = "$rootDir/$dire"; 
     }
@@ -308,7 +311,7 @@ sub push_repos {
     my $cmdStr = "";
 
     $cmdStr = $cdDir . "git add -A; git commit -a -m '" .getComment(). " on branch($gitBranch)'; ";
-    if ((0!=runSysCmd($cmdStr) && $FALSE==$bPushRemote)
+    if ((0!=runSysCmd($cmdStr) && $FALSE==$bPushRemote)  #commit fail
         || $FALSE==$bPushRemote) {
       next;
     }
@@ -318,8 +321,9 @@ sub push_repos {
       $cmdStr = $cdDir . "git push $gitUrl $gitBranch; ";
     }
 
-    my $cnt = 0;
-    while (runSysCmd($cmdStr) != 0 && $cnt<10) {
+    my $cnt = 1;
+    while (runSysCmd($cmdStr) != 0 && $cnt<=5) {
+      P("Trying No. $cnt time, " .(5-$cnt). "times remain.");
       sleep(3);
       $cnt++;
     }
