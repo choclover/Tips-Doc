@@ -382,6 +382,21 @@ create or replace view mytest_view as
   union
   select * from application_types_sys
 
+@. Mysql Dump
+  mysqldump -u用戶名 -p密码 -d 数据库名 表名 脚本名;
+
+    1、导出数据库为dbname的表结构（其中用戶名为root,密码为dbpasswd,生成的脚本名为db.sql）
+    mysqldump -uroot -pdbpasswd -d dbname >db.sql;
+
+    2、导出数据库为dbname某张表(test)结构
+    mysqldump -uroot -pdbpasswd -d dbname test>db.sql;
+
+    3、导出数据库为dbname所有表结构及表數據（不加-d）
+    mysqldump -uroot -pdbpasswd  dbname >db.sql;
+
+    4、导出数据库为dbname某张表(test)结构及表數據（不加-d）
+    mysqldump -uroot -pdbpasswd dbname test>db.sql;
+    
 mysqldump -uroot -proot camiantBoD > ~/BoD_db.txt
 mysqldump -uroot -proot camiant learnedsubnet > SqlLearnedSubnet.db
 mysqldump -uroot -proot camiant learnedserviceclass --where="networkelementuid='281474983238790' " > SqlLearnedServiceClass.db

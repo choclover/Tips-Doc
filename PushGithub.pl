@@ -20,6 +20,7 @@ use strict;
 
 #*****************************GLOBAL  VARIABLES****************************#
 my $bDEBUG = 0;
+my $bVerbose = 0;
 my ($TRUE, $FALSE, $SUCCESS, $FAILED) = (1,0,1,0);
 my $osVersion = "";
 
@@ -47,11 +48,11 @@ my %projReposMap_win = (
   "T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|E:/Coding/T2H/",
   
   #1
-  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
+  #"StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
   #2
-  "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+  #"StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   #3
-  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  #"SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
   
 );
 
@@ -67,7 +68,7 @@ if (0) {
   %projReposMap_common = (
     #"Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
     
-	#Not exist "SpalAdmin"              => "git\@github.com:choclover/studentpaladmin.git",
+  #Not exist "SpalAdmin"              => "git\@github.com:choclover/studentpaladmin.git",
     #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
     #"SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
   );
@@ -136,6 +137,9 @@ sub parse_args {
   for (my $i=0; $i<scalar(@_); $i++) {
     if ($_[$i] eq "-debug") {
       $bDEBUG = $TRUE;   P("** Running in DEBUG mode !**");
+    } elsif ($_[$i] eq "-v") {
+      $bVerbose = $TRUE; P("** Running in VERBOSE mode !**");
+      
     } elsif ($_[$i] eq "-m") {
       if (defined $_[$i+1]) {
         $gComments = $_[$i+1];
@@ -237,19 +241,18 @@ sub pull_repos {
   D("ProjReposMap is: ", %$refProjReposMap);
 
   foreach my $dire (sort keys %$refProjReposMap) {
-  	my $reposInfo = $$refProjReposMap{$dire};
-	my ($gitUrl, $gitBranch, $rootDir) = split('|', $reposInfo);
-	
-  	my $path = "$gRootDir/$dire";  
-	if ($FALSE == isEmptyStr($rootDir)) {
-	  $path = "$rootDir/$dire"; 
-	}
-	P("\n@@ cd $path\n");
-	
-	if (! defined $gitBranch) {
-	  $gitBranch = "master";
-	}
-	
+    my $reposInfo = $$refProjReposMap{$dire};
+    my ($gitUrl, $gitBranch, $rootDir) = split('|', $reposInfo);
+  
+    my $path = "$gRootDir/$dire";  
+    if ($FALSE == isEmptyStr($rootDir)) {
+      $path = "$rootDir/$dire"; 
+    }
+    P("\n@@ cd $path\n");
+    
+    if (! defined $gitBranch) {
+      $gitBranch = "master";
+    }
 
     my $cdDir = "";
     my $cmdStr = "";
@@ -283,24 +286,24 @@ sub push_repos {
   D("ProjReposMap is: ", %$refProjReposMap);
 
   foreach my $dire (sort keys %$refProjReposMap) {
-	my $reposInfo = $$refProjReposMap{$dire};  D($reposInfo);
-	my ($gitUrl, $gitBranch, $rootDir) = split(/\|/, $reposInfo);
-	D("GitUrl: $gitUrl; GitBranch: $gitBranch; RootDir: $rootDir");
-	
-  	my $path = "$gRootDir/$dire";  
-	if ($FALSE == isEmptyStr($rootDir)) {
-	  $path = "$rootDir/$dire"; 
-	}
-	if (! -d $path) {
-	  P("Path $path NOT existing! **");
-	  next;
-	}
-	P("\n@@ cd $path\n");
-	
-	if (isEmptyStr($gitBranch)) {
-	  $gitBranch = "master";
-	}
-	 	
+    my $reposInfo = $$refProjReposMap{$dire};  D($reposInfo);
+    my ($gitUrl, $gitBranch, $rootDir) = split(/\|/, $reposInfo);
+    D("GitUrl: $gitUrl; GitBranch: $gitBranch; RootDir: $rootDir");
+    
+      my $path = "$gRootDir/$dire";  
+    if ($FALSE == isEmptyStr($rootDir)) {
+      $path = "$rootDir/$dire"; 
+    }
+    if (! -d $path) {
+      P("Path $path NOT existing! **");
+      next;
+    }
+    P("\n@@ cd $path\n");
+    
+    if (isEmptyStr($gitBranch)) {
+      $gitBranch = "master";
+    }
+    
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
 
@@ -328,8 +331,8 @@ sub status_repos {
   D("ProjReposMap is: ", %$refProjReposMap);
 
   foreach my $dire (sort keys %$refProjReposMap) {
-  	my $gitUrl = $$refProjReposMap{$dire};
-  	my $path = "$gRootDir/$dire";  P("\n@@ cd $path\n");
+    my $gitUrl = $$refProjReposMap{$dire};
+    my $path = "$gRootDir/$dire";  P("\n@@ cd $path\n");
 
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
