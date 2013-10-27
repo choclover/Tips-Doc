@@ -321,7 +321,8 @@ sub push_repos {
 
     #$cmdStr = "git push github $gitBranch; ";
     if ($bPushRemote) {
-      $cmdStr = $cdDir . "git push $repoSym $gitBranch; ";
+      #$cmdStr = $cdDir . "git push $repoSym $gitBranch; ";
+      $cmdStr = $cdDir . "git push $gitUrl $gitBranch; ";
     }
 
     my $cnt = 1;
