@@ -48,11 +48,11 @@ my %projReposMap_win = (
   "T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|E:/Coding/T2H/",
   
   #1
-  #"StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
+  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
   #2
-  #"StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+  "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   #3
-  #"SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
   
 );
 
@@ -163,7 +163,7 @@ sub backupFile {
         $newFName = sprintf("%s_bak%02d%s", substr($oldFName, 0, rindex($oldFName, '.')),
                             $suffix, substr($oldFName, rindex($oldFName, '.')) );
       } else {
-       $newFName .=  sprintf("_bak%02d", $suffix);
+        $newFName .=  sprintf("_bak%02d", $suffix);
       }
     } while (-e $newFName);
     rename($oldFName, $newFName);
@@ -179,7 +179,7 @@ sub isCygwinArch {
 
 sub runSysCmd {
   my ($cmdStr) = @_;
-  D("\nCommand is: $cmdStr");
+  D("\nCommand is:\n $cmdStr");
   my $result = 0;
   $result = system($cmdStr) if (!$bDEBUG);
   P("Run command returns error") if ($result != 0);
@@ -285,23 +285,26 @@ sub pull_repos {
 }
 
 sub push_repos {
-  my ($repos, $refProjReposMap, $bPushRemote) = @_;
+  my ($repoSym, $refProjReposMap, $bPushRemote) = @_;
   D("ProjReposMap is: ", %$refProjReposMap);
 
   foreach my $dire (sort keys %$refProjReposMap) {
     my $reposInfo = $$refProjReposMap{$dire};  D($reposInfo);
-    my ($gitUrl, $gitBranch, $rootDir) = split(/\|/, $reposInfo);
-    D("GitUrl: $gitUrl; GitBranch: $gitBranch; RootDir: $rootDir");
+    my ($gitUrl, $gitBranch, $rootDir) = split('\|', $reposInfo);
+    D("GitUrl: $gitUrl; \nGitBranch: $gitBranch; \nRootDir: $rootDir");
     
-    my $path = "$gRootDir/$dire";  
+    my $path;  
     if ($FALSE == isEmptyStr($rootDir)) {
       $path = "$rootDir/$dire"; 
+    } else {
+      $path = "$gRootDir/$dire";  
     }
+    
     if (! -d $path) {
       P("Path $path NOT existing! **");
       next;
     }
-    P("\n@@ cd $path\n");
+    P("\n@@ cd $path");
     
     if (isEmptyStr($gitBranch)) {
       $gitBranch = "master";
@@ -311,19 +314,19 @@ sub push_repos {
     my $cmdStr = "";
 
     $cmdStr = $cdDir . "git add -A; git commit -a -m '" .getComment(). " on branch($gitBranch)'; ";
-    if ((0!=runSysCmd($cmdStr) && $FALSE==$bPushRemote)  #commit fail
+    if ((0!=runSysCmd($cmdStr) && $FALSE==$bPushRemote)  #commit fails
         || $FALSE==$bPushRemote) {
       next;
     }
 
     #$cmdStr = "git push github $gitBranch; ";
     if ($bPushRemote) {
-      $cmdStr = $cdDir . "git push $gitUrl $gitBranch; ";
+      $cmdStr = $cdDir . "git push $repoSym $gitBranch; ";
     }
 
     my $cnt = 1;
     while (runSysCmd($cmdStr) != 0 && $cnt<=5) {
-      P("Trying No. $cnt time, " .(5-$cnt). "times remain.");
+      P("## Trying No. $cnt time, " .(5-$cnt). " times remain.");
       sleep(3);
       $cnt++;
     }
