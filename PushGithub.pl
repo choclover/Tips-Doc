@@ -48,11 +48,11 @@ my %projReposMap_win = (
   "T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|E:/Coding/T2H/",
   
   #1
-  "StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
+  #"StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
   #2
-  "StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+  #"StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   #3
-  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  #"SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
   
 );
 
