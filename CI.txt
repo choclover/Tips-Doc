@@ -373,7 +373,7 @@ xjc -d test -target 2.0 /workspace/PANAMA_dev/build/mis/src/java/mi/mis/export/e
 
 ◎ MySQL
 /usr/bin/mysqladmin -u root -proot
-mysql -uroot -proot camiant / camiantBoD <./src/java/mi/mis/create_db.sql --default-character-set=utf8
+mysql -uroot -proot camiant/camiantBoD <./src/java/mi/mis/create_db.sql --default-character-set=utf8
 
 mysql -uroot -proot         <./src/java/mi/mis/addusers.sql --default-character-set=utf8
 
@@ -386,22 +386,24 @@ create or replace view mytest_view as
   mysqldump -u用户名 -p密码 [-d] 数据库名 表名 目标.sql脚本名;
   mysqldump -u用户名 -p密码 -h <remote server IP> [-d] 数据库名 表名 目标.sql脚本名;
  
-    1、导出数据库为dbname的表结构（其中用户名为root,密码为dbpasswd,生成的脚本名为db.sql）
-    mysqldump -uroot -pdbpasswd -d dbname > db.sql;
-    mysqldump -uroot -pdbpasswd -h <remote server IP> dbname > ./create_db.sql --default-character-set=utf8
+  1、导出数据库为dbname的表结构（其中用户名为root,密码为dbpasswd,生成的脚本名为db.sql）
+  mysqldump -uroot -pdbpasswd -d dbname > db.sql;
+  mysqldump -uroot -pdbpasswd -h <remote server IP> dbname > ./create_db.sql --default-character-set=utf8
 	
-    2、导出数据库为dbname某张表(test)结构
-    mysqldump -uroot -pdbpasswd -d dbname test > db.sql;
+  2、导出数据库为dbname某张表(test)结构
+  mysqldump -uroot -pdbpasswd -d dbname test > db.sql;
 
-    3、导出数据库为dbname所有表结构及表数据（不加-d）
-    mysqldump -uroot -pdbpasswd  dbname > db.sql;
+  3、导出数据库为dbname所有表结构及表数据（不加-d）
+  mysqldump -uroot -pdbpasswd  dbname > db.sql;
 
-    4、导出数据库为dbname某张表(test)结构及表数据（不加-d）
-    mysqldump -uroot -pdbpasswd dbname test > db.sql;
+  4、导出数据库为dbname某张表(test)结构及表数据（不加-d）
+  mysqldump -uroot -pdbpasswd dbname test > db.sql;
     
 mysqldump -uroot -proot camiantBoD > ~/BoD_db.txt
 mysqldump -uroot -proot camiant learnedsubnet > SqlLearnedSubnet.db
 mysqldump -uroot -proot camiant learnedserviceclass --where="networkelementuid='281474983238790' " > SqlLearnedServiceClass.db
+
+mysqldump -uroot -pthingtek_yun -d -h 42.96.136.216 PSHS > ./create_db.sql --default-character-set=utf8
 
 INSERT INTO `learnedserviceclass` VALUES (281474983238790,281474977110965,'ds_hsd_nosid111',3,0,0,0,0,0,'2013-01-03 21:42:23',1,NULL,NULL);
 
