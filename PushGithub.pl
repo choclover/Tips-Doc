@@ -354,7 +354,7 @@ sub status_repos {
 sub getComment {
   my ($branchName) = @_;
   if (isEmptyStr($gComments)) {
-    return getDate() . " commit on branch $branchName ";
+    return getDate() . " commit ";
   } else {
     return $gComments;
   }
