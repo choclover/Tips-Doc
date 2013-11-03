@@ -269,7 +269,7 @@ sub pull_repos {
       $cdDir = "cd $path; ";
       $cmdStr = "";
 
-      #$cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment() ." commit'; ";
+      #$cmdStr = $cdDir . "git add -A; git commit -a -m '". getComment($gitBranch) ." commit'; ";
       #runSysCmd($cmdStr);
 
       #$cmdStr = "git pull $repoSym $gitBranch; ";
@@ -313,7 +313,8 @@ sub push_repos {
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
 
-    $cmdStr = $cdDir . "git add -A; git commit -a -m '" .getComment(). " on branch($gitBranch)'; ";
+    $cmdStr = $cdDir . "git add -A; git commit -a -m '" 
+              .getComment($gitBranch). " on branch($gitBranch)'; ";
     if ((0!=runSysCmd($cmdStr) && $FALSE==$bPushRemote)  #commit fails
         || $FALSE==$bPushRemote) {
       next;
@@ -351,8 +352,9 @@ sub status_repos {
 }
 
 sub getComment {
+  my ($branchName) = @_;
   if (isEmptyStr($gComments)) {
-    return getDate() . " commit";
+    return getDate() . " commit on branch $branchName ";
   } else {
     return $gComments;
   }
