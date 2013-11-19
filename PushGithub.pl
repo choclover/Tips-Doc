@@ -188,7 +188,7 @@ sub runSysCmd {
 
 sub getDate {
   my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time());
-  return sprintf("%04d-%02d-%02d", $year+1900, $mon+1, $mday);
+  return sprintf("%04d-%02d-%02d %02d:%02d", $year+1900, $mon+1, $mday, $hour, $min);
 }
 ###############################################################################
 sub main {
