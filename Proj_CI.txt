@@ -1619,7 +1619,10 @@ qemu-img info *.qcow2
 
 -- create vm --
 vim /root/kvm/fargo.dat
-cd ~/kvm
+cd /root/kvm
+
+python cloneTPD6.py -c vmlists.dat -f xhe-cmp
+
 ./cloneKVM.py -c fargo.dat she-mpe2
 ./cloneKVM.py -c fargo.dat she-mpe3
 
