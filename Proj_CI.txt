@@ -153,6 +153,7 @@ hongkong-she      10.60.24.180      Simon
 ./install-7-7.sh -prod mpe+cmp -local ~/rpms
 
 http://10.60.24.244/QUINCY/
+http://10.60.24.244/data/localbuild/QUINCY/lexington-cable/Nov21
 scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*cmp*.iso /var/TKLC/upgrade/
 scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*mpe*.iso /var/TKLC/upgrade/
 
