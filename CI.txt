@@ -5,7 +5,7 @@
 rsync -v /home/users/she/Hem_Doc/*.txt /media/Doc/
 
 ◎ 命令行循环执行命令
-> while true;do ls; echo -e "---\n"; sleep 2;done 
+> while true;do ls; echo -e "---\n"; sleep 2;done
 
 ◎ epoch time 2 human readable
 > epoch2human 132332312
@@ -271,9 +271,9 @@ netstat：显示网络状况，使用参数p可以查看对应的进程号及程
 
 启动服务： /etc/rc.d/init.d/
 
-cat -A file1:  
+cat -A file1:
 } else if (PROP_FILE_VERSION_STRING == type) {^M$     --- indicating this is Dos format
-cat -A file2: 
+cat -A file2:
 } else if (PROP_FILE_VERSION_STRING == type) {$        --- indicating this is Unix format
 
 
@@ -385,11 +385,11 @@ create or replace view mytest_view as
 @. Mysql Dump
   mysqldump -u用户名 -p密码 [-d] 数据库名 表名 目标.sql脚本名;
   mysqldump -u用户名 -p密码 -h <remote server IP> [-d] 数据库名 表名 目标.sql脚本名;
- 
+
   1、导出数据库为dbname的表结构（其中用户名为root,密码为dbpasswd,生成的脚本名为db.sql）
   mysqldump -uroot -pdbpasswd -d dbname > db.sql;
   mysqldump -uroot -pdbpasswd -h <remote server IP> dbname > ./create_db.sql --default-character-set=utf8
-	
+
   2、导出数据库为dbname某张表(test)结构
   mysqldump -uroot -pdbpasswd -d dbname test > db.sql;
 
@@ -398,7 +398,7 @@ create or replace view mytest_view as
 
   4、导出数据库为dbname某张表(test)结构及表数据（不加-d）
   mysqldump -uroot -pdbpasswd dbname test > db.sql;
-    
+
 mysqldump -uroot -proot camiantBoD > ~/BoD_db.txt
 mysqldump -uroot -proot camiant learnedsubnet > SqlLearnedSubnet.db
 mysqldump -uroot -proot camiant learnedserviceclass --where="networkelementuid='281474983238790' " > SqlLearnedServiceClass.db
@@ -420,7 +420,7 @@ log-error=/var/log/mysqld.log
 
 ＊默认的数据库文件存放位置： /var/lib/mysql
 
-1. mysqladmin -u root password root
+1. mysqladmin -u root -p <old password> password <new password>
 2. SET PASSWORD FOR root=PASSWORD(’new password’);（对登录数据库后这种方式）
 3. UPDATE user SET password=PASSWORD(”new password”) WHERE user=’root’; 　（对登录数据库后这种方式）
 
