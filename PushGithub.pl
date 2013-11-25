@@ -37,28 +37,28 @@ my ($gSymBitbuck, $gSymGithub) = ("bitbuck", "github");
 
 my %projReposMap_common = (
   "Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git|master|",
-  
+
   #"SpalAdmin"              => "git\@bitbucket.org:choclover/studentpaladmin.git",
-  #"MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",  
+  #"MyPkgInstaller"         => "git\@bitbucket.org:choclover/mypkginstaller_froyo.git",
   #"SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
   );
 
 my %projReposMap_win = (
   #4
   "T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|E:/Coding/T2H/",
-  
+
   #1
   #"StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
   #2
   #"StudentPalClientDeamon" => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   #3
   #"SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
-  
+
 );
 
 my %projReposMap_lnx = (
   "T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|/media/Coding/T2H/",
-  
+
   "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
   "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
   "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
@@ -67,7 +67,7 @@ my %projReposMap_lnx = (
 if (0) {
   %projReposMap_common = (
     #"Tips_Doc"               => "git\@github.com:choclover/Tips-Doc.git",
-    
+
   #Not exist "SpalAdmin"              => "git\@github.com:choclover/studentpaladmin.git",
     #"MyPkgInstaller"         => "git\@github.com:choclover/CustomPkgInstaller.git",
     #"SysPkgInstaller"        => "git\@bitbucket.org:choclover/syspkginstaller_froyo",
@@ -88,7 +88,7 @@ if (0) {
 
 #*****************************AUXILIARY  FUNCTIONS****************************#
 sub DEBUG_INFO {
-  if ($bDEBUG || $bVerbose) 
+  if ($bDEBUG || $bVerbose)
   {
     if (defined(@_)) {
       print "@_\n";
@@ -141,7 +141,7 @@ sub parse_args {
       $bDEBUG = $TRUE;   P("** Running in DEBUG mode !**");
     } elsif ($_[$i] eq "-v") {
       $bVerbose = $TRUE; P("** Running in VERBOSE mode !**");
-      
+
     } elsif ($_[$i] eq "-m") {
       if (defined $_[$i+1]) {
         $gComments = $_[$i+1];
@@ -246,13 +246,13 @@ sub pull_repos {
     my $reposInfo = $$refProjReposMap{$dire};
     my ($gitUrl, $gitBranch, $rootDir) = split('\|', $reposInfo);
     D($gitUrl, $gitBranch, $rootDir);
-    
-    my $path = "$gRootDir/$dire";  
+
+    my $path = "$gRootDir/$dire";
     if ($FALSE == isEmptyStr($rootDir)) {
-      $path = "$rootDir/$dire"; 
+      $path = "$rootDir/$dire";
     }
     P("\n@@ cd $path\n");
-    
+
     if (! defined $gitBranch) {
       $gitBranch = "master";
     }
@@ -292,28 +292,28 @@ sub push_repos {
     my $reposInfo = $$refProjReposMap{$dire};  D($reposInfo);
     my ($gitUrl, $gitBranch, $rootDir) = split('\|', $reposInfo);
     D("GitUrl: $gitUrl; \nGitBranch: $gitBranch; \nRootDir: $rootDir");
-    
-    my $path;  
+
+    my $path;
     if ($FALSE == isEmptyStr($rootDir)) {
-      $path = "$rootDir/$dire"; 
+      $path = "$rootDir/$dire";
     } else {
-      $path = "$gRootDir/$dire";  
+      $path = "$gRootDir/$dire";
     }
-    
+
     if (! -d $path) {
       P("Path $path NOT existing! **");
       next;
     }
     P("\n@@ cd $path");
-    
+
     if (isEmptyStr($gitBranch)) {
       $gitBranch = "master";
     }
-    
+
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
 
-    $cmdStr = $cdDir . "git add -A; git commit -a -m '" 
+    $cmdStr = $cdDir . "git add -A; git commit -a -m '"
               .getComment($gitBranch). " on branch($gitBranch)'; ";
     if ((0!=runSysCmd($cmdStr) && $FALSE==$bPushRemote)  #commit fails
         || $FALSE==$bPushRemote) {
@@ -324,6 +324,7 @@ sub push_repos {
     if ($bPushRemote) {
       #$cmdStr = $cdDir . "git push $repoSym $gitBranch; ";
       $cmdStr = $cdDir . "git push $gitUrl $gitBranch; ";
+      $cmdStr = $cdDir . "git push $gitUrl $gitBranch --tag; ";
     }
 
     my $cnt = 1;
