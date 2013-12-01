@@ -274,7 +274,8 @@ sub pull_repos {
 
       #$cmdStr = "git pull $repoSym $gitBranch; ";
       $cmdStr = $cdDir . "git pull $gitUrl $gitBranch; ";
-
+      $cmdStr = $cdDir . "git pull $gitUrl $gitBranch --tag; ";
+			
       my $cnt = 0;
       while (runSysCmd($cmdStr) != 0  && $cnt<10) {
         sleep(3);

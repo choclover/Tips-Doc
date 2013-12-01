@@ -1,6 +1,9 @@
 
 
 
+netsh wlan set hostednetwork mode=allow ssid=test123 key=test1234
+netsh wlan start hostednetwork
+
 ◎ Rsync
 rsync -v /home/users/she/Hem_Doc/*.txt /media/Doc/
 
