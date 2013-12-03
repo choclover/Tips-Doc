@@ -42,7 +42,6 @@ Global setup:
   从 Git 仓库／暂存区中移除
   git rm --cached readme.txt
 
-
   cd /e/Coding/Perl/PriceNotify
   git pull (git@github.com:choclover/PriceNotify.git)
   or
@@ -78,7 +77,8 @@ Global setup:
   git reset --hard  回复到最近一次的commit
   git reset --hard  88e6ac65fccda4f703488b11e65dbedd11e29b3c  回复到某一次的commit
 
-
+	git commit --amend   修改 已经提交了的注释
+	
 ◎ 查看删除的文件  git ls-files -deleted
 ◎ 恢复删除的文件  git ls-files -d | xargs git checkout --
 
