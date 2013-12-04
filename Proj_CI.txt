@@ -313,6 +313,7 @@ iqt -W NodeInfo -- all node should show Active
 iqt -pE NodeInfo
 iqt -r -W    PersistIntervalStats.0  where statId=62 by tblTimeStamp
 
+ha.stat
 ha.states  -- check standby state on MPE/BoD (c nodes)
 alarm.put
 getPolicyRev -f
@@ -658,6 +659,11 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   RcMgr> create cablemodem -set MacAddress=10:01:00:00:00:01 -set Ipv4Address=192.0.0.1 -set Ipv6Address=a:b:c:d::1
   
   RcMgr> 
+  create account -set AccountId=Account11
+  create cablemodem -set MacAddress=1A:2A:3A:4A:5A:6A -set Ipv4Address=10.0.5.1 -set AccountId=Account11
+  create cpe -set IpAddress=10.0.80.1  -set CmMac=1A:2A:3A:4A:5A:6A
+  
+  -----------------------------------------------------
   create account -set AccountId=Account11
   create account -set AccountId=Account22
   
@@ -1304,7 +1310,7 @@ Subnets Configured Manually (IP / MASK)
   10.0.80.0 / 24
 
   Requirements for IPv6 Prefix Delegation: http://tools.ietf.org/html/rfc3769
-  
+	
   http://www.gestioip.net/cgi-bin/subnet_calculator.cgi
 
 ＊ MI Policy Server Configuration -> Policy Server Tab -> Diameter
@@ -1644,7 +1650,7 @@ qemu-img snapshot -l hongkong-she-bod.qcow2
 ** Recover ** 
 qemu-img snapshot -a she_cmp_ori she-cmp.qcow2
 qemu-img snapshot -a tpdbase she-mpe.qcow2
-qemu-img snapshot -a tpdbase she-mpe1.qcow2
+qemu-img snapshot -a tpdbase she-mpe3.qcow2
 qemu-img snapshot -a tpdbase she-bod.qcow2
 
 qemu-img snapshot -a tpdbase tshen-bod.qcow2
