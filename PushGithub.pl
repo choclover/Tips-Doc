@@ -57,7 +57,8 @@ my %projReposMap_win = (
 );
 
 my %projReposMap_lnx = (
-  "shell-scripts"           => "git\@bitbucket.org:choclover/shell-scripts.git|master|/media/workspace/",
+  #2. shell-scripts
+  ""           => "git\@bitbucket.org:choclover/shell-scripts.git|master|/media/workspace/",
   
   #1
   #"T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|/media/Coding/T2H/",
