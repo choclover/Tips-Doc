@@ -57,11 +57,11 @@ my %projReposMap_win = (
 );
 
 my %projReposMap_lnx = (
-  "T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|/media/Coding/T2H/",
+  #"T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|/media/Coding/T2H/",
 
-  "SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
-  "SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
-  "SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
+  #"SpalClient"             => "git\@bitbucket.org:choclover/studentpalclient.git",
+  #"SpalClientDaemon"       => "git\@bitbucket.org:choclover/studentpalclientdaemon.git",
+  #"SpalSvr"                => "git\@bitbucket.org:choclover/studentpalsvr.git",
 );
 
 if (0) {

@@ -59,7 +59,7 @@ alias newbash='vim ~/.bashrc '
 alias runbash='source ~/.bashrc '
 alias killps='kill -9 '
 alias komo7='/media/Tools/Komodo-Edit-7/lib/mozilla/komodo & '
-alias komo='/media/Tools/Komodo-Edit-8.5.1/bin/komodo & '
+alias komo='/media/Tools/Komodo-Edit-8.5.1/bin/komodo '
 alias unlockkomo='rm /home/users/she/.komodoedit/8.5.1/running.lock; rm /home/users/she/.komodoedit/8.5.1/XRE/.parentlock '
 
 alias sqllogin='mysql -A -uroot -proot camiant -A '
