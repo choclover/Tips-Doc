@@ -342,8 +342,22 @@ sub status_repos {
   D("ProjReposMap is: ", %$refProjReposMap);
 
   foreach my $dire (sort keys %$refProjReposMap) {
-    my $gitUrl = $$refProjReposMap{$dire};
-    my $path = "$gRootDir/$dire";  P("\n@@ cd $path\n");
+    my $reposInfo = $$refProjReposMap{$dire};  D($reposInfo);
+    my ($gitUrl, $gitBranch, $rootDir) = split('\|', $reposInfo);
+    D("GitUrl: $gitUrl; \nGitBranch: $gitBranch; \nRootDir: $rootDir");
+
+    my $path;
+    if ($FALSE == isEmptyStr($rootDir)) {
+      $path = "$rootDir/$dire";
+    } else {
+      $path = "$gRootDir/$dire";
+    }
+
+    if (! -d $path) {
+      P("Path $path NOT existing! **");
+      next;
+    }
+    P("\n@@ cd $path");
 
     my $cdDir = "cd $path; ";
     my $cmdStr = "";
