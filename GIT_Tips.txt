@@ -36,6 +36,7 @@ Global setup:
   3. git checkout <branch name>:    创建并切换到branch name
      git checkout -b <branch name>: 创建并切换到branch name，如已经存在则报错
   
+	4. git branch -m <oldname> <newname>: git 重命名branch
   
 ◎ 从工作目录磁盘上删除文件
   git rm readme.txt
