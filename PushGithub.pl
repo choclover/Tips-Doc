@@ -46,7 +46,7 @@ my %projReposMap_common = (
 my %projReposMap_win = (
   #4
   #"T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|E:/Coding/T2H/",
-  "thumb2home_internal_dev"        => "git\@bitbucket.org:thumb2home/server.git|thumb2home_hmils|E:/Coding/T2H/T2H_Svr",
+  "thumb2home_internal_dev" => "git\@bitbucket.org:thumb2home/server.git|thumb2home_internal_dev|E:/Coding/T2H/T2H_Svr",
 
   #1
   #"StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
