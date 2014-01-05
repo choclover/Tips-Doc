@@ -33,6 +33,8 @@ Global setup:
   2. git branch <branch name>: 创建branch name.
      git push origin/bitbuck <branch name>
 
+     git push bitbuck --delete <branch name> : 删除远程的branch 名字
+
   3. git checkout <branch name>:    创建并切换到branch name
      git checkout -b <branch name>: 创建并切换到branch name，如已经存在则报错
 
