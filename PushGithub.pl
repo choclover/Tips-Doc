@@ -46,7 +46,7 @@ my %projReposMap_common = (
 my %projReposMap_win = (
   #4
   #"T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|E:/Coding/T2H/",
-  "thumb2home_hmils"        => "git\@bitbucket.org:thumb2home/server.git|thumb2home_hmils|E:/Coding/T2H/T2H_Svr",
+  "thumb2home_test"        => "git\@bitbucket.org:thumb2home/server.git|thumb2home_hmils|E:/Coding/T2H/T2H_Svr",
 
   #1
   #"StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
@@ -60,7 +60,7 @@ my %projReposMap_win = (
 my %projReposMap_lnx = (
   #2. shell-scripts
   ""           => "git\@bitbucket.org:choclover/shell-scripts.git|master|/media/workspace/",
-  
+
   #1
   #"T2H_Svr"                => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|/media/Coding/T2H/",
 
@@ -280,7 +280,7 @@ sub pull_repos {
       #$cmdStr = "git pull $repoSym $gitBranch; ";
       $cmdStr = $cdDir . "git pull $gitUrl $gitBranch; ";
       $cmdStr = $cdDir . "git pull $gitUrl $gitBranch --tag; ";
-			
+
       my $cnt = 0;
       while (runSysCmd($cmdStr) != 0  && $cnt<10) {
         sleep(3);
