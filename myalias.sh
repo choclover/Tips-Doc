@@ -44,6 +44,8 @@ alias port1='sudo netstat -tuapn |grep -i '
 
 alias psa='ps -aux |grep -i '
 alias port='netstat -tuapn |grep -i '
+alias grepexception='grep -R -i exception *'
+alias greperror='grep -R -i error *'
 
 alias qprestart='service qp_procmgr restart'
 alias reqp='service qp_procmgr restart'
@@ -89,7 +91,7 @@ alias useant19='export ANT_HOME=/media/Tools/ant/apache-ant-1.9.0; export PATH=$
 
 alias acc='$ACCUREV_HOME/bin/accurev '
 alias aclogin='$ACCUREV_HOME/bin/accurev login she she '
-alias acupdate='$ACCUREV_HOME/bin/accurev update '
+alias acupdate='$ACCUREV_HOME/bin/accurev login she she  && $ACCUREV_HOME/bin/accurev update '
 alias acgui='$ACCUREV_HOME/bin/acgui &'
 alias updatecode='aclogin; acupdate; '
 

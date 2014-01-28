@@ -1,5 +1,7 @@
 
 
+10.60.26.206
+
 
 DIAMETER.Cleanup.RXSessionValidityTime=10
 
@@ -80,11 +82,7 @@ Unique Name:      SH2
 
 alias classver='java -cp /media/Tools/JavaParser JavaParser '
 
-VM on DL360-7(10.60.24.247) 
-    HostName          Blade IP       OAM VIP        SignalA IP
-xxx hongkong-she-cmp     10.60.24.189   10.60.24.190
-xxx she-mpe              10.60.24.191                  10.60.24.192
-xxx hongkong-she-bod     10.60.24.205                  10.60.24.206 
+
 ** VM on 10.60.28.105 ** 
 she-mpe2             10.60.57.75                  10.60.57.76
 she-mpe3             10.60.57.77                  10.60.57.78
@@ -102,6 +100,12 @@ Ming He	 MA     BL460G8 -161	 she-ma	  10.60.32.219	 10.60.32.220
 == subnet mask == /21    gateway: 10.60.56.1 
 Ming He  MPE 	BL460-G8-8       she-mpe2  tpd6 10.60.57.75 10.60.57.76
 Ming He  MPE 	BL460-G8-8       she-mpe3  tpd6 10.60.57.77 10.60.57.78
+
+VM on DL360-7(10.60.24.247) 
+    HostName          Blade IP       OAM VIP        SignalA IP
+xxx hongkong-she-cmp     10.60.24.189   10.60.24.190
+xxx she-mpe              10.60.24.191                  10.60.24.192
+xxx hongkong-she-bod     10.60.24.205                  10.60.24.206
 
 cd /var/lib/libvirt/images/
 
@@ -153,7 +157,9 @@ hongkong-she      10.60.24.180      Simon
 ./install-7-7.sh -prod mpe+cmp -local ~/rpms
 
 http://10.60.24.244/QUINCY/
-http://10.60.24.244/data/localbuild/QUINCY/lexington-cable/Nov21
+http://10.60.24.244/data/localbuild/QUINCY/lexington-cable/
+/data/localbuild/QUINCY/lexington-cable/11.0.0_99.3.0
+
 scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*cmp*.iso /var/TKLC/upgrade/
 scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*mpe*.iso /var/TKLC/upgrade/
 
@@ -632,6 +638,8 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   
   RcMgr> create cmts 
   RcMgr> reconfig
+  RcMgr> show counters "DiameterAF *"
+  
   RcMgr> show counter "KPI *"
   -- KPI Statitics --
     KPI statistics only focus on CPU, Memory, Disk,  TPS, Session, Loading Shedding, Protocol error, Connection error, etc.
@@ -696,6 +704,25 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   
   create account -set AccountId=Account11
   create account -set AccountId=Account22
+  
+  --------------------------------------------
+  create account -set AccountId=000001
+  create account -set AccountId=000002
+  create cablemodem -set MacAddress=10:01:00:00:00:01 -set IpAddress=192.0.0.1 -set AccountId=000001
+  create cablemodem -set MacAddress=10:01:00:00:00:02 -set IpAddress=192.0.0.100 -set AccountId=000002
+  create cablemodem -set MacAddress=10:01:00:00:00:03 -set IpAddress=192.0.0.200 -set AccountId=000002
+  create cpe -set IpAddress=192.0.0.2 -set CmMac=10:01:00:00:00:01
+  create cpe -set IpAddress=192.0.0.3 -set CmMac=10:01:00:00:00:01
+  create cpe -set IpAddress=192.0.0.4 -set CmMac=10:01:00:00:00:01
+  create cpe -set IpAddress=192.0.0.5 -set CmMac=10:01:00:00:00:01
+  create cpe -set IpAddress=192.0.0.6 -set CmMac=10:01:00:00:00:01
+  create cpe -set IpAddress=192.0.0.7 -set CmMac=10:01:00:00:00:01
+  create cpe -set IpAddress=192.0.0.8 -set CmMac=10:01:00:00:00:01
+  create cpe -set IpAddress=192.0.0.9 -set CmMac=10:01:00:00:00:01
+  create cpe -set IpAddress=192.0.0.199 -set CmMac=10:01:00:00:00:02
+  create cpe -set IpAddress=192.0.0.199 -set CmMac=10:01:00:00:00:03
+  
+  refreshdb
   
   -------------------------------------
   BodMgr> show counter "*BOD *"
@@ -886,10 +913,14 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
 
   aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 118 from 192.168.200.2 to 192.168.200.26 6024" -set media1.upmax=80000 -sessionid=client.test.example.com;1325042785;4
 
+  == DELETE classifier or Gate ==
+  aar rx -set media1.type=0 -set media1.status=4 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 118 from 192.168.200.2 to 192.168.200.26 6024" -set media1.upmax=80000 -sessionid=client.test.example.com;1325042785;4
+  
   ** To create command ** :
   aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -set media1.upmax=80000 -subip=10.0.80.1
 
-  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -set media1.downmax=8000 -set media1.flow1.downflowdesc="permit out 17 from 192.168.8 to 192.168.200.2 6022" -set media1.upmax=80000 -sessionid=client.test.example.com;1283140698;3
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024" -set media1.downmax=8000 -set media1.flow1.downflowdesc="permit out 17 from 192.168.8 to 192.168.200.2 6022" -set media1.upmax=80000 -subip=10.0.80.1
+  -sessionid=client.test.example.com;1283140698;3
 
   ** Use IPv6 SubIP **:
   aar rx -framedipv6prefix=FC00::0A0F:4724  -set media1.type=0 -set media1.status=2 -set media1.afappid="voip" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=3333 -set media1.flow1.upflowdesc="permit in 20 from FC00::0A0F:4702 to FC00::0A0F:4726"
@@ -919,7 +950,7 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   upflowdesc="permit in 17 from 192.168.200.2 to 192.168.200.26 6024"
 
   ** Multiple classifier & Double Direction **
-  aar rx -subip=192.0.0.3 -set media1.type=0 -set media1.status=2 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.downmax=80000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.10 123 to 11.11.11.11 6024" -set media1.flow1.downflowdesc="permit out 17 from 11.11.11.11 6024 to 10.10.10.10 123" -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.10 124 to 11.11.11.11 6025" -set media1.flow2.downflowdesc="permit out 17 from 11.11.11.11 6025 to 10.10.10.10 124"
+  aar rx -set media1.type=0 -set media1.status=2 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.downmax=80000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.10 123 to 11.11.11.11 6024" -set media1.flow1.downflowdesc="permit out 17 from 11.11.11.11 6024 to 10.10.10.10 123" -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.10 124 to 11.11.11.11 6025" -set media1.flow2.downflowdesc="permit out 17 from 11.11.11.11 6025 to 10.10.10.10 124"  -subip=192.0.0.3
 
   aar rx -subip=10.0.1.226 -set media1.type=0 -set media1.status=2 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.downmax=80000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.20 123 to 11.11.11.21 6024" -set media1.flow1.downflowdesc="permit out 17 from 11.11.11.21 6024 to 10.10.10.20 123" -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.20 124 to 11.11.11.21 6025" -set media1.flow2.downflowdesc="permit out 17 from 11.11.11.21 6025 to 10.10.10.20 124"
   
@@ -932,7 +963,7 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
 
   aar rx -subip=10.0.1.226 -set media1.type=0 -set media1.status=2 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.20 123 to 11.11.11.21 6024" -set media1.flow2.upflowdesc="permit in 17 from 10.10.10.20 124 to 11.11.11.21 6025"
   
-  aar rx -subip=10.60.24.110 -set media1.type=0 -set media1.status=2 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.20 123 to 11.11.11.21 6024" -set media1.flow1.upflowdesc="permit in 20 from FC00::0A0F:4702 to FC00::0A0F:4726" 
+  aar rx -subip=10.60.24.110 -set media1.type=0 -set media1.status=2 -set media1.afappid="vp" -set media1.upmax=60000 -set media1.rs=222 -set media1.rr=333 -set media1.flow1.upflowdesc="permit in 17 from 10.10.10.20 123 to 11.11.11.21 6024" -set media1.flow2.upflowdesc="permit in 20 from FC00::0A0F:4702 to FC00::0A0F:4726" 
 
   =============================================
   /media/workspace/HK_NBod_she/src/common/java/camiant/diameter/apps/nasreq/af/objects/FlowStatus.java
@@ -1224,7 +1255,7 @@ fi
 
   Cmts> Gatereport
   eg. gatereport -set gateid=82400957
-      gatereport -set gateid=77510775 -set reason=5
+      gatereport  -set reason=5 -set gateid=77510775
       
       
   Cmts> set versions=4.0,3.0,2.0 －－ 设置CMTS 支持的PCMM的版本
@@ -1799,6 +1830,15 @@ http://10.60.2.12/twiki/bin/view/Main/ByteMe
   Use signal network between clusters.
   
 ◎ \\files\public\Material Collected\Whitepaper
+
+
+◎ Automation Test
+  http://10.15.29.94/
+  user/passwd: admin110/camiant
+  
+  ssh 10.15.29.94; root/camiant
+  Test cases location:  /opt/home/admin110/branches/work_release_wireless_110_0
+  
 ===============================================================================
 http://signal.tekelec.com/sites/CustSupp/CustomerPub/Shared%20Documents/910-6357-001_rev_a.pdf
 
