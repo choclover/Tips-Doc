@@ -29,14 +29,17 @@ Global setup:
 ◎ Branch
   1. git branch: 列出当前目录的所有branch
      git branch -r: 列出远程的所有branch
-     
+
   2. git branch <branch name>: 创建branch name.
      git push origin/bitbuck <branch name>
-     
+
+     git push bitbuck --delete <branch name> : 删除远程的branch 名字
+
   3. git checkout <branch name>:    创建并切换到branch name
      git checkout -b <branch name>: 创建并切换到branch name，如已经存在则报错
-  
-  
+
+	4. git 重命名 branch: git branch -m <oldname> <newname>
+
 ◎ 从工作目录磁盘上删除文件
   git rm readme.txt
   从 Git 仓库／暂存区中移除
@@ -54,6 +57,7 @@ Global setup:
   > github  git@github.com:choclover/PriceNotify.git (fetch)
   > origin  git@github.com:choclover/caosir.git (fetch)
 
+  # 重命名remote 名字
   git remote rename github github_new
 
   git remote show github
@@ -78,7 +82,7 @@ Global setup:
   git reset --hard  88e6ac65fccda4f703488b11e65dbedd11e29b3c  回复到某一次的commit
 
 	git commit --amend   修改 已经提交了的注释
-	
+
 ◎ 查看删除的文件  git ls-files -deleted
 ◎ 恢复删除的文件  git ls-files -d | xargs git checkout --
 
@@ -132,10 +136,10 @@ Global setup:
 
   $ 总是要求输入密码，即使已经将本地的public key导入bitbuck
     解决方法：删除https目标，建立git目标
-    git remote remove      https://choclover@bitbucket.org/xxxxx.git 
+    git remote remove      https://choclover@bitbucket.org/xxxxx.git
     git remote add bitbuck git@bitbucket.org:xxxxx.git
-    
-    
+
+
 ◎ Q&A
   1. Error: Agent admitted failure to sign
       For most users, simply running "ssh-add" to load your keys into the SSH agent will fix this issue.
