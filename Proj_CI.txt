@@ -94,7 +94,7 @@ VM on BL460G8 -161(10.60.28.161 / NextGen)
 Ming He	 CMP	BL460G8 -161	 she-cmp  10.60.32.211	 10.60.32.212
 Ming He	 MPE	BL460G8 -161	 she-mpe1 10.60.32.213	 10.60.32.214
 Ming He	 BOD	BL460G8 -161	 she-bod  10.60.32.217	 10.60.32.218
-Ming He	 MA     BL460G8 -161	 she-ma	  10.60.32.219	 10.60.32.220
+Ming He	 MA   BL460G8 -161	 she-ma	  10.60.32.219	 10.60.32.220
 
 ** VM on 10.60.28.105 **
 == subnet mask == /21    gateway: 10.60.56.1 
@@ -123,6 +123,9 @@ Used by Simon
 hongkong-ryang-cmp   10.60.24.197   10.60.24.198    
 hongkong-ryang-mpe   10.60.24.199                 10.60.24.200 
 hongkong-ryang-bod   10.60.24.209                 10.60.24.210 
+
+VM on DL360-7(10.60.24.247)
+Rui Yang 	MRA 	DL360-7 	ryang-mra 	10.60.24.199 	  	10.60.24.200 	tpd 6.0
 
 hongkong-ryang-mpe   10.60.24.199                 10.60.24.200 
 tshen-bod           10.60.24.95                   10.60.24.96
@@ -156,8 +159,9 @@ hongkong-she      10.60.24.180      Simon
 ./install-7-7.sh -prod mpe+cmp -stream DOVER_dev -local rpms
 ./install-7-7.sh -prod mpe+cmp -local ~/rpms
 
-http://10.60.24.244/QUINCY/
-http://10.60.24.244/data/localbuild/QUINCY/lexington-cable/
+http://10.60.24.245/QUINCY/
+http://10.60.24.245/data/localbuild/QUINCY/lexington-cable/
+http://10.60.24.245/data/localbuild/ZHONGSHAN/11.3.0_99.1.0/
 /data/localbuild/QUINCY/lexington-cable/11.0.0_99.3.0
 
 scp root@10.60.24.244:/var/nfs/isos/nbod/latest/*cmp*.iso /var/TKLC/upgrade/
@@ -997,6 +1001,9 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   > Namcli
   test rate 10.60.32.213 -set AmCount=3 -set AbortOnError=false -set Am1.GateSet=upstream -set Skipinfos=no -set skipdeletes=no -set Am1.SubscriberIdRange=10.60.24.2-254 -set Am2.SubscriberIdRange=10.60.24.1-254 -set Am3.SubscriberIdRange=10.60.24.2-200 -set Am1.GateSet=downstream -set Am3.GateSet=upstream:downstream -set interval=3000 -set cycles=1 -set gates=100
 
+  test perf -set AmCount=3 -set AbortOnError=false -set Am1.GateSet=upstream -set Skipinfos=no -set skipdeletes=no -set Am1.SubscriberIdRange=10.60.24.2-254 -set Am2.SubscriberIdRange=10.60.24.1-254 -set Am3.SubscriberIdRange=10.60.24.2-200 -set Am1.GateSet=downstream -set Am3.GateSet=upstream:downstream -set interval=3000 -set cycles=1 -set gates=1000 10.60.57.77
+
+
   test rate 10.60.57.76 -set AmCount=2 -set AbortOnError=false -set Am1.GateSet=upstream -set skipinfos=false -set skipdeletes=false -set Am1.SubscriberIdRange=10.60.24.2-254 -set Am2.SubscriberIdRange=10.60.24.2-254  -set Am1.GateSet=downstream -output /tmp/amLog.txt -echo -set interval=1500 -set cycles=1000 -set gates=10 
 
   test rate 10.60.57.76 -set AmCount=2 -set AbortOnError=false -set Am1.GateSet=upstream -set interval=200000 -set cycles=10 -set gates=100 -set Skipinfos=false -set skipdeletes=false -set Am1.SubscriberIdRange=10.10.10.2-254 -set Am2.SubscriberIdRange=10.10.11.2-254  -set Am1.GateSet=downstream
@@ -1011,9 +1018,9 @@ ant single_test -Dtest.name=camiant.services.incident.handler.IncidentManagerTes
   
   -duration: 持续时间，仅当-cycle=0
   
-  test perf rx -realm=camiant.com -remoteidentity=mpe_root    -identity=test_perf -addressrange=10.0.80.1/30 -disconnect=true -verbose=off -duration=0 -output=/root/perf.txt -timeout=5000 -terminate=false -modifies=1 -transactions=10000  -cycles=1 -numclients=100 -hostname=10.60.57.76 
+  test perf rx -realm=camiant.com -remoteidentity=mpe_root    -identity=test_perf -addressrange=10.0.80.1/30 -disconnect=true -verbose=off -duration=0 -output=/root/perf.txt -timeout=5000 -terminate=false -modifies=1 -transactions=10000  -cycles=1 -numclients=100 -hostname=10.60.57.77
   
-  test perf rx -realm=camiant.com -remoteidentity=mpe_serve1  -identity=test_perf -addressrange=10.0.80.1/30 -disconnect=true -verbose=on -duration=0 -output=/root/perf.txt -timeout=5000 -terminate=true -modifies=1 -transactions=100 -cycles=1 -numclients=1 -hostname=10.60.32.213
+  test perf rx -realm=camiant.com -remoteidentity=mpe_root  -identity=test_perf -addressrange=10.0.80.1/30 -disconnect=true -verbose=on -duration=0 -output=/root/perf.txt -timeout=5000 -terminate=true -modifies=1 -transactions=10000 -cycles=1 -numclients=1 -hostname=10.60.32.213
   -delay=60000
 
   test perf rx -hostname=10.15.24.107 -realm=camiant.com -remoteidentity=mpe  -identity=mpe_root -numclients=1 -transactions=1000 -cycles=30 -addressrange=10.15.24.1/24 -disconnect=true -verbose=off -modifies=1 -duration=0 -output=/root/perf_nomgpi_107.txt -timeout=5000 -terminate=false
@@ -1702,6 +1709,11 @@ Password: 4ourGue$t
 
 27. Product Version:
   TPD:  /workspace/PANAMA_dev/src/common/java/camiant/util/VersionUtils.java
+  
+  Modify:
+  /usr/TKLC/plat/etc/prodinfo/isometadata1387349816
+  release 11.0.0_99.3.0
+  
   QBUS: src/mi/version.properties
         /opt/camiant/mi/version
         /opt/camiant/rc/version
