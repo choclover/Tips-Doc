@@ -81,10 +81,11 @@ Global setup:
   git reset --hard  回复到最近一次的commit
   git reset --hard  88e6ac65fccda4f703488b11e65dbedd11e29b3c  回复到某一次的commit
 
-	git commit --amend   修改 已经提交了的注释
+  git commit --amend   修改 已经提交了的注释
 
-◎ 查看删除的文件  git ls-files -deleted
-◎ 恢复删除的文件  git ls-files -d | xargs git checkout --
+◎ 查看版本控制的文件: git ls-files
+◎ 查看删除的文件      git ls-files -deleted
+◎ 恢复删除的文件      git ls-files -d | xargs git checkout --
 
 ◎ git add
     这是个多功能命令，根据目标文件的状态不同，此命令的效果也不同：可以用它开始跟踪新文件，或者把已跟踪的文件放到暂存区，还能用于合并时把有冲突的文件标记为已解决状态等）
