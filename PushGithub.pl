@@ -45,10 +45,14 @@ my %projReposMap_common = (
 
 my %projReposMap_win = (
   #4 Thumb2home Dev/Product
+  "thumb2home_internal_dev" => "git\@bitbucket.org:choclover/thumb2home.git|thumb2home_internal_dev|E:/Coding/T2H/T2H_Svr",
+  "thumb2home_product"      => "git\@bitbucket.org:choclover/thumb2home.git|thumb2home_product|E:/Coding/T2H/T2H_Svr",
+  "SqlInsert"               => "git\@bitbucket.org:choclover/thumb2home.git|SqlInsert|E:/Coding/T2H/",
+
   #"T2H_Svr"    => "git\@bitbucket.org:thumb2home/server.git|simon_refactor1|E:/Coding/T2H/",
-  "thumb2home_internal_dev" => "git\@bitbucket.org:thumb2home/server.git|thumb2home_internal_dev|E:/Coding/T2H/T2H_Svr",
-  "thumb2home_product"      => "git\@bitbucket.org:thumb2home/server.git|thumb2home_product|E:/Coding/T2H/T2H_Svr",
-  "SqlInsert"               => "git\@bitbucket.org:thumb2home/server.git|SqlInsert|E:/Coding/T2H/",
+  #"thumb2home_internal_dev" => "git\@bitbucket.org:thumb2home/server.git|thumb2home_internal_dev|E:/Coding/T2H/T2H_Svr",
+  #"thumb2home_product"      => "git\@bitbucket.org:thumb2home/server.git|thumb2home_product|E:/Coding/T2H/T2H_Svr",
+  #"SqlInsert"               => "git\@bitbucket.org:thumb2home/server.git|SqlInsert|E:/Coding/T2H/",
 
   #1
   #"StudentPalClient"       => "git\@bitbucket.org:choclover/studentpalclient.git",
